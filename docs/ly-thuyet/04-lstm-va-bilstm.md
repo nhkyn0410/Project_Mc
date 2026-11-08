@@ -102,12 +102,12 @@ Bảng 1: Số tham số của ba lớp BiLSTM trong mô hình M1
 | BiLSTM 3 | 256 | 197.120 | 394.240 |
 | Tổng | | | 1.051.648 |
 
-Ba lớp BiLSTM chiếm khoảng 1,05 triệu trong 1,14 triệu tham số của M1 ước tính trong bản mô tả đề tài. Phần còn lại thuộc CNN 1D và lớp đầu ra.
+Ba lớp BiLSTM chiếm khoảng 1,05 triệu trong 1,14 triệu tham số của M1 ước tính trong `01-mo-ta-de-tai.md`, mục 7.3. Phần còn lại thuộc CNN 1D và lớp đầu ra.
 
 ## 4. Áp dụng trong đề tài
 
 - **Vì sao cần hai chiều:** CTC chỉ cho phép đầu ra theo đúng thứ tự thời gian của đầu vào, theo `05-ctc.md`, mục 5. Nét dấu thanh viết trễ xuất hiện sau chữ cái của nó trong chuỗi. Chiều ngược mang thông tin của nét trễ về đúng bước của chữ cái, nên mô hình mới phát ra được ký tự có dấu ở đúng chỗ. Đây là lý do đề tài dùng BiLSTM thay cho LSTM một chiều.
-- **Cấu hình:** mô hình cơ sở M0 có 2 lớp BiLSTM 100 ô, mô hình đề xuất M1 có 3 lớp BiLSTM 128 ô sau CNN 1D, theo bản mô tả đề tài. Cấu hình huấn luyện khởi đầu dùng dropout 0,5 sau mỗi lớp LSTM [@carbune2019].
+- **Cấu hình:** mô hình cơ sở M0 có 2 lớp BiLSTM 100 ô, mô hình đề xuất M1 có 3 lớp BiLSTM 128 ô sau CNN 1D, theo `01-mo-ta-de-tai.md`, mục 7.3. Cấu hình huấn luyện khởi đầu dùng dropout 0,5 sau mỗi lớp LSTM [@carbune2019].
 - **Chọn LSTM thay cho GRU:** công cụ chuyển đổi LiteRT có hướng dẫn chuyển đổi sẵn cho lớp LSTM của Keras. Chi tiết thuộc `06-trien-khai-android.md` (dự kiến).
 - **Kết quả tạm thời khi đang viết:** chiều ngược cần toàn bộ chuỗi, nên ứng dụng chạy lại cả dòng sau mỗi lần người dùng dừng bút, thay vì cập nhật từng bước.
 

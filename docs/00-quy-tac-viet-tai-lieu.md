@@ -14,7 +14,7 @@ Tài liệu này đặt quy tắc chung cho mọi tài liệu phát triển củ
 ## 2. Ngôn ngữ và văn phong
 
 - Viết tiếng Việt có dấu đầy đủ, lưu tệp bằng UTF-8, chữ ở chuẩn Unicode NFC.
-- Đặt dấu thanh theo kiểu cũ, giống bản mô tả đề tài hiện có: viết "hòa", "khỏe", "thủy", không viết `hoà`, `khoẻ`, `thuỷ`. Sau "qu", dấu đặt trên nguyên âm cuối: "quý", "quỳ".
+- Đặt dấu thanh theo kiểu cũ, giống `01-mo-ta-de-tai.md`: viết "hòa", "khỏe", "thủy", không viết `hoà`, `khoẻ`, `thuỷ`. Sau "qu", dấu đặt trên nguyên âm cuối: "quý", "quỳ".
 - Dùng từ tiếng Việt khi đã có từ quen dùng: mô hình, tập huấn luyện, lượng tử hóa, độ trễ. Giữ nguyên tiếng Anh cho tên riêng và thuật ngữ chưa có từ tiếng Việt quen dùng: CTC, BiLSTM, beam search, n-gram, LiteRT.
 - Lần đầu dùng một chữ viết tắt trong mỗi tài liệu, viết đầy đủ rồi đặt chữ viết tắt trong ngoặc, ví dụ "tỷ lệ lỗi ký tự (CER)". Mọi chữ viết tắt phải có trong `ky-hieu-va-viet-tat.md`.
 - Viết theo ngôi khách quan, chủ ngữ là "đề tài", "hệ thống", "mô hình". Không dùng "tôi", "chúng tôi", "mình", "bạn".
@@ -124,6 +124,7 @@ trong đó $S$, $I$, $D$ là số ký tự bị thay, chèn và xóa, $N$ là s�
 
 - Mọi nguồn dùng làm căn cứ, kể cả trang web, có một mục trong `docs/tai-lieu-tham-khao.bib`.
 - Khóa trích dẫn gồm họ của tác giả đầu, viết thường không dấu, nối với năm, ví dụ `carbune2019`. Trùng khóa thì thêm `a`, `b` vào cuối. Với tên người Việt, họ là chữ đầu tiên, nên khóa của bài do Pham Thach Thanh Truc viết bắt đầu bằng `pham`.
+- Nguồn không có tác giả là người, như trang tài liệu của Google, thì khóa dùng tên ngắn của tổ chức hoặc trang, ví dụ `google2026a`, `vohtr2026a`. Trang web không ghi năm thì dùng năm truy cập.
 - Trong tệp `.bib`, tên tác giả ghi dạng `Họ, Tên đệm và tên`, ví dụ `Pham, Thach Thanh Truc`, để công cụ xuất đúng thứ tự tên.
 - Trong lời văn, trích bằng `[@carbune2019]`. Nhiều nguồn viết `[@carbune2019; @le2019]`, kèm số trang viết `[@carbune2019, tr. 5]`.
 - Trang web ghi thêm ngày truy cập trong trường `urldate`.

@@ -134,7 +134,7 @@ Ví dụ cũng cho thấy giới hạn của giải mã theo công thức (7). �
 
 ## 4. Áp dụng trong đề tài
 
-- **Tập nhãn:** lớp đầu ra có 162 nhãn, gồm 161 ký tự của VNOnDB và nhãn trống. Đây là con số 162 trong bản mô tả đề tài.
+- **Tập nhãn:** lớp đầu ra có 162 nhãn, gồm 161 ký tự của VNOnDB và nhãn trống. Đây là con số 162 trong `01-mo-ta-de-tai.md`, mục 7.3.
 - **Lý do chọn CTC:** VNOnDB chỉ có văn bản theo dòng, không có nhãn căn chỉnh theo từng điểm, đúng trường hợp CTC được thiết kế cho [@graves2006]. Hệ thống nhận dạng chữ viết tay dạng nét của Google cũng huấn luyện BiLSTM bằng CTC [@carbune2019].
 - **Điều kiện độ dài:** CNN 1D giảm độ dài chuỗi 4 lần, nên phải kiểm tra công thức (6) cho mọi dòng huấn luyện. Dòng vi phạm làm mất mát vô cùng lớn và hỏng cả lô huấn luyện. Cách kiểm tra và xử lý thuộc `03-du-lieu.md` (dự kiến).
 - **Cài đặt:** dùng hàm CTC có sẵn của TensorFlow, chỉ định vị trí nhãn trống và độ dài thật của từng dòng sau khi giảm độ dài, không dùng độ dài đã đệm. Lựa chọn cụ thể ghi ở `04-thiet-ke-he-thong.md`.

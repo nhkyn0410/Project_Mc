@@ -99,7 +99,7 @@ $$
 
 ## 4. Áp dụng trong đề tài
 
-- **Vị trí trong hệ thống:** beam search và n-gram âm tiết tạo thành mô hình M2 trong bản mô tả đề tài, là bản đưa lên điện thoại. Giải mã đơn giản ở `05-ctc.md` chỉ dùng để theo dõi tỷ lệ lỗi ký tự (CER) trong lúc huấn luyện.
+- **Vị trí trong hệ thống:** beam search và n-gram âm tiết tạo thành mô hình M2 trong `01-mo-ta-de-tai.md`, mục 7.3, là bản đưa lên điện thoại. Giải mã đơn giản ở `05-ctc.md` chỉ dùng để theo dõi tỷ lệ lỗi ký tự (CER) trong lúc huấn luyện.
 - **Kho văn bản cho n-gram:** gồm văn bản của tập huấn luyện VNOnDB và một kho văn bản khác không lấy từ VieTreeBank, vì văn bản kiểm thử của VNOnDB lấy từ VieTreeBank. Các câu trùng với tập kiểm thử và với câu đề của tập tự thu phải được loại trước khi đếm. Chi tiết thuộc `03-du-lieu.md` (dự kiến).
 - **Chuẩn hóa văn bản:** kho văn bản và nhãn phải cùng chuẩn Unicode NFC và cùng kiểu đặt dấu thanh. Nếu không, một âm tiết bị đếm thành hai, và xác suất của cả hai đều thấp hơn thực tế.
 - **Chỉnh trọng số:** $\alpha$, $\beta$ chỉnh trên tập kiểm định, tập kiểm thử chỉ chạy một lần ở cuối.

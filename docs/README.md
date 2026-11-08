@@ -7,7 +7,7 @@ Tệp này liệt kê mọi tài liệu của đề tài, trạng thái hiện t
 | Tệp | Nội dung | Trạng thái | Phần trong báo cáo |
 | --- | --- | --- | --- |
 | [00-quy-tac-viet-tai-lieu.md](00-quy-tac-viet-tai-lieu.md) | Quy tắc viết tài liệu | Nháp | Không đưa vào báo cáo |
-| `01-mo-ta-de-tai.md` | Bối cảnh, mục tiêu, phạm vi, phương pháp tổng quát | Chưa viết | Chương 1 |
+| [01-mo-ta-de-tai.md](01-mo-ta-de-tai.md) | Bối cảnh, mục tiêu, phạm vi, phương pháp tổng quát | Nháp | Chương 1 |
 | `02-yeu-cau-va-danh-gia.md` | Mục tiêu và ngưỡng, định nghĩa chỉ số, kịch bản kiểm thử | Chưa viết | Chương 1, Chương 4 |
 | `03-du-lieu.md` | Nguồn dữ liệu, cách chia, tiền xử lý, chống rò rỉ, quy trình thu tập tự thu | Chưa viết | Chương 3 |
 | `04-thiet-ke-he-thong.md` | Lớp ghép đoạn, mô hình, giải mã, ứng dụng Android | Chưa viết | Chương 3 |
