@@ -8,8 +8,8 @@ Tệp này liệt kê mọi tài liệu của đề tài, trạng thái hiện t
 | --- | --- | --- | --- |
 | [00-quy-tac-viet-tai-lieu.md](00-quy-tac-viet-tai-lieu.md) | Quy tắc viết tài liệu | Nháp | Không đưa vào báo cáo |
 | [01-mo-ta-de-tai.md](01-mo-ta-de-tai.md) | Bối cảnh, mục tiêu, phạm vi, phương pháp tổng quát | Nháp | Chương 1 |
-| `02-yeu-cau-va-danh-gia.md` | Mục tiêu và ngưỡng, định nghĩa chỉ số, kịch bản kiểm thử | Chưa viết | Chương 1, Chương 4 |
-| `03-du-lieu.md` | Nguồn dữ liệu, cách chia, tiền xử lý, chống rò rỉ, quy trình thu tập tự thu | Chưa viết | Chương 3 |
+| [02-yeu-cau-va-danh-gia.md](02-yeu-cau-va-danh-gia.md) | Mục tiêu và ngưỡng, định nghĩa chỉ số, kịch bản kiểm thử | Nháp | Chương 1, Chương 4 |
+| [03-du-lieu.md](03-du-lieu.md) | Nguồn dữ liệu, cách chia, tiền xử lý, chống rò rỉ, quy trình thu tập tự thu | Nháp | Chương 3 |
 | `04-thiet-ke-he-thong.md` | Lớp ghép đoạn, mô hình, giải mã, ứng dụng Android | Chưa viết | Chương 3 |
 | `05-ke-hoach-thi-nghiem.md` | Các thí nghiệm, mốc so sánh, thứ tự chạy | Chưa viết | Chương 4 |
 | `06-trien-khai-android.md` | Chuyển đổi mô hình, lượng tử hóa, đo độ trễ | Chưa viết | Chương 5 |

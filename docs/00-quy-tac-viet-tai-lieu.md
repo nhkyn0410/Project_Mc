@@ -124,7 +124,7 @@ trong đó $S$, $I$, $D$ là số ký tự bị thay, chèn và xóa, $N$ là s�
 
 - Mọi nguồn dùng làm căn cứ, kể cả trang web, có một mục trong `docs/tai-lieu-tham-khao.bib`.
 - Khóa trích dẫn gồm họ của tác giả đầu, viết thường không dấu, nối với năm, ví dụ `carbune2019`. Trùng khóa thì thêm `a`, `b` vào cuối. Với tên người Việt, họ là chữ đầu tiên, nên khóa của bài do Pham Thach Thanh Truc viết bắt đầu bằng `pham`.
-- Nguồn không có tác giả là người, như trang tài liệu của Google, thì khóa dùng tên ngắn của tổ chức hoặc trang, ví dụ `google2026a`, `vohtr2026a`. Trang web không ghi năm thì dùng năm truy cập.
+- Nguồn không có tác giả là người, như trang tài liệu của Google, thì khóa dùng tên ngắn của tổ chức hoặc trang, ví dụ `google2026a`, `vohtr2018a`. Trang web không ghi năm thì dùng năm truy cập.
 - Trong tệp `.bib`, tên tác giả ghi dạng `Họ, Tên đệm và tên`, ví dụ `Pham, Thach Thanh Truc`, để công cụ xuất đúng thứ tự tên.
 - Trong lời văn, trích bằng `[@carbune2019]`. Nhiều nguồn viết `[@carbune2019; @le2019]`, kèm số trang viết `[@carbune2019, tr. 5]`.
 - Trang web ghi thêm ngày truy cập trong trường `urldate`.

@@ -50,6 +50,8 @@ Bảng 1: Ký hiệu toán dùng chung
 | $p_b(\mathbf{c}, t)$, $p_{nb}(\mathbf{c}, t)$ | Xác suất các đường dài $t$ gộp thành $\mathbf{c}$, kết thúc bằng nhãn trống và không bằng nhãn trống |
 | $\alpha$, $\beta$ | Trọng số của mô hình ngôn ngữ và điểm thưởng theo số âm tiết khi giải mã |
 | $S$, $I$, $D$, $N$ | Số ký tự bị thay, chèn, xóa, và số ký tự của chuỗi đúng |
+| $Q$, $q$ | Số dòng trong một tập khi tính tỷ lệ lỗi, và chỉ số của một dòng |
+| $E_q$, $N_q$ | Khoảng cách sửa của dòng thứ $q$, và độ dài chuỗi đúng của dòng đó |
 
 ## 2. Chữ viết tắt
 
@@ -65,6 +67,7 @@ Bảng 2: Chữ viết tắt
 | CTC | Connectionist Temporal Classification | Hàm mất mát cho bài toán chuỗi không có nhãn căn chỉnh |
 | GRU | Gated Recurrent Unit | Mạng hồi quy có cổng, gọn hơn LSTM |
 | ICFHR | International Conference on Frontiers in Handwriting Recognition | Hội nghị quốc tế về nhận dạng chữ viết tay |
+| InkML | Ink Markup Language | Định dạng lưu chữ viết tay dạng nét |
 | LSTM | Long Short-Term Memory | Mạng hồi quy có bộ nhớ dài ngắn hạn |
 | NFC | Normalization Form C | Dạng chuẩn Unicode dùng ký tự dựng sẵn |
 | VNOnDB | HANDS-VNOnDB | Bộ dữ liệu chữ viết tay tiếng Việt dạng nét |
