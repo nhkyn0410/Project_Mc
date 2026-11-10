@@ -12,15 +12,17 @@ Bảng 1: Mục tiêu và ngưỡng dự kiến
 
 | Mục tiêu | Chỉ số | Ngưỡng dự kiến |
 | --- | --- | --- |
-| Nhận dạng dòng liền | CER trên tập kiểm thử VNOnDB cấp dòng | ≤ 6,86% |
-| Nhận dạng dòng liền | WER trên tập kiểm thử VNOnDB cấp dòng | ≤ 19% |
-| Nhận dạng dòng liền, mục tiêu cao hơn | CER trên tập kiểm thử VNOnDB cấp dòng | Tiến gần 3,24% |
+| Nhận dạng dòng liền | CER trên tập kiểm thử VNOnDB cấp dòng | ≤ 8,4% |
+| Nhận dạng dòng liền | WER trên tập kiểm thử VNOnDB cấp dòng | ≤ 24,2% |
+| Nhận dạng dòng liền, mục tiêu cao hơn | CER trên tập kiểm thử VNOnDB cấp dòng | Tiến gần 7,6% |
 | Xử lý dòng ngắt | CER tăng thêm so với cùng dòng viết liền | ≤ 2 điểm phần trăm |
 | Chạy trên điện thoại | Tổng dung lượng mô hình và n-gram | ≤ 20 MB |
 | Phản hồi nhanh | Thời gian nhận dạng một dòng trên điện thoại thật | ≤ 1 giây |
 | Viết bằng ngón tay | CER trên tập tự thu | Đo và báo cáo |
 
-Ngưỡng CER và WER bằng mốc GoogleTask2 trong Bảng 3. Hệ thống này xử lý dữ liệu dạng nét, không huấn luyện trên VNOnDB [@carbune2019] và không dùng VieTreeBank [@le2019], nên là mốc công bằng nhất. Mục tiêu cao hơn lấy theo IVTOVTask2 và không bắt buộc. Đề tài xem lại các ngưỡng này sau khi có kết quả của mô hình cơ sở M0. Ngưỡng 20 MB ngang kích thước mô hình ML Kit cho mỗi ngôn ngữ [@google2026a].
+Đề tài huấn luyện trên chữ viết tay dạng ảnh, theo `03-du-lieu.md`, mục 1, nên ngưỡng lấy từ các mốc dạng ảnh trong Bảng 3. Ngưỡng CER và WER bằng mốc GFCN. Mô hình này có 1,4 triệu tham số, nhỏ nhất trong các mốc dạng ảnh, nên hợp với ràng buộc của điện thoại [@pham2025]. Mục tiêu cao hơn lấy theo OrigamiNet và không bắt buộc. Đề tài xem lại các ngưỡng này sau khi có kết quả của mô hình cơ sở M0.
+
+Ngưỡng 20 MB ngang kích thước mô hình ML Kit cho mỗi ngôn ngữ [@google2026a].
 
 ## 2. Chỉ số
 
@@ -62,7 +64,7 @@ Mức tăng là hiệu giữa CER của dòng ngắt và CER của chính các d
 ### 2.5. Dung lượng và độ trễ
 
 - **Dung lượng:** tổng kích thước các tệp mô hình `.tflite`, bộ ký tự và n-gram mà ứng dụng cần khi chạy.
-- **Độ trễ:** thời gian từ lúc nhấc bút lần cuối đến khi kết quả hiện ra, gồm ghép đoạn, tiền xử lý, mô hình và beam search.
+- **Độ trễ:** thời gian từ lúc nhấc bút lần cuối đến khi kết quả hiện ra, gồm ghép đoạn, vẽ dòng thành ảnh, mô hình và beam search.
 - **Cách báo cáo:** đo trên điện thoại Android thật, ghi tên máy, báo cáo trung vị, phân vị 95 và thời gian của dòng dài nhất.
 
 ### 2.6. Độ bất định trên tập tự thu
@@ -71,20 +73,21 @@ Tập tự thu chỉ có 20 người viết (dự kiến), nên kết quả cầ
 
 ## 3. Kịch bản kiểm thử
 
-Bảng 2 ghi bốn kịch bản kiểm thử. Dữ liệu của từng kịch bản được tạo theo `03-du-lieu.md`, mục 4 và mục 6.
+Bảng 2 ghi ba kịch bản kiểm thử. Dữ liệu của từng kịch bản được tạo theo `03-du-lieu.md`, mục 4 và mục 6.
 
 Bảng 2: Kịch bản kiểm thử
 
 | Kịch bản | Dữ liệu | Câu hỏi cần trả lời |
 | --- | --- | --- |
 | Dòng liền | 1.634 dòng kiểm thử của VNOnDB | Mô hình đứng ở đâu so với các mốc công bố? |
-| Ngắt mô phỏng | Cùng 1.634 dòng, cắt 1-2 lần tại ranh giới từ | Lớp ghép đoạn làm CER tăng bao nhiêu? |
-| Dấu thêm muộn | Cùng 1.634 dòng, chuyển nét dấu thanh và dấu phụ xuống cuối chuỗi | Mô hình có giữ được dấu thanh và dấu phụ khi nét trễ đến rất muộn? |
-| Viết tay thật | Tập tự thu, mỗi người 10 dòng liền và 10 dòng ngắt | Kết quả có giữ được khi viết bằng ngón tay? |
+| Ngắt mô phỏng | Dòng liền của nhóm kiểm thử trong tập tự thu, cắt 1-2 lần tại ranh giới từ | Lớp ghép đoạn làm CER tăng bao nhiêu? |
+| Viết tay thật | Nhóm kiểm thử của tập tự thu, mỗi người 10 dòng liền và 10 dòng ngắt | Kết quả có giữ được khi viết bằng ngón tay? |
+
+Kịch bản Ngắt mô phỏng dùng tập tự thu vì bản ảnh của VNOnDB không có nét để cắt. Đề tài không đặt kịch bản riêng cho nét trễ, vì ảnh của dòng không phụ thuộc vào thứ tự viết. Lớp ghép đoạn vẫn phải gán nét trễ vào đúng hàng, và kịch bản Viết tay thật kiểm tra điều này.
 
 ## 4. Mốc so sánh
 
-Bảng 3 ghi các mốc so sánh, tất cả đều đo trên tập kiểm thử 1.634 dòng của VNOnDB. Các nguồn đã đọc không nêu cách tính trung bình của cuộc thi, nên số liệu chỉ mang tính tham khảo.
+Bảng 3 ghi các mốc so sánh, tất cả đều đo trên tập kiểm thử 1.634 dòng của VNOnDB. Các nguồn đã đọc không nêu cách tính trung bình của cuộc thi, nên số liệu chỉ mang tính tham khảo. Đề tài so trực tiếp với các mốc dạng ảnh, còn các mốc dạng nét chỉ để đối chiếu vì đầu vào khác. Pham và cộng sự không mô tả cách tạo ảnh [@pham2025], nên ảnh của đề tài có thể khác ảnh của nhóm này.
 
 Bảng 3: Mốc so sánh trên tập kiểm thử VNOnDB
 
@@ -93,7 +96,9 @@ Bảng 3: Mốc so sánh trên tập kiểm thử VNOnDB
 | MyScriptTask2_1 [@le2019] | Nét | 1,02 | 2,02 | Mô hình ngôn ngữ dùng VieTreeBank |
 | IVTOVTask2 [@le2019] | Nét | 3,24 | 14,11 | 2 lớp BiLSTM 100 ô, ràng buộc từ điển lấy từ VieTreeBank |
 | HTR-ConvText [@pham2025] | Ảnh | 3,45 | 8,9 | 65,9 triệu tham số |
+| HTR-VT [@pham2025] | Ảnh | 4,26 | 11,2 | 53,5 triệu tham số |
 | GoogleTask2 [@le2019] | Nét | 6,86 | 19,00 | Không huấn luyện trên VNOnDB [@carbune2019] |
+| OrigamiNet [@pham2025] | Ảnh | 7,6 | 22,6 | 39,1 triệu tham số |
 | GFCN [@pham2025] | Ảnh | 8,4 | 24,2 | 1,4 triệu tham số |
 | CNN + BiLSTM [@pham2025] | Ảnh | 10,53 | 29,1 | 8,3 triệu tham số |
 
@@ -120,4 +125,5 @@ Bảng 4: Các vấn đề chưa chốt về đánh giá
 | Thiếu mốc nhận dạng từng hàng rồi nối chuỗi | Chưa chứng minh được dòng ảo tốt hơn cách đơn giản | Thêm mốc này vào kịch bản Ngắt mô phỏng và Viết tay thật |
 | Cách đưa dòng ngắt vào ML Kit | So sánh có thể thiếu công bằng | Đưa từng hàng kèm ngữ cảnh chữ đã nhận dạng |
 | Điện thoại dùng để đo | Độ trễ phụ thuộc vào máy | Chọn một máy tầm trung và ghi cấu hình |
-| Cách tính trung bình của cuộc thi | So sánh với Bảng 3 có thể lệch | Đọc bài tổng kết cuộc thi [@le2018] |
+| Cách tính trung bình của cuộc thi và của HTR-ConvText | So sánh với Bảng 3 có thể lệch | Đọc bài tổng kết cuộc thi [@le2018] và mã nguồn của HTR-ConvText [@dairgroup2026] |
+| Ảnh của đề tài có tương đương ảnh của các mốc dạng ảnh không | Ngưỡng ở Bảng 1 có thể không công bằng | Huấn luyện mô hình CNN + BiLSTM và so với mốc 10,53% trong Bảng 3 |

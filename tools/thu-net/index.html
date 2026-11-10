@@ -1,0 +1,814 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Sổ Thu Nét</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Bố cục: sổ thí nghiệm một cột, vùng viết chiếm phần lớn màn hình khi thu. */
+:root {
+  --bg: #e9eef1; --paper: #fcfdfd; --ink: #16324a; --muted: #566b7c; --rule: #b4c8d6; --tint: #dfe8ee;
+  --accent: #0a5fb0; --on-accent: #ffffff; --stroke: #10233a; --warn: #a33a12; --warn-bg: #fbe9df; --good: #1c6b48; --good-bg: #dff2e8;
+  --body: "Be Vietnam Pro", "Segoe UI", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f171e; --paper: #18232c; --ink: #e2ebf2; --muted: #9db0bf; --rule: #3b4f5f; --tint: #202e39;
+  --accent: #6db4f5; --on-accent: #082238; --stroke: #eef5fb; --warn: #ffad86; --warn-bg: #43241a; --good: #7fdcae; --good-bg: #17392b; color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0f171e; --paper: #18232c; --ink: #e2ebf2; --muted: #9db0bf; --rule: #3b4f5f; --tint: #202e39;
+  --accent: #6db4f5; --on-accent: #082238; --stroke: #eef5fb; --warn: #ffad86; --warn-bg: #43241a; --good: #7fdcae; --good-bg: #17392b; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { box-sizing: border-box; height: 100%; overscroll-behavior: none; }
+body { height: 100%; margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.45 var(--body); overscroll-behavior: none; overflow: hidden; }
+h1 { font-size: 22px; line-height: 1.2; margin: 0; text-wrap: balance; }
+h2 { font-size: 16px; margin: 0; }
+p { margin: 0; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { min-height: 44px; border: 1px solid var(--rule); background: var(--paper); border-radius: 6px; padding: 0 12px; font-weight: 500; touch-action: manipulation; }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
+button.danger { color: var(--warn); }
+button.armed { background: var(--warn-bg); color: var(--warn); border-color: var(--warn); }
+button:disabled { opacity: .45; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.view { height: 100%; }
+.scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 32px; }
+.stack { display: flex; flex-direction: column; gap: 16px; max-width: 560px; margin: 0 auto; }
+.head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.head > * { min-width: 0; }
+.panel { background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field > span, .label { font-size: 13px; color: var(--muted); font-weight: 500; }
+input[type=text], input[type=number], select, textarea { width: 100%; min-height: 44px; padding: 8px 10px; border: 1px solid var(--rule); border-radius: 6px; background: var(--bg); }
+textarea { min-height: 150px; font-size: 14px; }
+.hint { font-size: 13px; color: var(--muted); }
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.seg label { display: flex; align-items: center; justify-content: center; min-height: 44px; border: 1px solid var(--rule); border-radius: 6px; font-weight: 500; }
+.seg input { position: absolute; opacity: 0; }
+.seg input:checked + span { color: var(--accent); font-weight: 700; }
+.seg label:has(input:checked) { border-color: var(--accent); border-width: 2px; }
+.check { display: flex; gap: 10px; align-items: flex-start; min-height: 32px; }
+.check input { width: 22px; height: 22px; flex: none; margin: 0; }
+#ruler { height: 12px; border: 1px solid var(--ink); border-top: 0; max-width: 100%; }
+#pad { width: 100%; height: 104px; display: block; background: var(--bg); border: 1px dashed var(--rule); border-radius: 6px; touch-action: none; }
+.status { font-size: 13px; padding: 8px 10px; border-radius: 6px; background: var(--tint); }
+.status.ok { background: var(--good-bg); color: var(--good); }
+.status.bad { background: var(--warn-bg); color: var(--warn); }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+/* Màn viết */
+#write { display: flex; flex-direction: column; position: relative; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.w-top { padding: 8px max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); display: flex; flex-direction: column; gap: 4px; }
+.w-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.w-meta button { min-height: 32px; font-size: 12px; padding: 0 8px; }
+#w-chip { font-weight: 600; color: var(--accent); }
+#w-prompt { font-size: 18px; line-height: 1.32; font-weight: 500; user-select: text; -webkit-user-select: text; }
+.w-area { flex: 1 1 0; min-height: 0; position: relative; margin-left: max(16px, env(safe-area-inset-left, 0px)); margin-right: max(16px, env(safe-area-inset-right, 0px)); }
+#cv { position: absolute; inset: 0; width: 100%; height: 100%; background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; touch-action: none; }
+.w-bar { display: grid; grid-template-columns: repeat(4, 1fr) 1.35fr; gap: 6px; padding: 8px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px)); }
+.w-bar button { padding: 0 2px; font-size: 13px; min-height: 48px; white-space: nowrap; }
+.w-meta button { white-space: nowrap; flex: none; }
+.head strong { white-space: nowrap; flex: none; }
+#toast { position: fixed; left: 16px; right: 16px; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); text-align: center; pointer-events: none; z-index: 30; }
+#toast span { display: inline-block; background: var(--ink); color: var(--bg); font-size: 13px; padding: 7px 12px; border-radius: 6px; }
+#rotate { position: absolute; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 24px; text-align: center; font-size: 18px; font-weight: 600; z-index: 20; }
+
+/* Rà soát và tổng hợp */
+.card { background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.card canvas { width: 100%; display: block; background: var(--bg); border-radius: 4px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { min-height: 44px; padding: 3px 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.15; font-size: 15px; }
+.chip small { font-size: 10px; font-weight: 600; }
+.chip.start { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.chip.mid { background: var(--warn-bg); color: var(--warn); border-color: var(--warn); }
+.tbl { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums; }
+th, td { border-bottom: 1px solid var(--rule); padding: 6px 8px; text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { color: var(--muted); font-weight: 500; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.row > .grow { flex: 1 1 140px; min-width: 0; }
+</style>
+
+<section id="setup" class="view scroll" hidden>
+  <div class="stack">
+    <div class="head">
+      <h1>Sổ Thu Nét</h1>
+      <button id="go-list" type="button">Các buổi đã thu</button>
+    </div>
+    <p class="hint">Thu chữ viết tay tiếng Việt theo dòng trên điện thoại. Nét được lưu trên máy này sau mỗi dòng, và chỉ rời máy khi bạn xuất tệp.</p>
+    <div id="resume" class="stack" style="gap:8px" hidden></div>
+    <div id="storage-warn" class="status bad" hidden>Trình duyệt không cho lưu trên máy. Hãy giữ nguyên tab và xuất tệp ngay sau buổi thu.</div>
+
+    <div class="panel">
+      <h2>Người viết</h2>
+      <div class="grid2">
+        <label class="field"><span>Mã ẩn danh</span><input id="f-code" type="text" value="P01" autocomplete="off" autocapitalize="characters" maxlength="12"></label>
+        <label class="field"><span>Nhóm đổi chéo</span><select id="f-group"><option value="A">Nhóm A</option><option value="B">Nhóm B</option></select></label>
+      </div>
+      <p class="hint">Không nhập tên thật.</p>
+      <div class="field">
+        <span class="label">Thiết bị nhập của buổi này</span>
+        <div class="seg">
+          <label><input type="radio" name="f-input" value="touch" checked><span>Ngón tay</span></label>
+          <label><input type="radio" name="f-input" value="pen"><span>S Pen</span></label>
+        </div>
+      </div>
+      <label class="check"><input id="f-consent" type="checkbox"><span>Người viết đã đọc và ký phiếu đồng ý.</span></label>
+    </div>
+
+    <div class="panel">
+      <h2>Thử thiết bị nhập</h2>
+      <canvas id="pad"></canvas>
+      <div id="test-status" class="status">Vẽ một nét vào ô trên bằng thiết bị đã chọn.</div>
+    </div>
+
+    <div class="panel">
+      <h2>Kịch bản</h2>
+      <label class="field"><span>Loại buổi</span>
+        <select id="f-protocol">
+          <option value="pilot">Buổi thử: 10 dòng ngắt và 5 dòng liền</option>
+          <option value="official">Thu chính thức: 10 dòng liền và 10 dòng ngắt</option>
+        </select>
+      </label>
+      <div class="grid2">
+        <label class="field"><span id="l-h1">Chiều cao hàng 1 (mm)</span><input id="f-h1" type="number" min="6" max="30" step="1" value="10"></label>
+        <label class="field" id="w-h2"><span>Chiều cao hàng 2 (mm)</span><input id="f-h2" type="number" min="6" max="30" step="1" value="14"></label>
+      </div>
+      <label class="field"><span id="l-prompts">Câu đề, mỗi câu một dòng</span><textarea id="f-prompts" spellcheck="false"></textarea></label>
+    </div>
+
+    <div class="panel">
+      <h2>Máy thu</h2>
+      <div class="grid2">
+        <label class="field"><span>Tên máy (bắt buộc)</span><input id="f-device" type="text" placeholder="Ví dụ Galaxy A55" autocomplete="off"></label>
+        <label class="field"><span>Rộng màn hình, mm (bắt buộc)</span><input id="f-width" type="number" min="40" max="300" step="0.1" placeholder="Ví dụ 70" inputmode="decimal"></label>
+      </div>
+      <div class="field">
+        <span class="label">Thanh dưới đây phải dài đúng 50 mm khi đo bằng thước</span>
+        <div id="ruler" hidden></div>
+        <p id="ruler-empty" class="hint">Nhập độ rộng ước lượng để hiện thanh đo.</p>
+      </div>
+      <p class="hint">Dùng thước đo thanh, rồi sửa ô Rộng màn hình cho đến khi thanh dài đúng 50 mm. Cỡ hàng tính bằng mm dựa vào số này. Trang nhớ hai ô này cho những buổi sau trên cùng máy.</p>
+    </div>
+
+    <div id="start-err" class="status bad" hidden></div>
+    <button id="start" class="primary" type="button">Bắt đầu thu</button>
+  </div>
+</section>
+
+<section id="write" class="view" hidden>
+  <div class="w-top">
+    <div class="w-meta"><span><span id="w-prog" class="mono"></span> <span id="w-chip"></span></span><button id="w-prev" type="button">Viết lại dòng trước</button></div>
+    <p id="w-prompt"></p>
+  </div>
+  <div class="w-area"><canvas id="cv"></canvas></div>
+  <div class="w-bar">
+    <button id="b-back" type="button">Lên</button>
+    <button id="b-fwd" type="button">Xuống</button>
+    <button id="b-undo" type="button">Hoàn tác</button>
+    <button id="b-clear" type="button" class="danger">Xóa hết</button>
+    <button id="b-done" type="button" class="primary">Xong</button>
+  </div>
+  <div id="rotate" hidden>Hãy cầm dọc điện thoại để tiếp tục viết.</div>
+</section>
+
+<section id="review" class="view scroll" hidden>
+  <div class="stack">
+    <div class="head"><h1>Rà soát buổi thu</h1><span id="r-code" class="mono"></span></div>
+    <p class="hint">Người thu làm phần này sau khi người viết xong. Với mỗi dòng ngắt, chạm vào từ mở đầu mỗi hàng mới. Chạm lần nữa nếu hàng mới bắt đầu giữa từ đó, chạm lần ba để bỏ đánh dấu.</p>
+    <div id="r-list" class="stack"></div>
+    <button id="r-done" class="primary" type="button">Hoàn tất rà soát</button>
+  </div>
+</section>
+
+<section id="list" class="view scroll" hidden>
+  <div class="stack">
+    <div class="head"><h1>Các buổi đã thu</h1><button id="l-new" type="button">Buổi mới</button></div>
+    <div class="panel"><h2>Tổng hợp dòng ngắt</h2><div id="l-sum"></div></div>
+    <div class="panel"><h2>Kiểm tra buổi thử</h2><div id="l-crit" class="stack" style="gap:6px"></div></div>
+    <div id="l-items" class="stack" style="gap:10px"></div>
+    <button id="l-all" class="primary" type="button">Xuất tất cả thành một tệp JSON</button>
+    <div id="copy-panel" class="panel" hidden>
+      <h2>Sao chép thủ công</h2>
+      <p class="hint">Trình duyệt không cho sao chép tự động. Giữ ngón tay trên ô dưới đây, chọn tất cả rồi sao chép, sau đó dán vào email hoặc Google Docs.</p>
+      <textarea id="copy-text" readonly spellcheck="false" aria-label="Dữ liệu JSON của buổi thu"></textarea>
+    </div>
+  </div>
+</section>
+
+<div id="toast" hidden><span></span></div>
+
+<script>
+(() => {
+'use strict';
+
+const PILOT = [
+  'Buổi sáng mùa thu, sương còn đọng trên lá và con đường làng vắng người.',
+  'Ông nội thường kể rằng ngày xưa cả xóm chỉ có một chiếc đài cũ.',
+  'Cô giáo dặn học sinh phải giữ gìn sức khỏe trước kỳ thi cuối năm học.',
+  'Chiếc thuyền nhỏ trôi chầm chậm theo dòng sông, để lại phía sau những gợn nước.',
+  'Năm ngoái, thành phố đã trồng thêm 2.500 cây xanh dọc các tuyến đường ven hồ.',
+  'Mẹ tôi nấu canh chua với cá lóc, thêm một ít rau thơm và ớt.',
+  'Anh ấy quyết định nghỉ việc ở Hà Nội để về quê mở xưởng gỗ.',
+  'Những người thợ xây làm việc suốt đêm để kịp hoàn thành cây cầu mới.',
+  'Trời bỗng đổ mưa to khiến chúng tôi phải trú dưới mái hiên của quán nhỏ.',
+  'Hòa thích đọc sách về lịch sử, nhất là các cuộc khởi nghĩa ở phương Nam.',
+  'Bác sĩ khuyên bệnh nhân uống đủ nước và ngủ trước mười một giờ đêm.',
+  'Đoàn tàu rời ga lúc chín giờ, mang theo hơn ba trăm hành khách.',
+  'Thủy điện nằm sâu trong núi, cung cấp điện cho mấy huyện miền ngược xa xôi.',
+  'Em bé ngủ say trong nôi, còn chị gái khẽ hát một bài ru.',
+  'Đêm trung thu, lũ trẻ rước đèn ông sao đi khắp các ngõ trong thôn.'
+];
+const TOP_PAD = 14, BAND_MM = 16, TARGET_LINES = 20;
+const INPUT_NAME = { touch: 'Ngón tay', pen: 'S Pen', mouse: 'Chuột' };
+
+const $ = s => document.querySelector(s);
+const fmt = (n, d = 1) => Number(n).toLocaleString('vi-VN', { maximumFractionDigits: d });
+const r2 = n => Math.round(n * 100) / 100;
+const nfc = s => s.normalize('NFC').replace(/\s+/g, ' ').trim();
+const median = a => { if (!a.length) return NaN; const b = [...a].sort((x, y) => x - y), m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; };
+const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const inputValue = () => document.querySelector('input[name=f-input]:checked').value;
+
+// Lưu trên máy bằng IndexedDB, có bản trong bộ nhớ khi trình duyệt từ chối.
+const memory = new Map();
+let dbPromise = null;
+function openDb() {
+  if (!dbPromise) dbPromise = new Promise((res, rej) => {
+    const r = indexedDB.open('thu-net', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('sessions', { keyPath: 'id' });
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+  return dbPromise;
+}
+function storageWarn(on) { $('#storage-warn').hidden = !on; }
+async function putSession(s) {
+  memory.set(s.id, s);
+  try {
+    const d = await openDb();
+    await new Promise((res, rej) => { const t = d.transaction('sessions', 'readwrite'); t.objectStore('sessions').put(s); t.oncomplete = res; t.onerror = () => rej(t.error); });
+    storageWarn(false);
+    return true;
+  } catch (e) { storageWarn(true); return false; }
+}
+async function loadSessions() {
+  try {
+    const d = await openDb();
+    const all = await new Promise((res, rej) => { const q = d.transaction('sessions').objectStore('sessions').getAll(); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); });
+    all.forEach(s => { if (!memory.has(s.id)) memory.set(s.id, s); });
+  } catch (e) { storageWarn(true); }
+  return [...memory.values()].sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+}
+async function deleteSession(id) {
+  memory.delete(id);
+  try { const d = await openDb(); await new Promise((res, rej) => { const t = d.transaction('sessions', 'readwrite'); t.objectStore('sessions').delete(id); t.oncomplete = res; t.onerror = () => rej(t.error); }); } catch (e) { storageWarn(true); }
+}
+
+let toastTimer;
+function toast(msg) { const t = $('#toast'); t.firstElementChild.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2600); }
+
+function show(id) { ['setup', 'write', 'review', 'list'].forEach(v => { $('#' + v).hidden = v !== id; }); }
+
+// Nút cần chạm hai lần, thay cho hộp thoại xác nhận.
+function armed(btn, label, fn) {
+  const base = btn.textContent;
+  btn.addEventListener('click', () => {
+    if (btn.classList.contains('armed')) { btn.classList.remove('armed'); btn.textContent = base; clearTimeout(btn._t); fn(); return; }
+    btn.classList.add('armed'); btn.textContent = label;
+    btn._t = setTimeout(() => { btn.classList.remove('armed'); btn.textContent = base; }, 3000);
+  });
+}
+
+/* ---------- Cấu hình và ô thử ---------- */
+const widthMm = () => parseFloat($('#f-width').value);
+const widthOk = () => widthMm() >= 40 && widthMm() <= 300;
+const pxPerMm = () => screen.width / widthMm();
+function updateRuler() {
+  const ok = widthOk();
+  $('#ruler').hidden = !ok; $('#ruler-empty').hidden = ok;
+  if (ok) $('#ruler').style.width = (50 * pxPerMm()) + 'px';
+}
+function rememberDevice(model, width) { try { localStorage.setItem('thu-net-device', JSON.stringify({ model, width })); } catch (e) {} }
+function restoreDevice() {
+  if ($('#f-device').value || $('#f-width').value) return;
+  try {
+    const d = JSON.parse(localStorage.getItem('thu-net-device'));
+    if (d) { $('#f-device').value = d.model; $('#f-width').value = d.width; }
+  } catch (e) {}
+}
+
+const tested = { touch: null, pen: null };
+function updateTestStatus() {
+  const el = $('#test-status'), want = inputValue(), got = tested[want];
+  el.className = 'status';
+  if (got) { el.classList.add('ok'); el.textContent = `Đã nhận ${INPUT_NAME[want]}: ${fmt(got.rate, 0)} điểm mỗi giây, lực nhấn ${fmt(got.pressure, 2)}.`; return; }
+  const other = want === 'pen' ? tested.touch : tested.pen;
+  if (other || tested.mouse) { el.classList.add('bad'); el.textContent = `Trang vừa nhận ${INPUT_NAME[want === 'pen' ? 'touch' : 'pen']}, nhưng buổi này chọn ${INPUT_NAME[want]}. Hãy vẽ bằng ${INPUT_NAME[want]}.`; return; }
+  el.textContent = 'Vẽ một nét vào ô trên bằng thiết bị đã chọn.';
+}
+function setupPad() {
+  const c = $('#pad');
+  let cur = null, ctx = null;
+  function fit() { const r = c.getBoundingClientRect(); if (!r.width) return; c.width = r.width * devicePixelRatio; c.height = r.height * devicePixelRatio; ctx = c.getContext('2d'); ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0); }
+  c.addEventListener('pointerdown', e => {
+    e.preventDefault(); fit(); c.setPointerCapture(e.pointerId);
+    const r = c.getBoundingClientRect();
+    cur = { id: e.pointerId, type: e.pointerType, t0: e.timeStamp, tl: e.timeStamp, n: 1, p: e.pressure, r, lx: e.clientX - r.left, ly: e.clientY - r.top };
+  });
+  c.addEventListener('pointermove', e => {
+    if (!cur || e.pointerId !== cur.id) return;
+    const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [];
+    ctx.strokeStyle = cssVar('--stroke'); ctx.lineWidth = 2; ctx.lineCap = 'round';
+    (evs.length ? evs : [e]).forEach(p => {
+      const x = p.clientX - cur.r.left, y = p.clientY - cur.r.top;
+      ctx.beginPath(); ctx.moveTo(cur.lx, cur.ly); ctx.lineTo(x, y); ctx.stroke();
+      cur.lx = x; cur.ly = y; cur.n++; cur.p = Math.max(cur.p, p.pressure); cur.tl = p.timeStamp;
+    });
+  });
+  const end = e => {
+    if (!cur || e.pointerId !== cur.id) return;
+    const dt = cur.tl - cur.t0;
+    if (cur.n >= 5 && dt > 30) { if (cur.type === 'mouse') tested.mouse = true; else tested[cur.type] = { rate: cur.n / (dt / 1000), pressure: cur.p }; }
+    cur = null; updateTestStatus();
+  };
+  c.addEventListener('pointerup', end);
+  c.addEventListener('pointercancel', end);
+}
+
+function protocolChanged() {
+  const off = $('#f-protocol').value === 'official';
+  $('#w-h2').hidden = off;
+  $('#l-h1').textContent = off ? 'Chiều cao hàng (mm)' : 'Chiều cao hàng 1 (mm)';
+  $('#l-prompts').textContent = off ? 'Dán 20 câu đề chính thức, mỗi câu một dòng' : 'Câu đề của buổi thử, mỗi câu một dòng';
+  $('#f-prompts').value = off ? '' : PILOT.join('\n');
+}
+
+function buildLines(protocol, group, prompts, h1, h2) {
+  const mk = (cond, text, h) => ({ condition: cond, text, rowHeightMm: cond === 'broken' ? h : null, strokes: null, review: { breaks: [], miscopied: false, note: '' } });
+  if (protocol === 'pilot') {
+    const [a, b] = group === 'A' ? [h1, h2] : [h2, h1];
+    return prompts.slice(0, 15).map((t, i) => i < 5 ? mk('broken', t, a) : i < 10 ? mk('broken', t, b) : mk('continuous', t, null));
+  }
+  const first = prompts.slice(0, 10), second = prompts.slice(10, 20);
+  const [cont, brok] = group === 'A' ? [first, second] : [second, first];
+  return [...cont.map(t => mk('continuous', t, null)), ...brok.map(t => mk('broken', t, h1))];
+}
+
+function startErr(msg) { const e = $('#start-err'); e.hidden = !msg; e.textContent = msg || ''; if (msg) e.scrollIntoView({ block: 'center' }); }
+
+async function startSession() {
+  const code = $('#f-code').value.trim().toUpperCase();
+  const input = inputValue();
+  const protocol = $('#f-protocol').value;
+  const h1 = parseFloat($('#f-h1').value), h2 = parseFloat($('#f-h2').value);
+  const prompts = $('#f-prompts').value.split('\n').map(nfc).filter(Boolean);
+  const need = protocol === 'pilot' ? 15 : 20;
+  if (!/^[A-Z0-9_-]{1,12}$/.test(code)) return startErr('Mã ẩn danh chỉ gồm chữ không dấu, số, gạch nối, tối đa 12 ký tự.');
+  if (!$('#f-consent').checked) return startErr('Cần xác nhận người viết đã ký phiếu đồng ý.');
+  if (!tested[input]) return startErr(`Hãy vẽ thử một nét bằng ${INPUT_NAME[input]} trong ô thử. Nếu ô thử không nhận S Pen, hãy mở trang bằng Chrome.`);
+  const model = $('#f-device').value.trim();
+  if (!model) return startErr('Cần nhập tên máy ở mục Máy thu.');
+  if (!widthOk()) return startErr('Cần nhập độ rộng màn hình từ 40 đến 300 mm ở mục Máy thu, rồi đo thanh 50 mm bằng thước.');
+  if (!(h1 >= 6 && h1 <= 30) || (protocol === 'pilot' && !(h2 >= 6 && h2 <= 30))) return startErr('Chiều cao hàng phải từ 6 đến 30 mm.');
+  if (prompts.length < need) return startErr(`Cần ít nhất ${need} câu đề, hiện có ${prompts.length} câu.`);
+  if (protocol === 'official' && prompts.some(p => PILOT.includes(p))) return startErr('Câu đề chính thức không được trùng câu của buổi thử.');
+  startErr('');
+  rememberDevice(model, widthMm());
+  const now = new Date();
+  const s = {
+    schema: 'thu-net/1', id: `${code}_${input}_${now.getTime()}`, status: 'writing',
+    participant: code, group: $('#f-group').value, input, protocol,
+    createdAt: now.toISOString(), finishedAt: null, exportedAt: null,
+    coordinateUnit: 'css_px', consent: true,
+    device: {
+      model, userAgent: navigator.userAgent, screenCssWidth: screen.width, screenCssHeight: screen.height,
+      devicePixelRatio: devicePixelRatio, screenWidthMm: widthMm(), pxPerMm: r2(pxPerMm()), maxTouchPoints: navigator.maxTouchPoints
+    },
+    penTest: tested[input],
+    lines: buildLines(protocol, $('#f-group').value, prompts, h1, h2).map((l, i) => ({ index: i, ...l }))
+  };
+  await putSession(s);
+  try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
+  beginWriting(s);
+}
+
+/* ---------- Màn viết ---------- */
+const cv = $('#cv');
+const S = { session: null, idx: 0, line: null, view: { x: 0, y: 0 }, strokes: [], cur: null, undo: 0, clears: 0, t0: null, W: 0, H: 0, rect: null, scrollT: 0, lastPenAt: 0, rejected: 0 };
+let ctx = null, wakeLock = null;
+
+async function keepAwake() { try { if (navigator.wakeLock && document.visibilityState === 'visible' && !$('#write').hidden) wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} }
+document.addEventListener('visibilitychange', keepAwake);
+
+function beginWriting(s) {
+  S.session = s;
+  S.idx = s.lines.findIndex(l => !l.strokes);
+  if (S.idx < 0) return beginReview(s);
+  show('write'); keepAwake(); openLine();
+}
+
+function sizeCanvas() {
+  const r = cv.getBoundingClientRect();
+  if (!r.width) return;
+  S.W = r.width; S.H = r.height; S.rect = r;
+  cv.width = Math.round(r.width * devicePixelRatio); cv.height = Math.round(r.height * devicePixelRatio);
+  ctx = cv.getContext('2d');
+  ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  checkOrientation();
+  draw();
+}
+function isLandscape() { return window.innerWidth > window.innerHeight; }
+function checkOrientation() { $('#rotate').hidden = !isLandscape(); }
+
+function openLine() {
+  const line = S.session.lines[S.idx], total = S.session.lines.length;
+  const broken = line.condition === 'broken';
+  S.line = line; S.view = { x: 0, y: 0 }; S.strokes = []; S.cur = null; S.undo = 0; S.clears = 0; S.t0 = null; S.rejected = 0;
+  $('#w-prog').textContent = `${S.idx + 1}/${total}`;
+  $('#w-chip').textContent = broken ? `Dòng ngắt, hàng ${fmt(line.rowHeightMm, 1)} mm` : 'Dòng liền, cuộn ngang';
+  $('#w-prompt').textContent = line.text;
+  $('#w-prev').hidden = S.idx === 0;
+  $('#b-back').textContent = broken ? 'Lên' : 'Lùi';
+  $('#b-fwd').textContent = broken ? 'Xuống' : 'Tiến';
+  sizeCanvas();
+  const p = S.session.device.pxPerMm;
+  line.frame = broken
+    ? { type: 'ruled', topPad: TOP_PAD, rowPx: r2(line.rowHeightMm * p), canvasW: r2(S.W), canvasH: r2(S.H) }
+    : { type: 'scroll', topPad: TOP_PAD, bandMm: BAND_MM, bandPx: r2(BAND_MM * p), canvasW: r2(S.W), canvasH: r2(S.H) };
+  line.openedAt = Date.now();
+  draw();
+}
+
+function drawGuides() {
+  const f = S.line.frame, c = ctx;
+  if (!f) return;
+  c.strokeStyle = cssVar('--rule'); c.lineWidth = 1; c.fillStyle = cssVar('--muted'); c.font = '10px ' + cssVar('--mono');
+  if (f.type === 'ruled') {
+    const first = Math.max(0, Math.floor((S.view.y - f.topPad) / f.rowPx));
+    for (let r = first; ; r++) {
+      const y = f.topPad + r * f.rowPx - S.view.y;
+      if (y > S.H) break;
+      c.beginPath(); c.moveTo(0, y + .5); c.lineTo(S.W, y + .5); c.stroke();
+      if (y + f.rowPx <= S.H + f.rowPx) c.fillText(String(r + 1), S.W - 16, y + 12);
+    }
+  } else {
+    const top = f.topPad, bot = f.topPad + f.bandPx;
+    c.fillStyle = cssVar('--tint'); c.fillRect(0, bot, S.W, S.H - bot);
+    c.beginPath(); c.moveTo(0, top + .5); c.lineTo(S.W, top + .5); c.moveTo(0, bot + .5); c.lineTo(S.W, bot + .5); c.stroke();
+    const step = 20 * S.session.device.pxPerMm;
+    for (let k = Math.floor(S.view.x / step); k * step - S.view.x < S.W; k++) {
+      const x = k * step - S.view.x;
+      c.beginPath(); c.moveTo(x + .5, bot); c.lineTo(x + .5, bot + 8); c.stroke();
+    }
+  }
+}
+function strokeStyle() { ctx.strokeStyle = cssVar('--stroke'); ctx.lineWidth = 2.2; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; }
+function drawStroke(s) {
+  const p = s.points, c = ctx, vx = S.view.x, vy = S.view.y;
+  c.beginPath(); c.moveTo(p[0][0] - vx, p[0][1] - vy);
+  if (p.length === 1) c.lineTo(p[0][0] - vx + .1, p[0][1] - vy);
+  for (let i = 1; i < p.length; i++) c.lineTo(p[i][0] - vx, p[i][1] - vy);
+  c.stroke();
+}
+function draw() {
+  if (!ctx || !S.line) return;
+  ctx.clearRect(0, 0, S.W, S.H);
+  drawGuides(); strokeStyle();
+  S.strokes.forEach(drawStroke);
+  if (S.cur) drawStroke(S.cur);
+}
+
+function addPoint(e) {
+  const c = S.cur, x = r2(e.clientX - S.rect.left + c.view[0]), y = r2(e.clientY - S.rect.top + c.view[1]);
+  if (S.t0 === null) { S.t0 = e.timeStamp; S.line.firstPointAt = Date.now(); }
+  const t = Math.round((e.timeStamp - S.t0) * 10) / 10;
+  const last = c.points[c.points.length - 1];
+  if (last && last[0] === x && last[1] === y && last[2] === t) return false;
+  c.points.push([x, y, t, r2(e.pressure), e.tiltX || 0, e.tiltY || 0]);
+  return true;
+}
+cv.addEventListener('pointerdown', e => {
+  if (!S.line || S.cur || isLandscape()) return;
+  const want = S.session.input;
+  if (e.pointerType !== want) { S.rejected++; if (e.pointerType !== 'touch' || want !== 'pen') toast(`Buổi này chỉ nhận ${INPUT_NAME[want]}.`); return; }
+  if (e.button !== 0) return;
+  e.preventDefault();
+  clearTimeout(S.scrollT);
+  S.rect = cv.getBoundingClientRect();
+  cv.setPointerCapture(e.pointerId);
+  S.cur = { id: e.pointerId, pointerType: e.pointerType, view: [r2(S.view.x), r2(S.view.y)], points: [] };
+  addPoint(e);
+  if (e.pointerType === 'pen') S.lastPenAt = Date.now();
+});
+window.addEventListener('pointermove', e => { if (e.pointerType === 'pen') S.lastPenAt = Date.now(); }, { capture: true, passive: true });
+cv.addEventListener('pointermove', e => {
+  if (!S.cur || e.pointerId !== S.cur.id) return;
+  const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [];
+  const list = evs.length ? evs : [e];
+  const p = S.cur.points; let from = p.length - 1;
+  list.forEach(addPoint);
+  strokeStyle(); ctx.beginPath(); ctx.moveTo(p[from][0] - S.view.x, p[from][1] - S.view.y);
+  for (let i = from + 1; i < p.length; i++) ctx.lineTo(p[i][0] - S.view.x, p[i][1] - S.view.y);
+  ctx.stroke();
+});
+function endStroke(e, cancelled) {
+  if (!S.cur || e.pointerId !== S.cur.id) return;
+  if (!cancelled) addPoint(e);
+  const { id, ...stroke } = S.cur;
+  if (cancelled) stroke.cancelled = true;
+  S.strokes.push(stroke); S.cur = null;
+  if (e.pointerType === 'pen') S.lastPenAt = Date.now();
+  draw();
+  clearTimeout(S.scrollT); S.scrollT = setTimeout(autoScroll, 450);
+}
+cv.addEventListener('pointerup', e => endStroke(e, false));
+cv.addEventListener('pointercancel', e => endStroke(e, true));
+cv.addEventListener('contextmenu', e => e.preventDefault());
+
+function autoScroll() {
+  const f = S.line.frame, last = S.strokes[S.strokes.length - 1];
+  if (!last || S.cur) return;
+  if (f.type === 'scroll') {
+    const right = Math.max(...last.points.map(p => p[0]));
+    if (right - S.view.x > S.W * .68) { S.view.x = right - S.W * .34; draw(); }
+  } else {
+    const cy = last.points.reduce((a, p) => a + p[1], 0) / last.points.length;
+    const row = Math.floor((cy - f.topPad) / f.rowPx), visible = Math.floor((S.H - f.topPad) / f.rowPx);
+    const first = Math.round(S.view.y / f.rowPx);
+    if (row - first >= visible - 1) { S.view.y = (row - visible + 2) * f.rowPx; draw(); }
+  }
+}
+function moveView(dir) {
+  if (S.cur) return;
+  clearTimeout(S.scrollT);
+  const f = S.line.frame;
+  if (f.type === 'ruled') S.view.y = Math.max(0, S.view.y + dir * f.rowPx);
+  else S.view.x = Math.max(0, S.view.x + dir * S.W * .4);
+  draw();
+}
+
+// Nút chạy ngay lúc nhấc ngón tay, vì trình duyệt có thể không sinh click cho lần chạm liền sau một nét.
+// Khi viết bằng S Pen, lòng bàn tay chạm vào nút trên màn viết thì bỏ qua.
+let downBtn = null, handledAt = 0, synthetic = false;
+const palmTouch = e => !$('#write').hidden && S.session && S.session.input === 'pen' && e.pointerType === 'touch' && Date.now() - S.lastPenAt < 700;
+document.addEventListener('pointerdown', e => { downBtn = palmTouch(e) ? null : e.target.closest('button'); }, true);
+document.addEventListener('pointerup', e => {
+  const b = downBtn; downBtn = null;
+  if (!b || b.disabled || e.pointerType === 'mouse') return;
+  const r = b.getBoundingClientRect();
+  if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
+  handledAt = Date.now(); synthetic = true; b.click(); synthetic = false;
+}, true);
+document.addEventListener('click', e => {
+  if (synthetic || !e.target.closest('button')) return;
+  if (e.detail > 0 && (Date.now() - handledAt < 600 || !$('#write').hidden && S.session && S.session.input === 'pen' && Date.now() - S.lastPenAt < 700 && e.pointerType === 'touch')) { e.stopPropagation(); e.preventDefault(); }
+}, true);
+
+$('#b-back').addEventListener('click', () => moveView(-1));
+$('#b-fwd').addEventListener('click', () => moveView(1));
+$('#b-undo').addEventListener('click', () => { if (S.strokes.length) { S.strokes.pop(); S.undo++; draw(); } });
+armed($('#b-clear'), 'Chạm lần nữa', () => { if (S.strokes.length) { S.strokes = []; S.clears++; S.view = { x: 0, y: 0 }; draw(); } });
+armed($('#w-prev'), 'Chạm lần nữa để viết lại', () => {
+  if (S.idx === 0) return;
+  const p = S.session.lines[S.idx - 1];
+  ['strokes', 'auto', 'doneAt', 'openedAt', 'firstPointAt', 'writeMs', 'undoCount', 'clearCount', 'rejectedPointers'].forEach(k => { p[k] = k === 'strokes' ? null : undefined; });
+  p.rewritten = (p.rewritten || 0) + 1;
+  S.idx--; putSession(S.session); openLine();
+});
+
+function autoStats(line) {
+  if (line.condition !== 'broken') return null;
+  const { topPad, rowPx } = line.frame, ink = {};
+  let maxRow = -1, back = 0, cross = 0;
+  line.strokes.forEach(s => {
+    const ys = s.points.map(p => p[1]), cy = ys.reduce((a, b) => a + b, 0) / ys.length;
+    let len = 0;
+    for (let i = 1; i < s.points.length; i++) len += Math.hypot(s.points[i][0] - s.points[i - 1][0], s.points[i][1] - s.points[i - 1][1]);
+    const row = Math.floor((cy - topPad) / rowPx), top = topPad + row * rowPx;
+    ink[row] = (ink[row] || 0) + len;
+    if (Math.min(...ys) < top - .25 * rowPx || Math.max(...ys) > top + rowPx + .25 * rowPx) cross++;
+    if (row < maxRow && cy < topPad + maxRow * rowPx - .35 * rowPx) back++;
+    if (len >= .5 * rowPx) maxRow = Math.max(maxRow, row);
+  });
+  return { rowsUsed: Object.values(ink).filter(v => v >= .8 * rowPx).length, crossRowStrokes: cross, backtrackStrokes: back };
+}
+
+$('#b-done').addEventListener('click', async () => {
+  if (S.cur) return;
+  if (!S.strokes.length) { toast('Dòng này chưa có nét nào.'); return; }
+  clearTimeout(S.scrollT);
+  const l = S.line, last = S.strokes[S.strokes.length - 1].points;
+  l.strokes = S.strokes; l.doneAt = Date.now(); l.writeMs = last[last.length - 1][2];
+  l.undoCount = S.undo; l.clearCount = S.clears; l.rejectedPointers = S.rejected;
+  l.auto = autoStats(l);
+  await putSession(S.session);
+  S.idx++;
+  if (S.idx >= S.session.lines.length) { S.session.status = 'review'; S.session.finishedAt = new Date().toISOString(); await putSession(S.session); beginReview(S.session); }
+  else openLine();
+});
+
+/* ---------- Rà soát ---------- */
+function renderInk(canvas, line) {
+  const pts = line.strokes.flatMap(s => s.points), f = line.frame;
+  const maxX = Math.max(...pts.map(p => p[0]), f.canvasW), maxY = Math.max(...pts.map(p => p[1]));
+  const w = canvas.parentElement.clientWidth - 24 || 320;
+  const k = Math.min(1, w / maxX), contentH = f.type === 'ruled' ? maxY + 8 : Math.max(maxY, f.topPad + f.bandPx) + 8;
+  canvas.style.height = Math.ceil(contentH * k) + 'px';
+  canvas.width = Math.round(w * devicePixelRatio); canvas.height = Math.round(contentH * k * devicePixelRatio);
+  const c = canvas.getContext('2d');
+  c.setTransform(devicePixelRatio * k, 0, 0, devicePixelRatio * k, 0, 0);
+  c.strokeStyle = cssVar('--rule'); c.lineWidth = 1 / k;
+  if (f.type === 'ruled') for (let y = f.topPad; y < contentH; y += f.rowPx) { c.beginPath(); c.moveTo(0, y); c.lineTo(maxX, y); c.stroke(); }
+  c.strokeStyle = cssVar('--stroke'); c.lineWidth = 1.8 / k > 2.2 ? 2.2 : 1.8 / k; c.lineCap = 'round'; c.lineJoin = 'round';
+  line.strokes.forEach(s => { c.beginPath(); c.moveTo(s.points[0][0], s.points[0][1]); s.points.forEach(p => c.lineTo(p[0], p[1])); c.stroke(); });
+}
+let saveReviewT;
+function saveReviewSoon(s) { clearTimeout(saveReviewT); saveReviewT = setTimeout(() => putSession(s), 300); }
+
+function beginReview(s) {
+  S.session = s; show('review');
+  $('#r-code').textContent = `${s.participant}, ${INPUT_NAME[s.input]}`;
+  const list = $('#r-list'); list.textContent = '';
+  s.lines.forEach(line => {
+    const card = document.createElement('div'); card.className = 'card';
+    const title = document.createElement('div'); title.className = 'head';
+    const a = document.createElement('strong'); a.textContent = `Dòng ${line.index + 1}`;
+    const b = document.createElement('span'); b.className = 'hint';
+    title.append(a, b); card.append(title);
+    const cvs = document.createElement('canvas'); card.append(cvs); list.append(card); renderInk(cvs, line);
+    if (line.condition === 'broken') {
+      const refresh = () => { const n = line.review.breaks.length + 1, au = line.auto.rowsUsed; b.textContent = `Hàng ${fmt(line.rowHeightMm)} mm, tự đếm ${au} hàng, đã đánh dấu ${n} hàng`; b.style.color = n === au ? '' : 'var(--warn)'; };
+      const chips = document.createElement('div'); chips.className = 'chips';
+      line.text.split(' ').forEach((w, i) => {
+        const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'chip';
+        const label = document.createElement('span'); label.textContent = w; const small = document.createElement('small');
+        btn.append(label, small);
+        const paint = () => { const br = line.review.breaks.find(x => x.word === i); btn.classList.toggle('start', !!br && !br.mid); btn.classList.toggle('mid', !!br && br.mid); small.textContent = !br ? '' : br.mid ? 'giữa từ' : 'đầu hàng'; };
+        if (i === 0) btn.disabled = true;
+        btn.addEventListener('click', () => {
+          const arr = line.review.breaks, k = arr.findIndex(x => x.word === i);
+          if (k < 0) arr.push({ word: i, mid: false }); else if (!arr[k].mid) arr[k].mid = true; else arr.splice(k, 1);
+          arr.sort((x, y) => x.word - y.word); paint(); refresh(); saveReviewSoon(s);
+        });
+        paint(); chips.append(btn);
+      });
+      card.append(chips); refresh();
+    } else { b.textContent = 'Dòng liền'; const t = document.createElement('p'); t.textContent = line.text; card.append(t); }
+    const lab = document.createElement('label'); lab.className = 'check';
+    const chk = document.createElement('input'); chk.type = 'checkbox'; chk.checked = line.review.miscopied;
+    const sp = document.createElement('span'); sp.textContent = 'Người viết chép khác câu đề';
+    lab.append(chk, sp); card.append(lab);
+    const note = document.createElement('input'); note.type = 'text'; note.placeholder = 'Ghi chú, nếu có'; note.value = line.review.note; note.setAttribute('aria-label', `Ghi chú dòng ${line.index + 1}`);
+    card.append(note);
+    chk.addEventListener('change', () => { line.review.miscopied = chk.checked; saveReviewSoon(s); });
+    note.addEventListener('input', () => { line.review.note = note.value; saveReviewSoon(s); });
+  });
+  $('#review').scrollTop = 0;
+}
+$('#r-done').addEventListener('click', async () => { clearTimeout(saveReviewT); S.session.status = 'done'; await putSession(S.session); openList(); });
+
+/* ---------- Tổng hợp và xuất tệp ---------- */
+const rowsOf = l => l.review.breaks.length ? l.review.breaks.length + 1 : l.auto.rowsUsed;
+function sessionMinutes(s) {
+  const done = s.lines.filter(l => l.strokes && l.openedAt && l.doneAt);
+  if (!done.length) return null;
+  const perLine = done.reduce((a, l) => a + (l.doneAt - l.openedAt), 0) / done.length;
+  return { total: done.reduce((a, l) => a + (l.doneAt - l.openedAt), 0) / 60000, per20: perLine * TARGET_LINES / 60000 };
+}
+function renderSummary(all) {
+  const groups = new Map();
+  all.forEach(s => s.lines.forEach(l => {
+    if (l.condition !== 'broken' || !l.strokes) return;
+    const k = `${s.input}|${l.rowHeightMm}`;
+    if (!groups.has(k)) groups.set(k, { input: s.input, h: l.rowHeightMm, lines: [] });
+    groups.get(k).lines.push(l);
+  }));
+  const box = $('#l-sum'); box.textContent = '';
+  if (!groups.size) { const p = document.createElement('p'); p.className = 'hint'; p.textContent = 'Chưa có dòng ngắt nào trên máy này. Kết quả sẽ hiện ở đây sau buổi đầu tiên.'; box.append(p); return; }
+  const wrap = document.createElement('div'); wrap.className = 'tbl';
+  const t = document.createElement('table'), head = document.createElement('tr');
+  ['Nhập, cỡ hàng', 'Số dòng', 'Trung vị hàng', 'Tối đa hàng', 'Từ mỗi hàng', 'Ngắt giữa từ', 'Dòng có quay lại', 'Dòng có nét sang hàng'].forEach(x => { const h = document.createElement('th'); h.textContent = x; head.append(h); });
+  t.append(head);
+  [...groups.values()].sort((a, b) => a.input.localeCompare(b.input) || a.h - b.h).forEach(g => {
+    const rows = g.lines.map(rowsOf), wpr = g.lines.map(l => l.text.split(' ').length / rowsOf(l));
+    const breaks = g.lines.flatMap(l => l.review.breaks), mid = breaks.filter(b => b.mid).length;
+    const pct = n => `${fmt(100 * n / g.lines.length, 0)}%`;
+    const cells = [`${INPUT_NAME[g.input]}, ${fmt(g.h)} mm`, g.lines.length, fmt(median(rows)), Math.max(...rows), fmt(median(wpr)), breaks.length ? `${fmt(100 * mid / breaks.length, 0)}%` : 'Chưa đánh dấu', pct(g.lines.filter(l => l.auto.backtrackStrokes > 0).length), pct(g.lines.filter(l => l.auto.crossRowStrokes > 0).length)];
+    const tr = document.createElement('tr'); cells.forEach(c => { const d = document.createElement('td'); d.textContent = c; tr.append(d); }); t.append(tr);
+  });
+  wrap.append(t); box.append(wrap);
+}
+function renderCriteria(all) {
+  const pilots = all.filter(s => s.protocol === 'pilot' && s.lines.every(l => l.strokes));
+  const people = new Set(pilots.map(s => s.participant)).size;
+  const nBroken = pilots.flatMap(s => s.lines).filter(l => l.condition === 'broken').length;
+  const times = pilots.map(sessionMinutes).filter(Boolean).map(t => t.per20);
+  const allBreaks = pilots.flatMap(s => s.lines).flatMap(l => l.review.breaks);
+  const items = [
+    [people >= 3, `Số người viết: ${people}/3`],
+    [nBroken >= 30, `Số dòng ngắt: ${nBroken}/30`],
+    [allBreaks.length > 0, allBreaks.length ? `Đã đánh dấu ${allBreaks.length} chỗ ngắt` : 'Chưa đánh dấu chỗ ngắt nào'],
+    [times.length > 0 && Math.max(...times) <= 30, times.length ? `Thời gian quy đổi 20 dòng, người chậm nhất: ${fmt(Math.max(...times))} phút (mức đạt 30 phút)` : 'Chưa có số liệu thời gian']
+  ];
+  const box = $('#l-crit'); box.textContent = '';
+  items.forEach(([ok, txt]) => { const d = document.createElement('div'); d.className = 'status ' + (ok ? 'ok' : 'bad'); d.textContent = `${ok ? 'Đạt' : 'Chưa đạt'}: ${txt}`; box.append(d); });
+}
+function stamp(iso) { const d = new Date(iso), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}`; }
+const INPUT_FILE = { touch: 'ngon-tay', pen: 's-pen' };
+async function saveFile(name, text) {
+  if (window.claude && window.claude.use) {
+    const d = await window.claude.use('downloads');
+    if (!d) { toast('Khung xem này không cho tải tệp. Hãy dùng nút Sao chép của từng buổi.'); return false; }
+    try { await d.save({ filename: name, data: new Blob([text], { type: 'application/json' }) }); toast(`Đã lưu ${name}`); return true; }
+    catch (e) { toast(e && e.code === 'declined' ? 'Bạn đã từ chối lưu tệp.' : e && e.code === 'rate_limited' ? 'Đang có hộp thoại lưu tệp, hãy thử lại sau.' : 'Không lưu được tệp. Hãy dùng nút Sao chép của từng buổi.'); return false; }
+  }
+  const u = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+  const a = document.createElement('a'); a.href = u; a.download = name; document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(u), 30000);
+  toast(`Đã lưu ${name}`); return true;
+}
+async function exportSession(s) {
+  if (await saveFile(`thu-net_${s.participant}_${INPUT_FILE[s.input]}_${stamp(s.createdAt)}.json`, JSON.stringify(s))) { s.exportedAt = new Date().toISOString(); await putSession(s); openList(); }
+}
+// Dự phòng khi không tải được tệp: phải gọi clipboard ngay trong thao tác chạm.
+function copySession(s) {
+  const text = JSON.stringify(s), panel = $('#copy-panel'), area = $('#copy-text');
+  const manual = () => {
+    area.value = text; panel.hidden = false;
+    panel.scrollIntoView({ block: 'center' }); area.focus(); area.select();
+    toast('Không sao chép tự động được, hãy sao chép trong ô bên dưới.');
+  };
+  const done = async () => {
+    panel.hidden = true; area.value = '';
+    s.copiedAt = new Date().toISOString();
+    await putSession(s); await openList();
+    toast(`Đã sao chép ${fmt(text.length / 1024, 0)} KB. Hãy dán vào email hoặc Google Docs để giữ lại.`);
+  };
+  try { navigator.clipboard.writeText(text).then(done, manual); } catch (e) { manual(); }
+}
+async function openList() {
+  show('list');
+  const all = await loadSessions();
+  renderSummary(all); renderCriteria(all);
+  const box = $('#l-items'); box.textContent = '';
+  $('#l-all').hidden = !all.length;
+  if (!all.length) { const p = document.createElement('p'); p.className = 'hint'; p.textContent = 'Chưa có buổi thu nào trên máy này.'; box.append(p); }
+  all.forEach(s => {
+    const done = s.lines.filter(l => l.strokes).length, card = document.createElement('div'); card.className = 'card';
+    const head = document.createElement('div'); head.className = 'head';
+    const a = document.createElement('strong'); a.textContent = `${s.participant}, ${INPUT_NAME[s.input]}, nhóm ${s.group}`;
+    const b = document.createElement('span'); b.className = 'hint mono'; b.textContent = `${done}/${s.lines.length} dòng`;
+    head.append(a, b);
+    const m = sessionMinutes(s), info = document.createElement('p'); info.className = 'hint';
+    info.textContent = `${new Date(s.createdAt).toLocaleString('vi-VN')}. ${m ? `Thời gian ${fmt(m.total)} phút. ` : ''}${s.exportedAt ? 'Đã xuất tệp.' : s.copiedAt ? 'Đã sao chép, chưa xuất tệp.' : 'Chưa xuất tệp.'}`;
+    const row = document.createElement('div'); row.className = 'row';
+    const go = document.createElement('button'); go.type = 'button'; go.className = 'grow';
+    if (s.status === 'writing') { go.textContent = 'Viết tiếp'; go.onclick = () => beginWriting(s); } else { go.textContent = 'Rà soát'; go.onclick = () => beginReview(s); }
+    const ex = document.createElement('button'); ex.type = 'button'; ex.className = 'grow'; ex.textContent = 'Xuất JSON'; ex.onclick = () => exportSession(s);
+    const del = document.createElement('button'); del.type = 'button'; del.className = 'danger grow'; del.textContent = 'Xóa';
+    armed(del, s.exportedAt ? 'Chạm lần nữa' : 'Chưa xuất, vẫn xóa?', async () => { await deleteSession(s.id); openList(); });
+    const cp = document.createElement('button'); cp.type = 'button'; cp.className = 'grow'; cp.textContent = 'Sao chép'; cp.onclick = () => copySession(s);
+    row.append(go, ex, cp, del); card.append(head, info, row); box.append(card);
+  });
+}
+$('#l-all').addEventListener('click', async () => {
+  const all = await loadSessions();
+  if (await saveFile(`thu-net_tat-ca_${stamp(new Date().toISOString())}.json`, JSON.stringify({ schema: 'thu-net-bundle/1', sessions: all }))) {
+    for (const s of all) { s.exportedAt = new Date().toISOString(); await putSession(s); }
+    openList();
+  }
+});
+$('#l-new').addEventListener('click', openSetup);
+$('#go-list').addEventListener('click', openList);
+
+async function openSetup() {
+  show('setup');
+  const all = await loadSessions(), open = all.filter(s => s.status !== 'done'), box = $('#resume');
+  box.textContent = ''; box.hidden = !open.length;
+  open.forEach(s => {
+    const card = document.createElement('div'); card.className = 'status row';
+    const t = document.createElement('span'); t.className = 'grow'; t.textContent = `Buổi ${s.participant} (${INPUT_NAME[s.input]}) đang dở, đã xong ${s.lines.filter(l => l.strokes).length}/${s.lines.length} dòng.`;
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Tiếp tục';
+    b.onclick = () => s.status === 'writing' ? beginWriting(s) : beginReview(s);
+    card.append(t, b); box.append(card);
+  });
+  restoreDevice(); updateRuler(); updateTestStatus();
+}
+
+$('#start').addEventListener('click', startSession);
+$('#f-width').addEventListener('input', updateRuler);
+$('#f-protocol').addEventListener('change', protocolChanged);
+document.querySelectorAll('input[name=f-input]').forEach(r => r.addEventListener('change', updateTestStatus));
+new ResizeObserver(() => { if (!$('#write').hidden) sizeCanvas(); }).observe($('.w-area'));
+window.addEventListener('resize', () => { if (!$('#write').hidden) checkOrientation(); });
+
+protocolChanged();
+setupPad();
+openSetup();
+})();
+</script>
