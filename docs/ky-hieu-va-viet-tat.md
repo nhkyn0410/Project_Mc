@@ -12,13 +12,29 @@ Bảng 1: Ký hiệu toán dùng chung
 
 | Ký hiệu | Nghĩa |
 | --- | --- |
-| $(x_i, y_i)$ | Tọa độ của điểm thứ $i$ sau chuẩn hóa và lấy mẫu lại |
-| $M$ | Số điểm của một dòng sau lấy mẫu lại |
-| $\Delta x_i$, $\Delta y_i$ | Độ dời của điểm thứ $i$ so với điểm liền trước |
-| $s_i$ | Cờ bắt đầu nét, bằng 1 nếu điểm thứ $i$ mở đầu một nét và bằng 0 nếu không |
-| $\mathbf{X}$ | Chuỗi đặc trưng đầu vào của mô hình, gồm $M$ véc-tơ $(\Delta x_i, \Delta y_i, s_i)$ |
-| $T$ | Số bước thời gian sau khi CNN 1D giảm độ dài chuỗi |
-| $\mathbf{z}_t$ | Véc-tơ đầu vào của lớp hồi quy tại bước $t$, là đầu ra của CNN 1D hoặc của lớp BiLSTM bên dưới |
+| $\mathbf{e}_1$, $\mathbf{e}_2$ | Hai đầu của một đoạn thẳng trên nét, khi vẽ dòng thành ảnh |
+| $\mathbf{g}$ | Tâm của một ô trên lưới mịn khi vẽ dòng thành ảnh |
+| $\eta$ | Vị trí trên đoạn thẳng gần tâm ô nhất, trong khoảng từ 0 đến 1 |
+| $\rho$ | Số ô của lưới mịn trên một cạnh điểm ảnh |
+| $\omega$ | Độ dày nét trên khung cuối khi vẽ dòng thành ảnh, tính bằng điểm ảnh |
+| $\lambda$ | Hệ số co của nét khi đặt dòng vào khung ảnh |
+| $\delta$ | Lề ngang của khung ảnh, tính bằng điểm ảnh |
+| $\Delta_R$, $\Delta_H$ | Chiều rộng và chiều cao phần nét trước khi co |
+| $H$, $R$ | Chiều cao và chiều rộng của khung ảnh đầu vào |
+| $H_{\text{nét}}$ | Chiều cao tối đa của phần nét sau khi co, bằng $H$ khi không giới hạn |
+| $\mathbf{X}$ | Ảnh xám của một dòng sau tiền xử lý, là đầu vào của mô hình |
+| $s_x$, $s_y$ | Hệ số co giãn ngang và dọc khi tăng cường dữ liệu |
+| $\psi$ | Hệ số nghiêng khi tăng cường dữ liệu |
+| $o_y$ | Độ dịch dọc khi tăng cường dữ liệu, tính bằng điểm ảnh |
+| $u_0$, $v_0$ | Hàng và cột trên ảnh cũ ứng với điểm ảnh ở hàng $u$, cột $v$ của ảnh sau tăng cường |
+| $x_{u,v}$, $y_{u,v}$ | Giá trị tại hàng $u$, cột $v$ của đầu vào và đầu ra một bộ lọc tích chập |
+| $\kappa_{u',v'}$ | Trọng số của bộ lọc tích chập tại vị trí tương đối $(u', v')$ |
+| $F_{\text{vào}}$, $F$ | Số kênh đầu vào và số bộ lọc của một lớp tích chập |
+| $e_\ell$ | Kích thước cửa sổ của lớp thứ $\ell$ theo một chiều |
+| $\tau_\ell$ | Bước nhảy của lớp thứ $\ell$ theo một chiều |
+| $v_\ell$, $g_\ell$ | Vùng nhìn và bước nhảy tích lũy sau lớp thứ $\ell$ theo một chiều |
+| $T$ | Số bước thời gian sau khi CNN 2D giảm chiều rộng ảnh |
+| $\mathbf{z}_t$ | Véc-tơ đầu vào của lớp hồi quy tại bước $t$, là đầu ra của lớp kết nối đầy đủ sau CNN 2D hoặc của lớp BiLSTM bên dưới |
 | $d_{\text{vào}}$, $d$ | Số chiều của $\mathbf{z}_t$ và số ô của một chiều LSTM |
 | $\mathbf{h}_t$ | Trạng thái ẩn tại bước $t$. Với LSTM một chiều là đầu ra của chiều đó, với BiLSTM là phần ghép từ hai chiều |
 | $\overrightarrow{\mathbf{h}}_t$, $\overleftarrow{\mathbf{h}}_t$ | Trạng thái ẩn của chiều xuôi và chiều ngược trong BiLSTM |
@@ -27,9 +43,9 @@ Bảng 1: Ký hiệu toán dùng chung
 | $\mathbf{V}_{\ast}$, $\mathbf{b}_{\ast}$ | Ma trận trọng số và véc-tơ độ lệch của một cổng, chỉ số dưới cho biết cổng nào |
 | $\sigma$ | Hàm sigmoid, cho giá trị trong khoảng từ 0 đến 1 |
 | $\odot$ | Phép nhân từng phần tử của hai véc-tơ |
-| $\mathcal{A}$ | Bảng ký tự của VNOnDB, gồm 161 ký tự |
+| $\mathcal{A}$ | Bảng ký tự của mô hình, gồm 160 ký tự có ở tập huấn luyện hoặc tập kiểm định của VNOnDB |
 | $\epsilon$ | Nhãn trống của CTC |
-| $\mathcal{A}'$ | Tập nhãn đầu ra $\mathcal{A} \cup \{\epsilon\}$, gồm 162 nhãn |
+| $\mathcal{A}'$ | Tập nhãn đầu ra $\mathcal{A} \cup \{\epsilon\}$, gồm 161 nhãn |
 | $p_t(k)$ | Xác suất mô hình gán cho nhãn $k \in \mathcal{A}'$ tại bước $t$ |
 | $\mathbf{l} = (l_1, \ldots, l_U)$ | Chuỗi ký tự đích của một dòng, dài $U$ ký tự |
 | $r$ | Số cặp ký tự giống nhau đứng liền nhau trong $\mathbf{l}$ |
@@ -52,6 +68,9 @@ Bảng 1: Ký hiệu toán dùng chung
 | $S$, $I$, $D$, $N$ | Số ký tự bị thay, chèn, xóa, và số ký tự của chuỗi đúng |
 | $Q$, $q$ | Số dòng trong một tập khi tính tỷ lệ lỗi, và chỉ số của một dòng |
 | $E_q$, $N_q$ | Khoảng cách sửa của dòng thứ $q$, và độ dài chuỗi đúng của dòng đó |
+| $\theta$, $\tilde{\theta}$ | Một trọng số của mô hình, và giá trị khôi phục sau lượng tử hóa |
+| $\nu$ | Số nguyên lưu trọng số sau lượng tử hóa |
+| $\gamma$, $\zeta$ | Bước lượng tử và điểm không của phép lượng tử hóa |
 
 ## 2. Chữ viết tắt
 
@@ -64,6 +83,7 @@ Bảng 2: Chữ viết tắt
 | BiLSTM | Bidirectional Long Short-Term Memory | LSTM hai chiều |
 | CER | Character Error Rate | Tỷ lệ lỗi ký tự |
 | CNN | Convolutional Neural Network | Mạng nơ-ron tích chập |
+| CPU | Central Processing Unit | Bộ xử lý trung tâm |
 | CTC | Connectionist Temporal Classification | Hàm mất mát cho bài toán chuỗi không có nhãn căn chỉnh |
 | GRU | Gated Recurrent Unit | Mạng hồi quy có cổng, gọn hơn LSTM |
 | ICFHR | International Conference on Frontiers in Handwriting Recognition | Hội nghị quốc tế về nhận dạng chữ viết tay |

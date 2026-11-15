@@ -6,7 +6,7 @@ Tài liệu này trình bày cách giải mã đầu ra của mô hình Connecti
 
 ## 1. Bài toán
 
-Đầu vào của bước giải mã là ma trận xác suất $p_t(k)$ do mô hình cho ra, với $T$ bước thời gian và 162 nhãn. Đầu ra cần có là chuỗi ký tự $\hat{\mathbf{l}}$ hợp lý nhất cho dòng đó.
+Đầu vào của bước giải mã là ma trận xác suất $p_t(k)$ do mô hình cho ra, với $T$ bước thời gian và 161 nhãn. Đầu ra cần có là chuỗi ký tự $\hat{\mathbf{l}}$ hợp lý nhất cho dòng đó.
 
 Giải mã đơn giản ở `05-ctc.md`, mục 2.5, có hai điểm yếu. Thứ nhất, nó chỉ xét một đường căn chỉnh, trong khi xác suất của một chuỗi là tổng trên nhiều đường. Thứ hai, CTC coi các bước độc lập với nhau, nên mô hình không biết âm tiết nào hay đi cùng âm tiết nào. Với tiếng Việt, điểm yếu thứ hai rõ nhất ở dấu thanh: nét viết của "ma", "má", "mà" có thể gần giống nhau, và chỉ ngữ cảnh mới phân biệt được.
 

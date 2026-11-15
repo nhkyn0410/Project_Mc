@@ -98,7 +98,7 @@ Kiểu thứ ba không còn khó với mô hình, vì nét trễ nằm đúng ch
 
 ### 7.3. Mô hình
 
-Mô hình đề xuất gồm 4 khối CNN 2D, 2 lớp BiLSTM và lớp softmax trên 162 đầu ra, tức 161 ký tự và nhãn trống của CTC. CNN 2D giảm chiều cao 16 lần và chiều rộng 2 lần, còn 256 bước thời gian. Chiều rộng chỉ giảm 2 lần vì dòng dài nhất có 158 ký tự, và CTC cần số bước không ít hơn độ dài chuỗi đích. BiLSTM đọc ngữ cảnh theo cả hai chiều dọc dòng. Bảng 3 ghi ba mô hình, số tham số là ước tính theo cấu hình dự kiến.
+Mô hình đề xuất gồm 4 khối CNN 2D, 2 lớp BiLSTM và lớp softmax trên 161 đầu ra, tức 160 ký tự có ở tập huấn luyện hoặc tập kiểm định và nhãn trống của CTC. CNN 2D giảm chiều cao 16 lần và chiều rộng 2 lần, còn 256 bước thời gian. Chiều rộng chỉ giảm 2 lần vì dòng dài nhất có 158 ký tự, và CTC cần số bước không ít hơn độ dài chuỗi đích. BiLSTM đọc ngữ cảnh theo cả hai chiều dọc dòng. Bảng 3 ghi ba mô hình, số tham số là ước tính theo cấu hình dự kiến.
 
 Bảng 3: Các mô hình dự kiến
 
@@ -122,7 +122,7 @@ N-gram học từ văn bản của tập huấn luyện và một kho văn bản
 
 ### 7.6. Triển khai
 
-Mô hình huấn luyện bằng Keras được chuyển sang định dạng `.tflite` và chạy trên Android bằng LiteRT [@google2026c]. Bước đầu dùng lượng tử hóa dynamic range, vì cách này không cần tập hiệu chỉnh. Theo tài liệu LiteRT, cách này giảm dung lượng 4 lần và tăng tốc từ 2 đến 3 lần [@google2026e]. Sau bước này phải đo lại CER, vì lượng tử hóa có thể làm giảm độ chính xác.
+Mô hình huấn luyện bằng Keras được chuyển sang định dạng `.tflite` và chạy trên Android bằng LiteRT [@google2026c]. Đề tài thử hai cách lượng tử hóa không cần tập hiệu chỉnh là dynamic range và float16 [@google2026e]. Bản float16 được chọn vì không làm tăng CER, còn dynamic range làm CER vượt ngưỡng. Kết quả nằm trong `07-nhat-ky-thi-nghiem.md`, mục 5.
 
 Ứng dụng vẽ lại ảnh và nhận dạng lại cả dòng sau mỗi lần dừng, nên BiLSTM vẫn cho kết quả tạm thời trong lúc viết. Bước vẽ ảnh, bộ giải mã CTC và n-gram được viết bằng Kotlin.
 
@@ -147,9 +147,7 @@ Bảng 4: Sản phẩm đầu ra
 
 ## 10. Kế hoạch
 
-Đề tài chia thành bốn giai đoạn, mỗi giai đoạn kết thúc bằng một cổng kiểm tra đo được. Tỷ lệ thời gian giữa các giai đoạn là ước lượng thô, cần đổi sang tuần khi có hạn nộp. Cổng 1 chạy thử mô hình chưa huấn luyện trên điện thoại để phát hiện sớm lỗi chuyển đổi.
-
-Nội dung từng giai đoạn và từng cổng: Chưa viết. Hình kế hoạch trong bản mô tả gốc không chép sang được, nên phần này sẽ được bổ sung khi có bản gốc.
+Đề tài chia thành bốn giai đoạn: dữ liệu, huấn luyện, triển khai và đánh giá. Mỗi giai đoạn kết thúc bằng một cổng kiểm tra đo được. Nội dung từng giai đoạn, từng cổng và tình trạng hiện tại nằm trong `08-cac-giai-doan.md`.
 
 ## 11. Rủi ro
 

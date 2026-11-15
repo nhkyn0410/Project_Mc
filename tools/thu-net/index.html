@@ -52,7 +52,10 @@ textarea { min-height: 150px; font-size: 14px; }
 .seg label:has(input:checked) { border-color: var(--accent); border-width: 2px; }
 .check { display: flex; gap: 10px; align-items: flex-start; min-height: 32px; }
 .check input { width: 22px; height: 22px; flex: none; margin: 0; }
-#ruler { height: 12px; border: 1px solid var(--ink); border-top: 0; max-width: 100%; }
+/* Chỉ chiều cao của khung cần khớp thẻ, nên khung được phép hẹp hơn thẻ trên máy nhỏ. */
+#card { border: 2px solid var(--accent); border-radius: 4px; background: var(--tint); flex: none; max-width: 100%; align-self: flex-start; }
+input[type=range] { width: 100%; min-height: 44px; accent-color: var(--accent); }
+input[readonly], textarea[readonly], input:disabled { color: var(--muted); }
 #pad { width: 100%; height: 104px; display: block; background: var(--bg); border: 1px dashed var(--rule); border-radius: 6px; touch-action: none; }
 .status { font-size: 13px; padding: 8px 10px; border-radius: 6px; background: var(--tint); }
 .status.ok { background: var(--good-bg); color: var(--good); }
@@ -66,6 +69,7 @@ textarea { min-height: 150px; font-size: 14px; }
 .w-meta button { min-height: 32px; font-size: 12px; padding: 0 8px; }
 #w-chip { font-weight: 600; color: var(--accent); }
 #w-prompt { font-size: 18px; line-height: 1.32; font-weight: 500; user-select: text; -webkit-user-select: text; }
+.w-hint { font-size: 12px; color: var(--muted); margin: 0; }
 .w-area { flex: 1 1 0; min-height: 0; position: relative; margin-left: max(16px, env(safe-area-inset-left, 0px)); margin-right: max(16px, env(safe-area-inset-right, 0px)); }
 #cv { position: absolute; inset: 0; width: 100%; height: 100%; background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; touch-action: none; }
 .w-bar { display: grid; grid-template-columns: repeat(4, 1fr) 1.35fr; gap: 6px; padding: 8px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px)); }
@@ -91,6 +95,7 @@ th:first-child, td:first-child { text-align: left; }
 th { color: var(--muted); font-weight: 500; }
 .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .row > .grow { flex: 1 1 140px; min-width: 0; }
+.steps { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 4px; }
 </style>
 
 <section id="setup" class="view scroll" hidden>
@@ -99,17 +104,20 @@ th { color: var(--muted); font-weight: 500; }
       <h1>Sổ Thu Nét</h1>
       <button id="go-list" type="button">Các buổi đã thu</button>
     </div>
-    <p class="hint">Thu chữ viết tay tiếng Việt theo dòng trên điện thoại. Nét được lưu trên máy này sau mỗi dòng, và chỉ rời máy khi bạn xuất tệp.</p>
+    <p class="hint">Thu chữ viết tay tiếng Việt theo dòng trên điện thoại. Nét được lưu trên máy này sau mỗi dòng, và chỉ rời máy khi bạn gửi dữ liệu ở màn Các buổi đã thu.</p>
     <div id="resume" class="stack" style="gap:8px" hidden></div>
     <div id="storage-warn" class="status bad" hidden>Trình duyệt không cho lưu trên máy. Hãy giữ nguyên tab và xuất tệp ngay sau buổi thu.</div>
+    <div id="env-warn" class="status bad" hidden></div>
 
     <div class="panel">
       <h2>Người viết</h2>
       <div class="grid2">
-        <label class="field"><span>Mã ẩn danh</span><input id="f-code" type="text" value="P01" autocomplete="off" autocapitalize="characters" maxlength="12"></label>
+        <label class="field"><span id="l-code">Mã ẩn danh do công cụ cấp</span><input id="f-code" class="mono" type="text" value="" readonly list="codes" placeholder="NV-XXXX" autocomplete="off" autocapitalize="characters" maxlength="7"></label>
         <label class="field"><span>Nhóm đổi chéo</span><select id="f-group"><option value="A">Nhóm A</option><option value="B">Nhóm B</option></select></label>
       </div>
-      <p class="hint">Không nhập tên thật.</p>
+      <datalist id="codes"></datalist>
+      <button id="code-mode" type="button">Người này đã viết một buổi trước</button>
+      <p id="code-hint" class="hint">Mỗi người viết mới nhận một mã ngẫu nhiên. Nếu người này đã viết ở một buổi trước, bấm nút trên rồi chọn hoặc nhập mã cũ của họ.</p>
       <div class="field">
         <span class="label">Thiết bị nhập của buổi này</span>
         <div class="seg">
@@ -131,7 +139,8 @@ th { color: var(--muted); font-weight: 500; }
       <label class="field"><span>Loại buổi</span>
         <select id="f-protocol">
           <option value="pilot">Buổi thử: 10 dòng ngắt và 5 dòng liền</option>
-          <option value="official">Thu chính thức: 10 dòng liền và 10 dòng ngắt</option>
+          <option value="chinh">Nhóm chỉnh: 10 dòng liền và 10 dòng ngắt</option>
+          <option value="kiem-thu">Nhóm kiểm thử: 10 dòng liền và 10 dòng ngắt</option>
         </select>
       </label>
       <div class="grid2">
@@ -139,24 +148,28 @@ th { color: var(--muted); font-weight: 500; }
         <label class="field" id="w-h2"><span>Chiều cao hàng 2 (mm)</span><input id="f-h2" type="number" min="6" max="30" step="1" value="14"></label>
       </div>
       <label class="field"><span id="l-prompts">Câu đề, mỗi câu một dòng</span><textarea id="f-prompts" spellcheck="false"></textarea></label>
+      <p id="lock-hint" class="hint" hidden>Đợt thu chính thức khóa câu đề, cỡ hàng 12 mm và cách nhập bằng ngón tay, để mọi người viết cùng một điều kiện.</p>
     </div>
 
     <div class="panel">
       <h2>Máy thu</h2>
-      <div class="grid2">
-        <label class="field"><span>Tên máy (bắt buộc)</span><input id="f-device" type="text" placeholder="Ví dụ Galaxy A55" autocomplete="off"></label>
-        <label class="field"><span>Rộng màn hình, mm (bắt buộc)</span><input id="f-width" type="number" min="40" max="300" step="0.1" placeholder="Ví dụ 70" inputmode="decimal"></label>
+      <p class="hint">Cỡ hàng tính bằng mm cần biết chiều rộng thật của màn hình. Công cụ tự tìm số này theo đời máy. Nếu không nhận ra máy, công cụ đo bằng một thẻ căn cước hoặc thẻ ngân hàng, vì mọi thẻ này có cùng kích thước.</p>
+      <div id="dev-status" class="status">Đang nhận dạng máy.</div>
+      <label class="field" id="dev-pick-wrap" hidden><span>Màn hình này khớp nhiều đời máy, hãy chọn đúng đời máy</span><select id="dev-pick"></select></label>
+      <label class="field"><span>Tên máy</span><input id="f-device" type="text" placeholder="Ví dụ Galaxy A55" autocomplete="off"></label>
+      <button id="card-open" type="button">Đo bằng thẻ</button>
+      <div id="card-box" class="stack" style="gap:10px" hidden>
+        <p class="hint">Cầm dọc điện thoại. Đặt dọc một thẻ căn cước hoặc thẻ ngân hàng lên màn hình, sao cho cạnh trái và cạnh trên của thẻ trùng cạnh trái và cạnh trên của khung dưới đây. Kéo thanh trượt, rồi chỉnh tinh bằng hai nút, đến khi cạnh dưới của khung trùng cạnh dưới của thẻ.</p>
+        <div id="card"></div>
+        <input id="card-range" type="range" min="4" max="8" step="0.005" aria-label="Cỡ khung đo">
+        <div class="grid2"><button id="card-minus" type="button">Nhỏ hơn</button><button id="card-plus" type="button">Lớn hơn</button></div>
+        <button id="card-ok" class="primary" type="button">Khung đã khớp đúng thẻ</button>
       </div>
-      <div class="field">
-        <span class="label">Thanh dưới đây phải dài đúng 50 mm khi đo bằng thước</span>
-        <div id="ruler" hidden></div>
-        <p id="ruler-empty" class="hint">Nhập độ rộng ước lượng để hiện thanh đo.</p>
-      </div>
-      <p class="hint">Dùng thước đo thanh, rồi sửa ô Rộng màn hình cho đến khi thanh dài đúng 50 mm. Cỡ hàng tính bằng mm dựa vào số này. Trang nhớ hai ô này cho những buổi sau trên cùng máy.</p>
     </div>
 
     <div id="start-err" class="status bad" hidden></div>
     <button id="start" class="primary" type="button">Bắt đầu thu</button>
+    <p id="ver" class="hint mono"></p>
   </div>
 </section>
 
@@ -164,6 +177,7 @@ th { color: var(--muted); font-weight: 500; }
   <div class="w-top">
     <div class="w-meta"><span><span id="w-prog" class="mono"></span> <span id="w-chip"></span></span><button id="w-prev" type="button">Viết lại dòng trước</button></div>
     <p id="w-prompt"></p>
+    <p class="w-hint">Chép đúng từng chữ và dấu câu, không viết tắt.</p>
   </div>
   <div class="w-area"><canvas id="cv"></canvas></div>
   <div class="w-bar">
@@ -190,12 +204,23 @@ th { color: var(--muted); font-weight: 500; }
     <div class="head"><h1>Các buổi đã thu</h1><button id="l-new" type="button">Buổi mới</button></div>
     <div class="panel"><h2>Tổng hợp dòng ngắt</h2><div id="l-sum"></div></div>
     <div class="panel"><h2>Kiểm tra buổi thử</h2><div id="l-crit" class="stack" style="gap:6px"></div></div>
+    <div id="l-how" class="status" hidden></div>
     <div id="l-items" class="stack" style="gap:10px"></div>
-    <button id="l-all" class="primary" type="button">Xuất tất cả thành một tệp JSON</button>
+    <button id="l-all" type="button">Lưu tất cả thành một tệp JSON</button>
+    <div id="copy-done" class="panel" hidden>
+      <h2>Đã sao chép, giờ hãy gửi đi</h2>
+      <p id="copy-done-text"></p>
+      <ol class="steps">
+        <li>Mở email, Google Docs hoặc ứng dụng Ghi chú.</li>
+        <li>Giữ ngón tay vào chỗ soạn chữ rồi chọn Dán.</li>
+        <li>Gửi cho người phụ trách đề tài.</li>
+      </ol>
+      <p class="hint">Không nên dán thẳng vào ô tin nhắn của Zalo hay Messenger, vì ứng dụng nhắn tin có thể cắt bớt tin nhắn dài.</p>
+    </div>
     <div id="copy-panel" class="panel" hidden>
       <h2>Sao chép thủ công</h2>
       <p class="hint">Trình duyệt không cho sao chép tự động. Giữ ngón tay trên ô dưới đây, chọn tất cả rồi sao chép, sau đó dán vào email hoặc Google Docs.</p>
-      <textarea id="copy-text" readonly spellcheck="false" aria-label="Dữ liệu JSON của buổi thu"></textarea>
+      <textarea id="copy-text" readonly spellcheck="false" aria-label="Dữ liệu của buổi thu"></textarea>
     </div>
   </div>
 </section>
@@ -223,8 +248,64 @@ const PILOT = [
   'Em bé ngủ say trong nôi, còn chị gái khẽ hát một bài ru.',
   'Đêm trung thu, lũ trẻ rước đèn ông sao đi khắp các ngõ trong thôn.'
 ];
+// Câu đề của đợt thu chính thức, chép từ tools/thu-net/cau-de/. Hai nhóm không được dùng lẫn câu của nhau.
+const COHORT_PROMPTS = {
+  chinh: [
+    'Đó là những kiến trúc hình bán cầu xây trên nền hình tròn.',
+    'Các nhị hoa chèn vào bên trong ống của tràng hoa.',
+    'Chế độ Gorbachev không giải quyết những mục tiêu cơ bản này.',
+    'Cũng có sự trùng lắp giữa hai mô hình thực dân này.',
+    'Một trong những ứng dụng chính là chụp xạ hình tưới máu cơ tim.',
+    'Thời trẻ, có lúc ông đã từng đi buôn bán để sinh nhai.',
+    'Họ cho rằng vùng biển này quá hẹp như con mèo chui vào lỗ.',
+    'Buồng lái cũng được thiết kế lại để kết hợp các đặc tính hiện đại.',
+    'Mỗi khoảng cách đòi hỏi việc sử dụng các chiến lược khác nhau.',
+    'Trong khi đó, hoạt động thương mại dọc theo tuyến xuyên Sahara phát triển mạnh.',
+    'Bản gốc thậm chí còn không đề cập đến tên ca sĩ.',
+    'Khẩu phần chủ yếu của loài chim này là côn trùng, quả kiên và hạt.',
+    'Ông được đánh giá là phù hợp với những phim tình cảm.',
+    'Phía đông đồng bằng ven biển là vùng cao nguyên trung tâm.',
+    'Xã này gồm đảo Mỹ Tế và các đảo, đá phụ cận.',
+    'Cuộc đời của bà vẫn còn là đề tài gây tranh luận.',
+    'Các sách này còn là những tác phẩm văn chương cổ điển của Trung Quốc.',
+    'Đây là tỉnh rộng nhất nhưng dân số lại nhỏ nhất Campuchia.',
+    'Địa phương có chính sách và các biện pháp làm ngọt hóa.',
+    'Chúng sử dụng sáp để tạo thành các bức tường và chóp tầng tổ ong.'
+  ],
+  'kiem-thu': [
+    'Sứ mệnh này gồm có giáo dục cũng như điều lệ và dọn dẹp.',
+    'Bởi vậy ông rất được lòng tướng sĩ và nhân dân.',
+    'Dần dần các ông tiếp xúc được với các Đấng thiêng liêng.',
+    'Đó là hai chiếc vạc đặt trước sân điện Càn Thành.',
+    'Thời kỳ này, văn học dân gian vẫn độc lập phát triển.',
+    'Ngoài ra, ông Kế còn có một số bài báo và thơ.',
+    'Một nghề đáng lưu ý nữa của ngư dân Bình Đại là nghề câu kiều.',
+    'Ông đồng nhất điều này với khát vọng hướng tới cái vô hạn.',
+    'Dự án này sẽ nâng gấp đôi năng lực của kênh đào.',
+    'Họ đã giành chiến thắng ở vòng loại mà không để thua trận nào.',
+    'Các kỹ sư thường được học và sử dụng nó trong trường học.',
+    'Lúc nào sư cũng giữ một tác phong giản dị, thâm trầm.',
+    'Loài chim này giúp làm sạch môi trường, đặc biệt là ở những xứ nóng.',
+    'Tuy nhiên chính nhạc sĩ Nguyễn Chính cũng không nhớ là sưu tầm ở đâu.',
+    'Phương Thanh là người có đời sống tâm linh và tình cảm rất mạnh mẽ.',
+    'Đứng đầu là Chủ tịch Hội đồng nhân dân do các đại biểu bầu ra.',
+    'Điều luật của dòng tu được ghi lại thành văn kiện.',
+    'Vì vậy, năng lượng điện bị hao phí cũng giảm đi.',
+    'Những cuộc đối thoại sẽ được đóng gói và lưu trữ giống như email.',
+    'Vì thế dân gian phải phục dịch và đóng nhiều thuế hơn trước.'
+  ]
+};
+const COHORT_NAME = { chinh: 'nhóm chỉnh', 'kiem-thu': 'nhóm kiểm thử' };
+// Hàng kẻ của đợt thu chính thức cao bằng hàng kẻ của khung viết trong ứng dụng.
+const OFFICIAL_ROW_MM = 12;
 const TOP_PAD = 14, BAND_MM = 16, TARGET_LINES = 20;
 const INPUT_NAME = { touch: 'Ngón tay', pen: 'S Pen', mouse: 'Chuột' };
+// Bản của công cụ, ghi vào mỗi buổi thu để biết buổi đó được thu bằng bản nào.
+const TOOL_VERSION = '2026-11-15';
+// Trang chạy trong khung của claude.ai hay chạy riêng. Trong khung, trình duyệt chặn việc tải và chia sẻ tệp.
+const IN_FRAME = (() => { try { return window.top !== window.self; } catch (e) { return true; } })();
+// Trình duyệt nằm trong ứng dụng nhắn tin thường không cho lưu tệp và hay phóng to trang.
+const IN_APP = /Zalo|FBAN|FBAV|FB_IAB|Instagram|Line\/|TikTok|MicroMessenger/i.test(navigator.userAgent);
 
 const $ = s => document.querySelector(s);
 const fmt = (n, d = 1) => Number(n).toLocaleString('vi-VN', { maximumFractionDigits: d });
@@ -285,21 +366,180 @@ function armed(btn, label, fn) {
 }
 
 /* ---------- Cấu hình và ô thử ---------- */
-const widthMm = () => parseFloat($('#f-width').value);
-const widthOk = () => widthMm() >= 40 && widthMm() <= 300;
-const pxPerMm = () => screen.width / widthMm();
-function updateRuler() {
-  const ok = widthOk();
-  $('#ruler').hidden = !ok; $('#ruler-empty').hidden = ok;
-  if (ok) $('#ruler').style.width = (50 * pxPerMm()) + 'px';
-}
-function rememberDevice(model, width) { try { localStorage.setItem('thu-net-device', JSON.stringify({ model, width })); } catch (e) {} }
-function restoreDevice() {
-  if ($('#f-device').value || $('#f-width').value) return;
+/* Kích thước thật của màn hình.
+   iPhone: nhận theo kích thước màn hình tính bằng điểm và tỷ lệ điểm ảnh, bề rộng = số điểm ảnh gốc / mật độ điểm ảnh.
+   Android: nhận theo mã máy, bề rộng tính từ đường chéo và độ phân giải gốc.
+   Không nhận ra máy, hoặc trang bị phóng to, thì đo bằng thẻ chuẩn ID-1 (85,60 x 53,98 mm). */
+const CARD_W = 53.98, CARD_H = 85.6;
+const IPHONE = {
+  '320x568@2': [['iPhone SE đời 1, iPhone 5s', 640, 326]],
+  '375x667@2': [['iPhone 6 đến 8, iPhone SE đời 2 và 3', 750, 326]],
+  '414x736@3': [['iPhone 6 Plus đến 8 Plus', 1080, 401]],
+  '375x812@3': [['iPhone X, XS, 11 Pro', 1125, 458], ['iPhone 12 mini, 13 mini', 1080, 476]],
+  '414x896@2': [['iPhone XR, 11', 828, 326]],
+  '414x896@3': [['iPhone XS Max, 11 Pro Max', 1242, 458]],
+  '390x844@3': [['iPhone 12, 12 Pro, 13, 13 Pro, 14, 16e', 1170, 460]],
+  '428x926@3': [['iPhone 12 Pro Max, 13 Pro Max, 14 Plus', 1284, 458]],
+  '393x852@3': [['iPhone 14 Pro, 15, 15 Pro, 16', 1179, 460]],
+  '430x932@3': [['iPhone 14 Pro Max, 15 Plus, 15 Pro Max, 16 Plus', 1290, 460]],
+  '402x874@3': [['iPhone 16 Pro, 17, 17 Pro', 1206, 460]],
+  '420x912@3': [['iPhone Air', 1260, 460]],
+  '440x956@3': [['iPhone 16 Pro Max, 17 Pro Max', 1320, 460]]
+};
+// Mã máy: [tên, đường chéo theo inch, số điểm ảnh gốc theo chiều ngang, theo chiều dọc].
+const ANDROID = {
+  'SM-S901': ['Galaxy S22', 6.1, 1080, 2340], 'SM-S906': ['Galaxy S22+', 6.6, 1080, 2340], 'SM-S908': ['Galaxy S22 Ultra', 6.8, 1440, 3088],
+  'SM-S911': ['Galaxy S23', 6.1, 1080, 2340], 'SM-S916': ['Galaxy S23+', 6.6, 1080, 2340], 'SM-S918': ['Galaxy S23 Ultra', 6.8, 1440, 3088],
+  'SM-S921': ['Galaxy S24', 6.2, 1080, 2340], 'SM-S926': ['Galaxy S24+', 6.7, 1440, 3120], 'SM-S928': ['Galaxy S24 Ultra', 6.8, 1440, 3120],
+  'SM-S931': ['Galaxy S25', 6.2, 1080, 2340], 'SM-S936': ['Galaxy S25+', 6.7, 1440, 3120], 'SM-S938': ['Galaxy S25 Ultra', 6.9, 1440, 3120],
+  'SM-S711': ['Galaxy S23 FE', 6.4, 1080, 2340], 'SM-S721': ['Galaxy S24 FE', 6.7, 1080, 2340],
+  'SM-A346': ['Galaxy A34', 6.6, 1080, 2340], 'SM-A546': ['Galaxy A54', 6.4, 1080, 2340],
+  'SM-A356': ['Galaxy A35', 6.6, 1080, 2340], 'SM-A556': ['Galaxy A55', 6.6, 1080, 2340],
+  'SM-A366': ['Galaxy A36', 6.7, 1080, 2340], 'SM-A566': ['Galaxy A56', 6.7, 1080, 2340],
+  'SM-A155': ['Galaxy A15', 6.5, 1080, 2340], 'SM-A156': ['Galaxy A15 5G', 6.5, 1080, 2340], 'SM-A256': ['Galaxy A25', 6.5, 1080, 2340],
+  'SM-A165': ['Galaxy A16', 6.7, 1080, 2340], 'SM-A166': ['Galaxy A16 5G', 6.7, 1080, 2340],
+  'Pixel 7': ['Pixel 7', 6.3, 1080, 2400], 'Pixel 7 Pro': ['Pixel 7 Pro', 6.7, 1440, 3120],
+  'Pixel 8': ['Pixel 8', 6.2, 1080, 2400], 'Pixel 8 Pro': ['Pixel 8 Pro', 6.7, 1344, 2992],
+  'Pixel 9': ['Pixel 9', 6.3, 1080, 2424], 'Pixel 9 Pro': ['Pixel 9 Pro', 6.3, 1280, 2856], 'Pixel 9 Pro XL': ['Pixel 9 Pro XL', 6.8, 1344, 2992]
+};
+const portraitW = () => Math.min(screen.width, screen.height);
+const portraitH = () => Math.max(screen.width, screen.height);
+// Máy tính bảng có màn hình rộng từ 600 điểm ảnh CSS. Đợt thu chính thức chỉ nhận điện thoại.
+const isTablet = () => portraitW() >= 600;
+// Đường chéo màn hình tính bằng inch, suy ra từ bề rộng thật và tỷ lệ hai cạnh.
+const diagInch = mm => mm / 25.4 * Math.hypot(portraitW(), portraitH()) / portraitW();
+// Số đo bằng thẻ được coi là khớp với bảng máy khi lệch không quá 4%, tức khoảng 3 mm.
+const CARD_TOLERANCE = 0.04;
+const screenKey = () => `${portraitW()}x${portraitH()}@${Math.round(devicePixelRatio * 100) / 100}`;
+// Trang bị phóng to thì điểm ảnh CSS của trang không còn bằng điểm ảnh CSS của màn hình, khi đó bảng máy không dùng được.
+const pageZoomed = () => window.innerHeight > window.innerWidth && Math.abs(window.innerWidth - portraitW()) > 4;
+let size = null;  // { mm, source: 'bang-may' | 'the', name }
+let candidates = [];
+let cardMm = null;  // số đo bằng thẻ gần nhất, tính bằng mm, ghi vào tệp để đối chiếu
+const widthMm = () => size ? size.mm : NaN;
+const pxPerMm = () => portraitW() / widthMm();
+// Điện thoại và máy tính bảng có khoảng 4,5 đến 7 điểm ảnh CSS mỗi mm. Ngoài khoảng này, số đo gần như chắc chắn sai.
+const ppmPlausible = p => p >= 4.49 && p <= 7.01;  // nới 0,01 vì bề rộng được làm tròn tới 0,1 mm
+
+async function androidModel() {
   try {
-    const d = JSON.parse(localStorage.getItem('thu-net-device'));
-    if (d) { $('#f-device').value = d.model; $('#f-width').value = d.width; }
+    if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
+      const v = await navigator.userAgentData.getHighEntropyValues(['model']);
+      if (v.model) return v.model.trim();
+    }
   } catch (e) {}
+  const m = navigator.userAgent.match(/Android [^;]*;\s*([^;)]+?)(?:\s+Build\/[^;)]*)?[;)]/);
+  return m && m[1] !== 'K' ? m[1].trim() : '';
+}
+async function detectDevice() {
+  if (pageZoomed()) return [];
+  if (/iPhone/.test(navigator.userAgent)) {
+    return (IPHONE[`${portraitW()}x${portraitH()}@${devicePixelRatio}`] || []).map(([name, px, ppi]) => ({ name, mm: px / ppi * 25.4 }));
+  }
+  const model = await androidModel();
+  const spec = ANDROID[model] || ANDROID[model.slice(0, 7)];
+  if (!spec) return [];
+  const [name, inch, w, h] = spec;
+  return [{ name, mm: inch * 25.4 * w / Math.hypot(w, h) }];
+}
+function setSize(s) {
+  size = s;
+  const st = $('#dev-status');
+  if (!s) { st.className = 'status bad'; st.textContent = 'Chưa có kích thước màn hình. Hãy bấm Đo bằng thẻ.'; return; }
+  st.className = 'status ok';
+  st.textContent = s.source === 'bang-may'
+    ? `Nhận ra ${s.name}. Màn hình rộng ${fmt(s.mm, 1)} mm, hàng kẻ 12 mm cao ${fmt(12 * pxPerMm(), 0)} điểm ảnh.`
+    : `Đã đo bằng thẻ. Màn hình rộng ${fmt(s.mm, 1)} mm, ứng với màn hình khoảng ${fmt(diagInch(s.mm), 1)} inch. Nếu máy không phải cỡ đó, hãy đo lại.`;
+  if (s.source === 'bang-may' && !$('#f-device').value) $('#f-device').value = s.name;
+}
+async function initSize() {
+  if (size) return;
+  candidates = await detectDevice();
+  const pick = $('#dev-pick');
+  $('#dev-pick-wrap').hidden = candidates.length < 2;
+  if (candidates.length > 1) {
+    pick.textContent = '';
+    const blank = document.createElement('option'); blank.value = ''; blank.textContent = 'Chọn đời máy'; pick.append(blank);
+    candidates.forEach((c, i) => { const o = document.createElement('option'); o.value = i; o.textContent = c.name; pick.append(o); });
+  }
+  if (candidates.length === 1) return setSize({ ...candidates[0], source: 'bang-may' });
+  // Số đo bằng thẻ của lần trước chỉ dùng lại khi màn hình và mức phóng to không đổi.
+  try {
+    const d = JSON.parse(localStorage.getItem('thu-net-size'));
+    if (d && d.key === screenKey() && d.inner === window.innerWidth && candidates.length < 2) { if (!$('#f-device').value) $('#f-device').value = d.model || ''; return setSize({ mm: d.mm, source: 'the', name: d.model }); }
+  } catch (e) {}
+  setSize(null);
+  const st = $('#dev-status');
+  if (candidates.length > 1) { st.className = 'status'; st.textContent = 'Hãy chọn đúng đời máy ở ô dưới đây, hoặc đo bằng thẻ.'; }
+  else if (pageZoomed()) st.textContent = 'Trang đang bị phóng to, nên không dùng được bảng máy. Hãy đo bằng thẻ, hoặc đặt lại cỡ chữ của trình duyệt về mặc định rồi tải lại trang.';
+  else st.textContent = 'Không nhận ra đời máy này. Hãy bấm Đo bằng thẻ.';
+}
+function setupCard() {
+  const box = $('#card-box'), card = $('#card'), range = $('#card-range');
+  const paint = () => { const p = parseFloat(range.value); card.style.width = (CARD_W * p) + 'px'; card.style.height = (CARD_H * p) + 'px'; card.style.borderRadius = (3.18 * p) + 'px'; };
+  $('#card-open').addEventListener('click', () => {
+    box.hidden = !box.hidden;
+    // Khi chưa biết máy, khung bắt đầu ở cỡ của một điện thoại rộng 70 mm, giữ trong khoảng hợp lý.
+    if (!box.hidden) { range.value = size ? pxPerMm() : Math.min(7, Math.max(4.5, portraitW() / 70)); paint(); card.scrollIntoView({ block: 'start' }); }
+  });
+  range.addEventListener('input', paint);
+  // Mỗi lần bấm đổi chiều cao khung đúng 1 điểm ảnh CSS.
+  $('#card-minus').addEventListener('click', () => { range.value = parseFloat(range.value) - 1 / CARD_H; paint(); });
+  $('#card-plus').addEventListener('click', () => { range.value = parseFloat(range.value) + 1 / CARD_H; paint(); });
+  $('#card-ok').addEventListener('click', () => {
+    const p = parseFloat(range.value);
+    if (!ppmPlausible(p)) { toast('Khung này không hợp lý với một điện thoại. Hãy đặt lại thẻ và đo lại.'); return; }
+    const mm = Math.round(portraitW() / p * 10) / 10;
+    cardMm = mm;
+    box.hidden = true;
+    if (candidates.length) {
+      // Máy đã có trong bảng: số đo bằng thẻ chỉ để đối chiếu và để chọn giữa các đời máy trùng màn hình.
+      // Số của bảng không bị thay, vì đo bằng thẻ dễ lệch hơn nhiều so với thông số của nhà sản xuất.
+      const best = candidates.reduce((a, c) => Math.abs(c.mm - mm) < Math.abs(a.mm - mm) ? c : a);
+      if (Math.abs(best.mm - mm) / best.mm <= CARD_TOLERANCE) {
+        $('#f-device').value = best.name; setSize({ ...best, source: 'bang-may' }); $('#dev-pick-wrap').hidden = true;
+        toast(`Số đo bằng thẻ khớp với ${best.name}.`);
+      } else {
+        if (candidates.length === 1) setSize({ ...best, source: 'bang-may' });
+        const st = $('#dev-status'); st.className = 'status';
+        st.textContent = `Số đo bằng thẻ là ${fmt(mm, 1)} mm, lệch nhiều so với ${fmt(best.mm, 1)} mm của ${best.name}, nên công cụ giữ số của đời máy. Nếu bạn chắc đã đo khớp thì trang đang bị phóng to: hãy đặt lại mức thu phóng của trình duyệt rồi tải lại trang.`;
+      }
+      return;
+    }
+    setSize({ mm, source: 'the', name: $('#f-device').value.trim() });
+    try { localStorage.setItem('thu-net-size', JSON.stringify({ key: screenKey(), inner: window.innerWidth, mm, model: $('#f-device').value.trim() })); } catch (e) {}
+    $('#dev-pick-wrap').hidden = true;
+  });
+  $('#dev-pick').addEventListener('change', e => {
+    const c = candidates[e.target.value];
+    if (c) { $('#f-device').value = c.name; setSize({ ...c, source: 'bang-may' }); } else setSize(null);
+  });
+}
+
+/* Mã ẩn danh: công cụ tự cấp, người thu không gõ tên vào được. */
+const CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+const CODE_RE = /^NV-[ABCDEFGHJKMNPQRSTUVWXYZ2-9]{4}$/;
+let codeOld = false, knownCodes = [];
+function newCode() {
+  for (;;) {
+    const r = crypto.getRandomValues(new Uint8Array(4));
+    const c = 'NV-' + [...r].map(x => CODE_CHARS[x % CODE_CHARS.length]).join('');
+    if (!knownCodes.includes(c)) return c;
+  }
+}
+function setCodeMode(old) {
+  codeOld = old;
+  const f = $('#f-code');
+  f.readOnly = !old; f.value = old ? '' : newCode();
+  $('#l-code').textContent = old ? 'Mã cũ của người viết' : 'Mã ẩn danh do công cụ cấp';
+  $('#code-mode').textContent = old ? 'Đây là người viết mới' : 'Người này đã viết một buổi trước';
+  if (old) f.focus();
+}
+function refreshCodes(all) {
+  knownCodes = [...new Set(all.map(s => s.participant).filter(c => CODE_RE.test(c)))];
+  const dl = $('#codes'); dl.textContent = '';
+  knownCodes.forEach(c => { const o = document.createElement('option'); o.value = c; dl.append(o); });
+  if (!codeOld && (!$('#f-code').value || knownCodes.includes($('#f-code').value))) $('#f-code').value = newCode();
 }
 
 const tested = { touch: null, pen: null };
@@ -341,15 +581,20 @@ function setupPad() {
 }
 
 function protocolChanged() {
-  const off = $('#f-protocol').value === 'official';
+  const kind = $('#f-protocol').value, off = kind !== 'pilot';
   $('#w-h2').hidden = off;
   $('#l-h1').textContent = off ? 'Chiều cao hàng (mm)' : 'Chiều cao hàng 1 (mm)';
-  $('#l-prompts').textContent = off ? 'Dán 20 câu đề chính thức, mỗi câu một dòng' : 'Câu đề của buổi thử, mỗi câu một dòng';
-  $('#f-prompts').value = off ? '' : PILOT.join('\n');
+  $('#l-prompts').textContent = off ? `Câu đề của ${COHORT_NAME[kind]}, mỗi câu một dòng` : 'Câu đề của buổi thử, mỗi câu một dòng';
+  $('#f-prompts').value = (off ? COHORT_PROMPTS[kind] : PILOT).join('\n');
+  $('#f-h1').value = off ? OFFICIAL_ROW_MM : 10;
+  $('#f-prompts').readOnly = off; $('#f-h1').disabled = off; $('#lock-hint').hidden = !off;
+  document.querySelectorAll('input[name=f-input]').forEach(r => { r.disabled = off && r.value !== 'touch'; if (off && r.value === 'touch') r.checked = true; });
+  updateTestStatus();
 }
 
 function buildLines(protocol, group, prompts, h1, h2) {
-  const mk = (cond, text, h) => ({ condition: cond, text, rowHeightMm: cond === 'broken' ? h : null, strokes: null, review: { breaks: [], miscopied: false, note: '' } });
+  // verdict: 'dung' hoặc 'khac' sau khi người thu rà soát dòng, chưa rà soát thì là null.
+  const mk = (cond, text, h) => ({ condition: cond, text, rowHeightMm: cond === 'broken' ? h : null, strokes: null, review: { breaks: [], verdict: null, miscopied: false, note: '' } });
   if (protocol === 'pilot') {
     const [a, b] = group === 'A' ? [h1, h2] : [h2, h1];
     return prompts.slice(0, 15).map((t, i) => i < 5 ? mk('broken', t, a) : i < 10 ? mk('broken', t, b) : mk('continuous', t, null));
@@ -364,30 +609,45 @@ function startErr(msg) { const e = $('#start-err'); e.hidden = !msg; e.textConte
 async function startSession() {
   const code = $('#f-code').value.trim().toUpperCase();
   const input = inputValue();
-  const protocol = $('#f-protocol').value;
-  const h1 = parseFloat($('#f-h1').value), h2 = parseFloat($('#f-h2').value);
-  const prompts = $('#f-prompts').value.split('\n').map(nfc).filter(Boolean);
+  const kind = $('#f-protocol').value, protocol = kind === 'pilot' ? 'pilot' : 'official';
+  // Đợt thu chính thức lấy câu đề và cỡ hàng từ mã nguồn, không đọc từ ô nhập, để không ai sửa được.
+  const h1 = protocol === 'official' ? OFFICIAL_ROW_MM : parseFloat($('#f-h1').value), h2 = parseFloat($('#f-h2').value);
+  const prompts = protocol === 'official' ? COHORT_PROMPTS[kind].map(nfc) : $('#f-prompts').value.split('\n').map(nfc).filter(Boolean);
   const need = protocol === 'pilot' ? 15 : 20;
-  if (!/^[A-Z0-9_-]{1,12}$/.test(code)) return startErr('Mã ẩn danh chỉ gồm chữ không dấu, số, gạch nối, tối đa 12 ký tự.');
+  if (!CODE_RE.test(code)) return startErr(codeOld ? 'Mã cũ có dạng NV- và 4 ký tự, ví dụ NV-K7M2. Nếu không nhớ mã cũ, hãy cấp mã mới.' : 'Mã ẩn danh không hợp lệ. Hãy tải lại trang.');
+  if (codeOld && !knownCodes.includes(code)) {
+    if ($('#start').dataset.code !== code) { $('#start').dataset.code = code; return startErr(`Máy này chưa có buổi nào của ${code}. Nếu mã này được cấp trên máy khác, bấm bắt đầu lần nữa.`); }
+  }
   if (!$('#f-consent').checked) return startErr('Cần xác nhận người viết đã ký phiếu đồng ý.');
+  if (protocol === 'official' && input !== 'touch') return startErr('Đợt thu chính thức chỉ nhận viết bằng ngón tay.');
+  if (protocol === 'official' && isTablet()) return startErr('Đợt thu chính thức chỉ thu trên điện thoại, vì khung viết của ứng dụng là khung của điện thoại. Hãy mở link trên một điện thoại.');
   if (!tested[input]) return startErr(`Hãy vẽ thử một nét bằng ${INPUT_NAME[input]} trong ô thử. Nếu ô thử không nhận S Pen, hãy mở trang bằng Chrome.`);
   const model = $('#f-device').value.trim();
   if (!model) return startErr('Cần nhập tên máy ở mục Máy thu.');
-  if (!widthOk()) return startErr('Cần nhập độ rộng màn hình từ 40 đến 300 mm ở mục Máy thu, rồi đo thanh 50 mm bằng thước.');
+  if (!size) return startErr('Chưa có kích thước màn hình. Hãy chọn đời máy hoặc đo bằng thẻ ở mục Máy thu.');
+  if (!ppmPlausible(pxPerMm())) return startErr('Kích thước màn hình không hợp lý. Hãy đo lại bằng thẻ ở mục Máy thu.');
+  if (protocol === 'official' && size.source === 'the' && !(diagInch(size.mm) >= 4.5 && diagInch(size.mm) <= 7.3)) return startErr(`Số đo bằng thẻ cho ra màn hình khoảng ${fmt(diagInch(size.mm), 1)} inch, không hợp với một điện thoại. Hãy đo lại cho thật khớp thẻ.`);
+  if (size.source === 'bang-may' && pageZoomed()) return startErr('Trang đang bị phóng to so với lúc nhận máy. Hãy tải lại trang, hoặc đo bằng thẻ.');
   if (!(h1 >= 6 && h1 <= 30) || (protocol === 'pilot' && !(h2 >= 6 && h2 <= 30))) return startErr('Chiều cao hàng phải từ 6 đến 30 mm.');
   if (prompts.length < need) return startErr(`Cần ít nhất ${need} câu đề, hiện có ${prompts.length} câu.`);
   if (protocol === 'official' && prompts.some(p => PILOT.includes(p))) return startErr('Câu đề chính thức không được trùng câu của buổi thử.');
+  if (protocol === 'official') {
+    const other = COHORT_PROMPTS[kind === 'chinh' ? 'kiem-thu' : 'chinh'].map(nfc);
+    if (prompts.some(p => other.includes(p))) return startErr(`Câu đề của ${COHORT_NAME[kind]} không được lẫn câu của nhóm còn lại.`);
+  }
   startErr('');
-  rememberDevice(model, widthMm());
   const now = new Date();
   const s = {
     schema: 'thu-net/1', id: `${code}_${input}_${now.getTime()}`, status: 'writing',
-    participant: code, group: $('#f-group').value, input, protocol,
+    participant: code, group: $('#f-group').value, input, protocol, cohort: protocol === 'official' ? kind : null,
+    promptsLocked: protocol === 'official',
+    tool: TOOL_VERSION,
     createdAt: now.toISOString(), finishedAt: null, exportedAt: null,
     coordinateUnit: 'css_px', consent: true,
     device: {
-      model, userAgent: navigator.userAgent, screenCssWidth: screen.width, screenCssHeight: screen.height,
-      devicePixelRatio: devicePixelRatio, screenWidthMm: widthMm(), pxPerMm: r2(pxPerMm()), maxTouchPoints: navigator.maxTouchPoints
+      model, userAgent: navigator.userAgent, screenCssWidth: screen.width, screenCssHeight: screen.height, innerWidth: window.innerWidth,
+      devicePixelRatio: devicePixelRatio, screenWidthMm: r2(widthMm()), pxPerMm: r2(pxPerMm()), sizeSource: size.source, tableWidthMm: size.source === 'bang-may' ? r2(size.mm) : null, cardWidthMm: cardMm,
+      inFrame: IN_FRAME, visualScale: window.visualViewport ? r2(window.visualViewport.scale) : null, maxTouchPoints: navigator.maxTouchPoints
     },
     penTest: tested[input],
     lines: buildLines(protocol, $('#f-group').value, prompts, h1, h2).map((l, i) => ({ index: i, ...l }))
@@ -659,18 +919,33 @@ function beginReview(s) {
       });
       card.append(chips); refresh();
     } else { b.textContent = 'Dòng liền'; const t = document.createElement('p'); t.textContent = line.text; card.append(t); }
-    const lab = document.createElement('label'); lab.className = 'check';
-    const chk = document.createElement('input'); chk.type = 'checkbox'; chk.checked = line.review.miscopied;
-    const sp = document.createElement('span'); sp.textContent = 'Người viết chép khác câu đề';
-    lab.append(chk, sp); card.append(lab);
-    const note = document.createElement('input'); note.type = 'text'; note.placeholder = 'Ghi chú, nếu có'; note.value = line.review.note; note.setAttribute('aria-label', `Ghi chú dòng ${line.index + 1}`);
-    card.append(note);
-    chk.addEventListener('change', () => { line.review.miscopied = chk.checked; saveReviewSoon(s); });
+    // Người thu phải chọn một trong hai ý cho mỗi dòng, không có lựa chọn mặc định.
+    card.id = `r-line-${line.index}`;
+    const ask = document.createElement('span'); ask.className = 'label'; ask.textContent = 'So với câu đề, người viết đã';
+    const seg = document.createElement('div'); seg.className = 'seg';
+    [['dung', 'Chép đúng'], ['khac', 'Chép khác']].forEach(([v, t]) => {
+      const lab = document.createElement('label');
+      const r = document.createElement('input'); r.type = 'radio'; r.name = `verdict-${line.index}`; r.value = v; r.checked = line.review.verdict === v;
+      const sp = document.createElement('span'); sp.textContent = t;
+      r.addEventListener('change', () => { line.review.verdict = v; line.review.miscopied = v === 'khac'; note.placeholder = v === 'khac' ? 'Ghi chỗ khác, ví dụ thiếu từ, viết tắt, viết dở' : 'Ghi chú, nếu có'; card.style.borderColor = ''; saveReviewSoon(s); });
+      lab.append(r, sp); seg.append(lab);
+    });
+    const note = document.createElement('input'); note.type = 'text'; note.placeholder = line.review.verdict === 'khac' ? 'Ghi chỗ khác, ví dụ thiếu từ, viết tắt, viết dở' : 'Ghi chú, nếu có'; note.value = line.review.note; note.setAttribute('aria-label', `Ghi chú dòng ${line.index + 1}`);
+    card.append(ask, seg, note);
     note.addEventListener('input', () => { line.review.note = note.value; saveReviewSoon(s); });
   });
   $('#review').scrollTop = 0;
 }
-$('#r-done').addEventListener('click', async () => { clearTimeout(saveReviewT); S.session.status = 'done'; await putSession(S.session); openList(); });
+$('#r-done').addEventListener('click', async () => {
+  const left = S.session.lines.filter(l => !l.review.verdict);
+  if (left.length) {
+    left.forEach(l => { $(`#r-line-${l.index}`).style.borderColor = 'var(--warn)'; });
+    $(`#r-line-${left[0].index}`).scrollIntoView({ block: 'center' });
+    toast(`Còn ${left.length} dòng chưa chọn Chép đúng hoặc Chép khác.`);
+    return;
+  }
+  clearTimeout(saveReviewT); S.session.status = 'done'; S.session.reviewedAt = new Date().toISOString(); await putSession(S.session); openList();
+});
 
 /* ---------- Tổng hợp và xuất tệp ---------- */
 const rowsOf = l => l.review.breaks.length ? l.review.breaks.length + 1 : l.auto.rowsUsed;
@@ -705,6 +980,7 @@ function renderSummary(all) {
 }
 function renderCriteria(all) {
   const pilots = all.filter(s => s.protocol === 'pilot' && s.lines.every(l => l.strokes));
+  $('#l-crit').parentElement.hidden = !pilots.length;
   const people = new Set(pilots.map(s => s.participant)).size;
   const nBroken = pilots.flatMap(s => s.lines).filter(l => l.condition === 'broken').length;
   const times = pilots.map(sessionMinutes).filter(Boolean).map(t => t.per20);
@@ -720,26 +996,77 @@ function renderCriteria(all) {
 }
 function stamp(iso) { const d = new Date(iso), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}`; }
 const INPUT_FILE = { touch: 'ngon-tay', pen: 's-pen' };
-async function saveFile(name, text) {
-  if (window.claude && window.claude.use) {
-    const d = await window.claude.use('downloads');
-    if (!d) { toast('Khung xem này không cho tải tệp. Hãy dùng nút Sao chép của từng buổi.'); return false; }
-    try { await d.save({ filename: name, data: new Blob([text], { type: 'application/json' }) }); toast(`Đã lưu ${name}`); return true; }
-    catch (e) { toast(e && e.code === 'declined' ? 'Bạn đã từ chối lưu tệp.' : e && e.code === 'rate_limited' ? 'Đang có hộp thoại lưu tệp, hãy thử lại sau.' : 'Không lưu được tệp. Hãy dùng nút Sao chép của từng buổi.'); return false; }
+/* Đưa tệp ra khỏi máy. Trang có thể chạy ở ba nơi, mỗi nơi cho một cách khác nhau:
+   khung của claude.ai với người đã đăng nhập: lưu qua quyền downloads của trang;
+   khung của claude.ai với người chưa đăng nhập: khung chặn mọi cách tải và chia sẻ tệp, chỉ còn sao chép;
+   trang chạy riêng, ngoài khung: mở bảng chia sẻ của máy với tệp đính kèm, hoặc tải tệp về máy. */
+let saver = null;
+const saverReady = (async () => {
+  try { if (window.claude && window.claude.use) saver = await window.claude.use('downloads'); } catch (e) { saver = null; }
+})();
+// Chrome trên Android chỉ cho chia sẻ một số loại tệp và không có .json, nên thử thêm tên có đuôi .txt.
+function shareable(name, text) {
+  if (IN_FRAME || !navigator.canShare || !navigator.share) return null;
+  for (const [n, type] of [[name, 'application/json'], [name + '.txt', 'text/plain']]) {
+    try { const f = new File([text], n, { type }); if (navigator.canShare({ files: [f] })) return f; } catch (e) {}
+  }
+  return null;
+}
+const exportMode = () => saver ? 'cap' : IN_FRAME ? 'copy' : shareable('a.json', '{}') ? 'share' : 'file';
+// Trả về true khi tệp đã được lưu hoặc đã giao cho bảng chia sẻ. how = 'file' thì tải về máy, không mở bảng chia sẻ.
+async function saveFile(name, text, how) {
+  await saverReady;
+  if (saver) {
+    try { await saver.save({ filename: name, data: new Blob([text], { type: 'application/json' }) }); toast(`Đã lưu ${name}`); return true; }
+    catch (e) { toast(e && e.code === 'declined' ? 'Bạn đã từ chối lưu tệp.' : e && e.code === 'rate_limited' ? 'Đang có hộp thoại lưu tệp, hãy thử lại sau.' : 'Không lưu được tệp. Hãy dùng nút Sao chép.'); return false; }
+  }
+  if (IN_FRAME) { toast('Trang đang mở trong khung chưa đăng nhập nên không lưu được tệp. Hãy dùng nút Sao chép để gửi.'); return false; }
+  const file = how === 'file' ? null : shareable(name, text);
+  if (file) {
+    try { await navigator.share({ files: [file], title: name }); toast('Đã chuyển tệp sang ứng dụng bạn chọn.'); return true; }
+    catch (e) { if (e && e.name === 'AbortError') { toast('Bạn chưa chọn nơi gửi.'); return false; } }
   }
   const u = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
   const a = document.createElement('a'); a.href = u; a.download = name; document.body.append(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(u), 30000);
-  toast(`Đã lưu ${name}`); return true;
+  toast(`Đã tải ${name} về máy.`); return true;
 }
-async function exportSession(s) {
-  if (await saveFile(`thu-net_${s.participant}_${INPUT_FILE[s.input]}_${stamp(s.createdAt)}.json`, JSON.stringify(s))) { s.exportedAt = new Date().toISOString(); await putSession(s); openList(); }
+// Chỉ buổi đã rà soát xong mới được rời máy, để mọi tệp đều có đánh dấu dòng chép khác đề.
+const reviewed = s => s.status === 'done' && s.lines.every(l => l.review.verdict);
+function needReview(s) { toast('Buổi này chưa rà soát xong. Hãy bấm Rà soát và chọn ý cho từng dòng.'); beginReview(s); }
+const fileName = s => `thu-net_${s.participant}_${INPUT_FILE[s.input]}_${stamp(s.createdAt)}.json`;
+async function exportSession(s, how) {
+  if (!reviewed(s)) return needReview(s);
+  if (await saveFile(fileName(s), JSON.stringify(s), how)) { s.exportedAt = new Date().toISOString(); await putSession(s); openList(); }
 }
-// Dự phòng khi không tải được tệp: phải gọi clipboard ngay trong thao tác chạm.
+/* Bản nén để sao chép, nhỏ hơn JSON gốc khoảng 4 lần: THUNET1|mã|số byte của JSON|CRC-32|base64 của gzip|HET.
+   Số byte, CRC-32 và chữ HET ở cuối giúp phát hiện bản dán bị cắt. Tệp tools/thu-net/giai-ma.py đổi lại thành JSON. */
+const CRC_TABLE = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(bytes) { let c = 0xFFFFFFFF; for (let i = 0; i < bytes.length; i++) c = CRC_TABLE[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+async function pack(s) {
+  const json = JSON.stringify(s);
+  if (typeof CompressionStream !== 'function') return json;
+  const bytes = new TextEncoder().encode(json);
+  const gz = new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer());
+  let bin = '';
+  for (let i = 0; i < gz.length; i += 0x8000) bin += String.fromCharCode.apply(null, gz.subarray(i, i + 0x8000));
+  return `THUNET1|${s.participant}|${bytes.length}|${crc32(bytes).toString(16).padStart(8, '0')}|${btoa(bin)}|HET`;
+}
+// Bản nén được chuẩn bị sẵn khi mở danh sách, vì clipboard phải được gọi ngay trong thao tác chạm.
+const packed = new Map();
+const packKey = s => [s.reviewedAt, s.exportedAt, s.copiedAt].join('|');
+function prepack(s) {
+  const key = packKey(s);
+  if ((packed.get(s.id) || {}).key === key) return;
+  pack(s).then(text => packed.set(s.id, { key, text }), () => {});
+}
 function copySession(s) {
-  const text = JSON.stringify(s), panel = $('#copy-panel'), area = $('#copy-text');
+  if (!reviewed(s)) return needReview(s);
+  const ready = packed.get(s.id);
+  const text = ready && ready.key === packKey(s) ? ready.text : JSON.stringify(s);
+  const panel = $('#copy-panel'), area = $('#copy-text'), ok = $('#copy-done');
   const manual = () => {
-    area.value = text; panel.hidden = false;
+    ok.hidden = true; area.value = text; panel.hidden = false;
     panel.scrollIntoView({ block: 'center' }); area.focus(); area.select();
     toast('Không sao chép tự động được, hãy sao chép trong ô bên dưới.');
   };
@@ -747,40 +1074,63 @@ function copySession(s) {
     panel.hidden = true; area.value = '';
     s.copiedAt = new Date().toISOString();
     await putSession(s); await openList();
-    toast(`Đã sao chép ${fmt(text.length / 1024, 0)} KB. Hãy dán vào email hoặc Google Docs để giữ lại.`);
+    $('#copy-done-text').textContent = `Dữ liệu của buổi ${s.participant} đã nằm trong bộ nhớ tạm của máy, dài ${fmt(text.length / 1024, 0)} KB.`;
+    ok.hidden = false; ok.scrollIntoView({ block: 'center' });
   };
   try { navigator.clipboard.writeText(text).then(done, manual); } catch (e) { manual(); }
 }
+const HOW = {
+  cap: 'Bấm Lưu tệp ở từng buổi, rồi gửi tệp đó cho người phụ trách đề tài.',
+  share: 'Bấm Gửi tệp ở từng buổi, chọn Zalo hoặc email trong bảng hiện ra, rồi gửi cho người phụ trách đề tài.',
+  file: 'Bấm Lưu tệp ở từng buổi. Tệp nằm trong thư mục Tải về của máy, hãy gửi tệp đó cho người phụ trách đề tài.',
+  copy: 'Trang đang mở trong khung của claude.ai mà chưa đăng nhập, nên trình duyệt không cho lưu tệp. Bấm Sao chép để gửi ở từng buổi, rồi dán vào email hoặc Google Docs gửi cho người phụ trách đề tài.'
+};
 async function openList() {
   show('list');
-  const all = await loadSessions();
+  $('#copy-done').hidden = true; $('#copy-panel').hidden = true;
+  const all = await loadSessions(), mode = exportMode();
   renderSummary(all); renderCriteria(all);
+  const how = $('#l-how'); how.hidden = !all.some(reviewed); how.textContent = HOW[mode];
+  const allBtn = $('#l-all');
+  allBtn.hidden = mode === 'copy' || !all.some(reviewed);
+  allBtn.textContent = mode === 'share' ? 'Gửi tất cả thành một tệp' : 'Lưu tất cả thành một tệp JSON';
   const box = $('#l-items'); box.textContent = '';
-  $('#l-all').hidden = !all.length;
   if (!all.length) { const p = document.createElement('p'); p.className = 'hint'; p.textContent = 'Chưa có buổi thu nào trên máy này.'; box.append(p); }
+  const mk = (label, fn, cls) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.textContent = label; if (fn) b.onclick = fn; return b; };
   all.forEach(s => {
+    const ok = reviewed(s);
+    if (ok) prepack(s);
     const done = s.lines.filter(l => l.strokes).length, card = document.createElement('div'); card.className = 'card';
     const head = document.createElement('div'); head.className = 'head';
     const a = document.createElement('strong'); a.textContent = `${s.participant}, ${INPUT_NAME[s.input]}, nhóm ${s.group}`;
     const b = document.createElement('span'); b.className = 'hint mono'; b.textContent = `${done}/${s.lines.length} dòng`;
     head.append(a, b);
     const m = sessionMinutes(s), info = document.createElement('p'); info.className = 'hint';
-    info.textContent = `${new Date(s.createdAt).toLocaleString('vi-VN')}. ${m ? `Thời gian ${fmt(m.total)} phút. ` : ''}${s.exportedAt ? 'Đã xuất tệp.' : s.copiedAt ? 'Đã sao chép, chưa xuất tệp.' : 'Chưa xuất tệp.'}`;
+    info.textContent = `${new Date(s.createdAt).toLocaleString('vi-VN')}. ${m ? `Thời gian ${fmt(m.total)} phút. ` : ''}${s.exportedAt ? 'Đã gửi hoặc lưu tệp.' : s.copiedAt ? 'Đã sao chép.' : ok ? 'Chưa gửi dữ liệu.' : 'Chưa xong.'}`;
+    // Nút chính là bước tiếp theo của buổi này: viết tiếp, rà soát, rồi gửi dữ liệu theo cách mà nơi chạy trang cho phép.
+    const main = s.status === 'writing' ? mk('Viết tiếp', () => beginWriting(s), 'primary')
+      : !ok ? mk('Rà soát', () => beginReview(s), 'primary')
+      : mode === 'copy' ? mk('Sao chép để gửi', () => copySession(s), 'primary')
+      : mk(mode === 'share' ? 'Gửi tệp' : 'Lưu tệp', () => exportSession(s), 'primary');
     const row = document.createElement('div'); row.className = 'row';
-    const go = document.createElement('button'); go.type = 'button'; go.className = 'grow';
-    if (s.status === 'writing') { go.textContent = 'Viết tiếp'; go.onclick = () => beginWriting(s); } else { go.textContent = 'Rà soát'; go.onclick = () => beginReview(s); }
-    const ex = document.createElement('button'); ex.type = 'button'; ex.className = 'grow'; ex.textContent = 'Xuất JSON'; ex.onclick = () => exportSession(s);
-    const del = document.createElement('button'); del.type = 'button'; del.className = 'danger grow'; del.textContent = 'Xóa';
-    armed(del, s.exportedAt ? 'Chạm lần nữa' : 'Chưa xuất, vẫn xóa?', async () => { await deleteSession(s.id); openList(); });
-    const cp = document.createElement('button'); cp.type = 'button'; cp.className = 'grow'; cp.textContent = 'Sao chép'; cp.onclick = () => copySession(s);
-    row.append(go, ex, cp, del); card.append(head, info, row); box.append(card);
+    if (ok) row.append(mk('Rà soát lại', () => beginReview(s), 'grow'));
+    if (ok && mode === 'share') row.append(mk('Lưu về máy', () => exportSession(s, 'file'), 'grow'));
+    if (ok && mode !== 'copy') row.append(mk('Sao chép', () => copySession(s), 'grow'));
+    const del = mk('Xóa', null, 'danger grow');
+    armed(del, s.exportedAt || s.copiedAt ? 'Chạm lần nữa' : 'Chưa gửi, vẫn xóa?', async () => { await deleteSession(s.id); packed.delete(s.id); openList(); });
+    row.append(del); card.append(head, info, main, row); box.append(card);
   });
 }
+// Quyền lưu tệp của khung có thể trả lời chậm, khi có thì vẽ lại danh sách cho đúng cách gửi.
+saverReady.then(() => { if (!$('#list').hidden) openList(); });
 $('#l-all').addEventListener('click', async () => {
-  const all = await loadSessions();
+  const all = (await loadSessions()).filter(reviewed);
+  if (!all.length) { toast('Chưa có buổi nào rà soát xong.'); return; }
   if (await saveFile(`thu-net_tat-ca_${stamp(new Date().toISOString())}.json`, JSON.stringify({ schema: 'thu-net-bundle/1', sessions: all }))) {
     for (const s of all) { s.exportedAt = new Date().toISOString(); await putSession(s); }
-    openList();
+    await openList();
+    const skipped = (await loadSessions()).length - all.length;
+    if (skipped) toast(`Đã xuất ${all.length} buổi. ${skipped} buổi chưa rà soát xong nên chưa xuất.`);
   }
 });
 $('#l-new').addEventListener('click', openSetup);
@@ -797,18 +1147,24 @@ async function openSetup() {
     b.onclick = () => s.status === 'writing' ? beginWriting(s) : beginReview(s);
     card.append(t, b); box.append(card);
   });
-  restoreDevice(); updateRuler(); updateTestStatus();
+  const warn = $('#env-warn');
+  warn.hidden = !IN_APP;
+  if (IN_APP) warn.textContent = 'Bạn đang mở trang trong trình duyệt của một ứng dụng nhắn tin. Hãy bấm nút ba chấm rồi chọn mở bằng Safari hoặc Chrome, nếu không có thể không gửi được dữ liệu sau khi viết.';
+  refreshCodes(all); setCodeMode(false); startErr('');
+  await initSize(); updateTestStatus();
 }
 
 $('#start').addEventListener('click', startSession);
-$('#f-width').addEventListener('input', updateRuler);
+$('#code-mode').addEventListener('click', () => setCodeMode(!codeOld));
 $('#f-protocol').addEventListener('change', protocolChanged);
 document.querySelectorAll('input[name=f-input]').forEach(r => r.addEventListener('change', updateTestStatus));
 new ResizeObserver(() => { if (!$('#write').hidden) sizeCanvas(); }).observe($('.w-area'));
 window.addEventListener('resize', () => { if (!$('#write').hidden) checkOrientation(); });
 
+$('#ver').textContent = `Bản ${TOOL_VERSION}, ${IN_FRAME ? 'trong khung claude.ai' : 'trang riêng'}`;
 protocolChanged();
 setupPad();
+setupCard();
 openSetup();
 })();
 </script>

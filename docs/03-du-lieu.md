@@ -37,7 +37,7 @@ Bảng 2: Thống kê bản ảnh VNOnDB theo từng tập, đã đo
 
 Bảng 2 khớp với Le và cộng sự về số dòng, số từ và số ký tự của hai tập đầu [@le2019]. Tập kiểm thử có 111.393 ký tự, ít hơn con số 112.769 của nguồn này 1.376 ký tự. Mục 7 ghi lại vấn đề này.
 
-Mỗi dòng có trung bình khoảng 15 từ và 68 ký tự. Mỗi từ có trung bình khoảng 3,3 ký tự, nên "từ" của VNOnDB tương ứng với âm tiết. Nhãn cấp dòng dùng 161 ký tự khác nhau.
+Mỗi dòng có trung bình khoảng 15 từ và 68 ký tự. Mỗi từ có trung bình khoảng 3,3 ký tự, nên "từ" của VNOnDB tương ứng với âm tiết. Nhãn cấp dòng dùng 161 ký tự khác nhau, trong đó 160 ký tự có ở tập huấn luyện hoặc tập kiểm định.
 
 ### 2.2. Định dạng
 
@@ -97,7 +97,7 @@ Huấn luyện và ứng dụng cùng đưa ảnh qua các bước sau:
 
 1. Chuyển ảnh về một kênh xám.
 2. Cắt lề trắng theo khung bao của nét.
-3. Co ảnh giữ nguyên tỷ lệ để ảnh nằm trong khung rộng 512, cao 64 điểm ảnh (dự kiến).
+3. Co ảnh giữ nguyên tỷ lệ để ảnh nằm trong khung rộng 512, cao 64 điểm ảnh, chừa lề 8 điểm ảnh ở hai bên (dự kiến).
 4. Thêm nền trắng vào phần còn thiếu của khung.
 
 Cỡ khung lấy theo Pham và cộng sự [@pham2025], và cần được chọn lại trên tập kiểm định. Đề tài cũng thử bỏ bước 2, vì cắt lề làm chiều cao ảnh phụ thuộc vào chữ có phần trên hay phần dưới dài.
@@ -106,18 +106,18 @@ Cỡ khung lấy theo Pham và cộng sự [@pham2025], và cần được chọ
 
 Tăng cường chỉ áp dụng cho tập huấn luyện, gồm các phép sau:
 
-- Co giãn và nghiêng cả dòng.
+- Co giãn và nghiêng cả dòng, không để nét rơi khỏi khung, vì nhãn vẫn giữ đủ ký tự.
 - Làm dày hoặc mỏng nét, để mô hình bớt phụ thuộc vào cách vẽ.
-- Làm nhiễu nhẹ hình dạng nét.
-- Mô phỏng chỗ nối: cắt ảnh tại khoảng trống giữa hai từ, rồi dịch dọc và co nhẹ từng phần (dự kiến).
+- Làm nhiễu nhẹ hình dạng nét (chưa cài đặt).
+- Mô phỏng chỗ nối: cắt ảnh tại khoảng trống giữa hai từ, rồi dịch dọc và co nhẹ từng phần (dự kiến, chưa cài đặt).
 
-Mức của từng phép sẽ được chốt trong `05-ke-hoach-thi-nghiem.md` (chưa viết).
+Mức hiện dùng của từng phép nằm ở `ly-thuyet/02-tien-xu-ly-anh.md`, mục 4. Mức cuối cùng sẽ được chốt trong `05-ke-hoach-thi-nghiem.md`, mục 5.
 
 ## 4. Dòng ngắt mô phỏng
 
 Bộ mô phỏng sinh dòng ngắt từ dòng liền của tập tự thu, vì bản ảnh VNOnDB không có nét để cắt. Bộ mô phỏng chạy qua đúng các bước mà ứng dụng dùng. Nhờ vậy, lỗi gán nét vào hàng cũng được tính vào kết quả. Các bước như sau:
 
-1. Chọn từ 1 đến 2 ranh giới từ làm chỗ ngắt (dự kiến).
+1. Chọn 2, 4 hoặc 6 ranh giới từ làm chỗ ngắt. Trong buổi thử, một dòng ngắt dài 15 hoặc 16 âm tiết chiếm từ 4 đến 8 hàng, theo `07-nhat-ky-thi-nghiem.md`, mục 10.
 2. Tách các nét của dòng thành các đoạn tại chỗ ngắt.
 3. Đặt mỗi đoạn lên một hàng của khung kẻ ảo.
 4. Thêm lệch cỡ chữ và lệch đường chân chữ riêng cho từng đoạn.
@@ -144,18 +144,32 @@ Tập tự thu là nguồn dữ liệu nét duy nhất của đề tài, và là
 - **Nhóm chỉnh:** khoảng 10 người (dự kiến), dùng để chỉnh ngưỡng của lớp ghép đoạn và độ dày nét.
 - **Nhóm kiểm thử:** 20 người (dự kiến), chỉ chạy một lần ở cuối.
 
-Mỗi người viết 10 dòng liền và 10 dòng ngắt. Quy trình thu gồm các bước sau:
+Người đã viết ở các buổi thử, mã từ K01 đến V08, không được vào nhóm kiểm thử, vì nét của họ đã dùng để chọn mô hình ở `07-nhat-ky-thi-nghiem.md`, mục 10. Những người này vẫn có thể vào nhóm chỉnh, với mã mới do công cụ thu cấp.
 
-1. Người tham gia đọc và ký phiếu đồng ý. Phiếu phải nói rõ dữ liệu sẽ được công bố, vì tập tự thu là một sản phẩm đầu ra của đề tài.
-2. Hệ thống gán cho người tham gia một mã ẩn danh và không lưu tên.
+Mỗi người viết 10 dòng liền và 10 dòng ngắt. Người thu làm theo hướng dẫn từng bước trong `tools/thu-net/quy-trinh-thu.md`, viết cho người không biết về đề tài. Quy trình thu gồm các bước sau:
+
+1. Người tham gia đọc và ký phiếu đồng ý theo mẫu `tools/thu-net/phieu-dong-y.md`. Phiếu nói rõ dữ liệu sẽ được công bố theo giấy phép CC BY-SA 4.0, vì tập tự thu là một sản phẩm đầu ra của đề tài và câu đề lấy từ Wikipedia. Phiếu không ghi mã của người viết, nên người tham gia chỉ rút lui được trước khi rời buổi thu.
+2. Công cụ thu tự cấp cho người tham gia một mã ngẫu nhiên dạng NV và 4 ký tự, ví dụ NV-K7M2, và không có ô nào để nhập tên. Người đã viết một buổi trước dùng lại mã cũ của mình.
 3. Người tham gia thuộc một trong hai nhóm đổi chéo. Hai nhóm đổi chéo nội dung của dòng liền và dòng ngắt, để so sánh công bằng.
-4. Người tham gia cầm dọc điện thoại và viết bằng ngón tay trong ứng dụng thu. Dòng liền viết trên khung cuộn ngang, dòng ngắt viết trên khung có hàng kẻ.
+4. Người tham gia cầm dọc điện thoại và viết bằng ngón tay trong ứng dụng thu. Dòng liền viết trên khung cuộn ngang, dòng ngắt viết trên khung có hàng kẻ cao 12 mm, bằng khung viết của ứng dụng theo `06-trien-khai-android.md`, mục 2. Người tham gia chép đúng từng chữ và dấu câu của câu đề, không viết tắt.
 5. Ứng dụng lưu tọa độ, thứ tự nét, thời điểm của từng điểm, kích thước màn hình và mã thiết bị.
-6. Người thu kiểm tra nhãn theo câu đề, ghi lại các chỗ người viết chép sai đề, rồi chuẩn hóa nhãn theo mục 3.1.
+6. Người thu chọn Chép đúng hoặc Chép khác cho từng dòng trên màn rà soát, ghi chỗ khác nếu có, rồi chuẩn hóa nhãn theo mục 3.1. Công cụ không cho xuất tệp khi còn dòng chưa chọn.
 
 Câu đề lấy từ các bài Wikipedia tiếng Việt được tách riêng, và các bài này bị loại khỏi kho văn bản của n-gram. Văn bản Wikipedia được cấp theo giấy phép Creative Commons Attribution-Share-Alike 4.0 [@wikimedia2026b], nên khi công bố tập tự thu phải ghi nguồn của câu đề và giữ giấy phép tương ứng. Cả hai điều kiện viết đều cầm dọc, để hướng cầm máy không ảnh hưởng đến so sánh.
 
-Tệp tự thu lưu thành tệp `.json` theo lược đồ `thu-net/1` của công cụ `tools/thu-net/`. Thời điểm của từng điểm chỉ dùng để phân tích, không đưa vào mô hình.
+Câu đề của đợt thu chính thức nằm trong thư mục `tools/thu-net/cau-de/`, gồm 20 câu cho nhóm chỉnh và 20 câu cho nhóm kiểm thử. Mã `training/select_prompts.py` chọn các câu này, mỗi bài Wikipedia tối đa một câu, dài từ 11 đến 15 âm tiết. Tệp `nguon.tsv` ghi tên bài của từng câu để ghi nguồn khi công bố. Công cụ thu chứa sẵn hai bộ câu này. Người thu chỉ chọn nhóm chỉnh hoặc nhóm kiểm thử. Với hai nhóm này, công cụ khóa câu đề, cỡ hàng 12 mm và cách nhập bằng ngón tay, rồi ghi `promptsLocked` vào tệp, nên người thu không sửa được câu đề như ở buổi V08 của `07-nhat-ky-thi-nghiem.md`, mục 10.10.
+
+Công cụ tự tìm chiều rộng thật của màn hình để vẽ hàng kẻ đúng cỡ. Với iPhone, công cụ nhận đời máy từ kích thước màn hình và tỷ lệ điểm ảnh, rồi lấy chiều rộng bằng số điểm ảnh gốc chia mật độ điểm ảnh. Với Android, công cụ đọc mã máy rồi tính chiều rộng từ đường chéo và độ phân giải gốc, hiện có các máy Galaxy S và A phổ biến và Pixel. Khi không nhận ra máy, hoặc khi trang bị phóng to, người thu đo bằng một thẻ căn cước hoặc thẻ ngân hàng, vì các thẻ này theo chuẩn ID-1 cao 85,60 mm. Người thu đặt thẻ lên màn hình và chỉnh khung cho khớp cạnh thẻ, mỗi lần bấm đổi khoảng 0,2%. Trường `device.sizeSource` ghi chiều rộng lấy từ bảng máy hay từ thẻ. Từ bản công cụ 2026-11-15, khi máy đã có trong bảng thì số đo bằng thẻ chỉ dùng để đối chiếu và không thay số của bảng, vì ở đợt thu đầu ba trên bốn số đo bằng thẻ lệch từ 22% đến 33%, theo `07-nhat-ky-thi-nghiem.md`, mục 10.12. Với máy không có trong bảng, công cụ hiện đường chéo màn hình suy ra từ số đo để người viết tự đối chiếu, và đợt thu chính thức chỉ nhận số đo ứng với màn hình từ 4,5 đến 7,3 inch. Đợt thu chính thức cũng không nhận máy tính bảng, vì khung viết của ứng dụng là khung của điện thoại. Tệp ghi thêm `tool`, `device.tableWidthMm` và `device.cardWidthMm`.
+
+Tệp tự thu lưu thành tệp `.json` theo lược đồ `thu-net/1` của công cụ `tools/thu-net/`. Khung của claude.ai chặn việc tải tệp với người chưa đăng nhập, nên người đó chỉ sao chép được dữ liệu. Bản 2026-11-15 sao chép một bản nén có số byte và mã kiểm tra, và mã `tools/thu-net/giai-ma.py` đổi bản dán thành tệp `.json`, đồng thời báo lỗi khi bản dán bị cắt. Khi trang được đặt riêng ngoài khung, bằng mã `tools/thu-net/dong-goi.py`, người viết gửi được tệp qua bảng chia sẻ của điện thoại. Trường `cohort` ghi buổi thu thuộc nhóm chỉnh hay nhóm kiểm thử. Thời điểm của từng điểm chỉ dùng để phân tích, không đưa vào mô hình. Thứ tự nét thì có dùng, vì lớp ghép đoạn gán nét vào dòng chữ theo thứ tự viết.
+
+Hai buổi thử ngày 09/11/2026 và 10/11/2026 có 6 người viết bằng bút S Pen, kết quả nằm ở `07-nhat-ky-thi-nghiem.md`, mục 10. Hai buổi thử cho thấy bốn việc người thu phải làm trước khi dùng một tệp. Từ ngày 12/11/2026, công cụ thu tự làm ba việc đầu như đã nêu ở trên, còn việc thứ tư vẫn do người thu làm:
+
+- **Đo thanh 50 mm:** nhập chiều rộng màn hình rồi đo thanh 50 mm bằng thước. Màn hình của máy thu rộng khoảng 73 mm, nhưng buổi đầu nhập 50 mm và buổi thứ hai nhập 62 mm, nên hàng kẻ cao hơn dự định khoảng 1,46 lần và 1,18 lần. Cảnh báo của công cụ không bắt được số 62 mm, vì số này vẫn hợp lý với một điện thoại nhỏ hơn.
+- **Rà soát từng dòng:** đánh dấu các dòng chép khác đề trên màn rà soát của công cụ. Người thu chưa đánh dấu dòng nào, trong khi buổi đầu có 8 dòng và buổi thứ hai có 7 dòng chép khác đề. Lỗi hay gặp là viết tắt, thiếu một từ, viết chữ số thay cho chữ và bỏ dở dòng.
+- **Đặt mã không chứa tên:** buổi thứ hai dùng mã có tên người viết. Đề tài đổi sang mã V03 đến V06 trước khi dùng, và không đưa tệp gốc vào dữ liệu của đề tài.
+- **Rà soát lại ở nơi nhận:** ở đợt thu đầu, người rà soát bỏ sót 8 dòng chép khác đề trên 200 dòng, theo `07-nhat-ky-thi-nghiem.md`, mục 10.12. Đề tài vì vậy xem lại mọi dòng trên ảnh vẽ từ nét gốc trước khi dùng một tệp, và với nhóm kiểm thử thì không chạy mô hình khi xem. Chỉ dòng có nội dung khác câu đề mới bị loại, còn dòng có nét lạc được giữ.
+- **Kiểm tra tệp sau khi chép:** mở lại tệp trên máy tính để chắc tệp không bị cắt. Một tệp của buổi thử đầu bị cắt cụt, chỉ đọc được 11 dòng đầu.
 
 ## 7. Vấn đề chưa chốt
 
@@ -171,4 +185,5 @@ Bảng 4: Các vấn đề chưa chốt về dữ liệu
 | Tập kiểm thử ít hơn nguồn 1.376 ký tự, số đoạn văn ít hơn 2 | Giá trị $N$ khi tính tỷ lệ lỗi | Tìm các dòng có nhãn bất thường, ghi kết quả vào báo cáo |
 | Hai giấy phép khác nhau trong kho HTR-ConvText | Việc lưu danh sách chia tập vào kho mã | Đọc lại giấy phép, ghi nguồn khi lưu |
 | Cách xác định ranh giới từ trong dòng liền tự thu | Bộ mô phỏng cần biết nét nào thuộc từ nào | Tìm các khoảng trống lớn theo số khoảng trắng của câu đề, kiểm tra bằng tay |
-| Số chỗ ngắt khi mô phỏng | Một dòng khoảng 15 từ có thể cần nhiều hàng hơn 3 khi cầm dọc | Cho từ 2 đến 3 người viết thử trên điện thoại, đếm số từ mỗi hàng |
+| Mới có 2 người viết bằng ngón tay, và các buổi thu chưa đúng quy trình | CER khi viết bằng ngón tay cao hơn viết bằng bút, theo `07-nhat-ky-thi-nghiem.md`, mục 10.10, nhưng chưa đủ người để kết luận | Thu nhóm chỉnh bằng ngón tay theo mục 6, với câu đề khóa trên công cụ thu |
+| Bảng máy của công cụ thu chưa kiểm trên máy thật | Sai một dòng trong bảng làm sai cỡ hàng của mọi buổi trên đời máy đó | Ở buổi đầu trên mỗi đời máy, đo thêm bằng thẻ và so với số của bảng |

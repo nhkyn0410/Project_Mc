@@ -80,10 +80,10 @@ Bảng 2: Kịch bản kiểm thử
 | Kịch bản | Dữ liệu | Câu hỏi cần trả lời |
 | --- | --- | --- |
 | Dòng liền | 1.634 dòng kiểm thử của VNOnDB | Mô hình đứng ở đâu so với các mốc công bố? |
-| Ngắt mô phỏng | Dòng liền của nhóm kiểm thử trong tập tự thu, cắt 1-2 lần tại ranh giới từ | Lớp ghép đoạn làm CER tăng bao nhiêu? |
+| Ngắt mô phỏng | Dòng liền của nhóm kiểm thử trong tập tự thu, cắt 2, 4 hoặc 6 lần tại ranh giới từ | Lớp ghép đoạn làm CER tăng bao nhiêu? |
 | Viết tay thật | Nhóm kiểm thử của tập tự thu, mỗi người 10 dòng liền và 10 dòng ngắt | Kết quả có giữ được khi viết bằng ngón tay? |
 
-Kịch bản Ngắt mô phỏng dùng tập tự thu vì bản ảnh của VNOnDB không có nét để cắt. Đề tài không đặt kịch bản riêng cho nét trễ, vì ảnh của dòng không phụ thuộc vào thứ tự viết. Lớp ghép đoạn vẫn phải gán nét trễ vào đúng hàng, và kịch bản Viết tay thật kiểm tra điều này.
+Số lần cắt lấy theo dữ liệu thử, trong đó một dòng ngắt chiếm từ 4 đến 8 hàng, theo `07-nhat-ky-thi-nghiem.md`, mục 10. Hai kịch bản Ngắt mô phỏng và Viết tay thật báo thêm mốc nhận dạng từng hàng rồi nối chuỗi, để so với dòng ảo. Kịch bản Ngắt mô phỏng dùng tập tự thu vì bản ảnh của VNOnDB không có nét để cắt. Đề tài không đặt kịch bản riêng cho nét trễ, vì ảnh của dòng không phụ thuộc vào thứ tự viết. Lớp ghép đoạn vẫn phải gán nét trễ vào đúng hàng, và kịch bản Viết tay thật kiểm tra điều này.
 
 ## 4. Mốc so sánh
 
@@ -108,10 +108,10 @@ ML Kit có mô hình tiếng Việt với mã `vi` [@google2026b], nên đề t�
 
 ## 5. Quy tắc đo
 
-- **Chọn mô hình:** mô hình tốt nhất được chọn theo CER trên tập kiểm định.
-- **Tập kiểm thử:** kịch bản trên tập kiểm thử chỉ chạy một lần ở cuối, sau khi đã chốt mô hình và mọi tham số.
+- **Chọn mô hình:** trong các mô hình có CER của M2 trên tập kiểm định không quá 8,4%, mô hình tốt nhất là mô hình có CER của M2 thấp nhất trên nét viết thật của buổi thử và nhóm chỉnh. CER trên tập kiểm định không phản ánh được nét viết trên điện thoại, theo `07-nhat-ky-thi-nghiem.md`, mục 10.
+- **Tập kiểm thử:** kịch bản trên tập kiểm thử chỉ chạy một lần ở cuối, sau khi đã chốt mô hình và mọi tham số. Nhóm kiểm thử của tập tự thu cũng vậy.
 - **Kiểm tra bộ giải mã:** bộ giải mã Kotlin phải cho cùng kết quả với bản Python tham chiếu trên một bộ mẫu chung.
-- **Ghi nhận:** mọi lần chạy ghi vào `07-nhat-ky-thi-nghiem.md` (chưa viết), số liệu trong báo cáo phải chỉ ra được lần chạy tạo ra nó.
+- **Ghi nhận:** mọi lần chạy ghi vào `07-nhat-ky-thi-nghiem.md`, số liệu trong báo cáo phải chỉ ra được lần chạy tạo ra nó.
 
 ## 6. Vấn đề chưa chốt
 
@@ -121,8 +121,7 @@ Bảng 4: Các vấn đề chưa chốt về đánh giá
 
 | Vấn đề | Ảnh hưởng | Hướng đề xuất |
 | --- | --- | --- |
-| Ngưỡng 2 điểm phần trăm chưa gắn với số chỗ nối | Kết quả phụ thuộc vào số lần cắt | Ghi ngưỡng theo số chỗ nối sau khi đo số hàng thực tế |
-| Thiếu mốc nhận dạng từng hàng rồi nối chuỗi | Chưa chứng minh được dòng ảo tốt hơn cách đơn giản | Thêm mốc này vào kịch bản Ngắt mô phỏng và Viết tay thật |
+| Ngưỡng 2 điểm phần trăm chưa gắn với số chỗ nối | Kết quả phụ thuộc vào số lần cắt | Ghi ngưỡng riêng cho 2, 4 và 6 chỗ nối, theo số hàng đo được ở `07-nhat-ky-thi-nghiem.md`, mục 10 |
 | Cách đưa dòng ngắt vào ML Kit | So sánh có thể thiếu công bằng | Đưa từng hàng kèm ngữ cảnh chữ đã nhận dạng |
 | Điện thoại dùng để đo | Độ trễ phụ thuộc vào máy | Chọn một máy tầm trung và ghi cấu hình |
 | Cách tính trung bình của cuộc thi và của HTR-ConvText | So sánh với Bảng 3 có thể lệch | Đọc bài tổng kết cuộc thi [@le2018] và mã nguồn của HTR-ConvText [@dairgroup2026] |

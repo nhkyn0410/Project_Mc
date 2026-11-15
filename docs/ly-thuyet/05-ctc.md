@@ -6,7 +6,7 @@ Tài liệu này trình bày hàm mất mát Connectionist Temporal Classificati
 
 ## 1. Bài toán
 
-Đầu vào của mô hình là chuỗi đặc trưng $\mathbf{X}$ của một dòng. Sau khi mạng nơ-ron tích chập một chiều (CNN 1D) giảm độ dài chuỗi, lớp BiLSTM cho ra $T$ bước thời gian. Đầu ra cần có là chuỗi ký tự $\mathbf{l} = (l_1, \ldots, l_U)$ của dòng đó.
+Đầu vào của mô hình là ảnh $\mathbf{X}$ của một dòng. Sau khi mạng nơ-ron tích chập hai chiều (CNN 2D) giảm kích thước ảnh, lớp BiLSTM cho ra $T$ bước thời gian. Đầu ra cần có là chuỗi ký tự $\mathbf{l} = (l_1, \ldots, l_U)$ của dòng đó.
 
 Bộ dữ liệu HANDS-VNOnDB (VNOnDB) chỉ cho biết văn bản của cả dòng. Dữ liệu không ghi bước thời gian nào ứng với ký tự nào, nên không thể huấn luyện bằng cách phân loại từng bước. Độ dài cũng khác nhau: $T$ thường lớn hơn $U$ nhiều lần, và một ký tự kéo dài qua nhiều bước.
 
@@ -16,7 +16,7 @@ CTC giải bài toán này bằng cách tính xác suất của chuỗi đích $
 
 ### 2.1. Xác suất của một đường căn chỉnh
 
-Tại mỗi bước $t$, lớp softmax cho ra phân bố xác suất $p_t(k)$ trên tập nhãn $\mathcal{A}'$. Tập này gồm 161 ký tự của VNOnDB cộng thêm nhãn trống $\epsilon$, nghĩa là "không phát ra ký tự nào ở bước này".
+Tại mỗi bước $t$, lớp softmax cho ra phân bố xác suất $p_t(k)$ trên tập nhãn $\mathcal{A}'$. Tập này gồm 160 ký tự của bảng ký tự $\mathcal{A}$ cộng thêm nhãn trống $\epsilon$, nghĩa là "không phát ra ký tự nào ở bước này".
 
 Một đường căn chỉnh $\boldsymbol{\pi} = (\pi_1, \ldots, \pi_T)$ chọn một nhãn cho mỗi bước. CTC giả định các bước độc lập với nhau khi đã biết $\mathbf{X}$, nên xác suất của một đường là tích các xác suất từng bước:
 
@@ -134,15 +134,15 @@ Ví dụ cũng cho thấy giới hạn của giải mã theo công thức (7). �
 
 ## 4. Áp dụng trong đề tài
 
-- **Tập nhãn:** lớp đầu ra có 162 nhãn, gồm 161 ký tự của VNOnDB và nhãn trống. Đây là con số 162 trong `01-mo-ta-de-tai.md`, mục 7.3.
-- **Lý do chọn CTC:** VNOnDB chỉ có văn bản theo dòng, không có nhãn căn chỉnh theo từng điểm, đúng trường hợp CTC được thiết kế cho [@graves2006]. Hệ thống nhận dạng chữ viết tay dạng nét của Google cũng huấn luyện BiLSTM bằng CTC [@carbune2019].
-- **Điều kiện độ dài:** CNN 1D giảm độ dài chuỗi 4 lần, nên phải kiểm tra công thức (6) cho mọi dòng huấn luyện. Dòng vi phạm làm mất mát vô cùng lớn và hỏng cả lô huấn luyện. Cách kiểm tra và xử lý thuộc `03-du-lieu.md` (dự kiến).
+- **Tập nhãn:** lớp đầu ra có 161 nhãn, gồm 160 ký tự có ở tập huấn luyện hoặc tập kiểm định và nhãn trống. Đây là con số 161 trong `01-mo-ta-de-tai.md`, mục 7.3.
+- **Lý do chọn CTC:** VNOnDB chỉ có văn bản theo dòng, không có nhãn căn chỉnh theo từng cột ảnh, đúng trường hợp CTC được thiết kế cho [@graves2006]. Hệ thống nhận dạng chữ viết tay dạng nét của Google cũng huấn luyện BiLSTM bằng CTC [@carbune2019].
+- **Điều kiện độ dài:** CNN 2D giảm chiều rộng ảnh 2 lần, nên $T = 256$. Giá trị lớn nhất của $U + r$ đo được là 159 trên tập huấn luyện và 110 trên tập kiểm định, nên công thức (6) luôn thỏa. Nếu đổi cỡ khung ảnh hoặc mức giảm chiều rộng thì phải kiểm tra lại, vì dòng vi phạm làm hỏng cả lô huấn luyện.
 - **Cài đặt:** dùng hàm CTC có sẵn của TensorFlow, chỉ định vị trí nhãn trống và độ dài thật của từng dòng sau khi giảm độ dài, không dùng độ dài đã đệm. Lựa chọn cụ thể ghi ở `04-thiet-ke-he-thong.md`.
 - **Giải mã:** giải mã theo công thức (7) dùng để đo tỷ lệ lỗi ký tự (CER) trên tập kiểm định trong lúc huấn luyện, vì nhanh và không cần mô hình ngôn ngữ. Bản đưa lên điện thoại dùng beam search kết hợp n-gram âm tiết.
 
 ## 5. Hạn chế
 
 - **Giả định độc lập giữa các bước:** công thức (1) coi các bước độc lập khi đã biết $\mathbf{X}$, nên CTC không tự học quan hệ giữa các ký tự đầu ra. Việc chọn giữa "ma", "má", "mà" theo ngữ cảnh phải nhờ mô hình ngôn ngữ ở bước giải mã.
-- **Căn chỉnh đơn điệu:** thứ tự ký tự đầu ra phải theo thứ tự thời gian của đầu vào. Nét dấu thanh viết trễ, nhất là dấu thêm vào sau khi đã viết sang hàng khác, nằm xa chữ cái của nó trong chuỗi. Lớp BiLSTM phải mang thông tin của nét trễ về đúng bước của chữ cái, nên đây là rủi ro cần đo trong kịch bản "Dấu thêm muộn".
+- **Căn chỉnh đơn điệu:** thứ tự ký tự đầu ra phải theo thứ tự các cột ảnh từ trái sang phải. Trên ảnh, dấu thanh và dấu phụ nằm đúng chỗ dù được viết trễ, nên ràng buộc này phù hợp với đầu vào. Khi chữ nghiêng nhiều, một cột ảnh có thể chứa phần của hai ký tự, và đây là nguồn lỗi cần phân tích.
 - **Ràng buộc độ dài:** công thức (6) đặt giới hạn cho mức giảm độ dài chuỗi. Giảm mạnh hơn để chạy nhanh hơn có thể làm một số dòng dài vi phạm điều kiện.
 - **Xác suất quá tự tin:** đầu ra CTC thường tập trung gần hết xác suất vào một nhãn ở mỗi bước, và mô hình quá tự tin trên chính dữ liệu đã học. Vì vậy trọng số của mô hình ngôn ngữ phải chỉnh trên dữ liệu khác với tập huấn luyện [@carbune2019].

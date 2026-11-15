@@ -2,7 +2,7 @@
 
 Trạng thái: Nháp
 
-Tài liệu này trình bày mạng nơ-ron hồi quy, ô nhớ dài ngắn hạn (LSTM) và LSTM hai chiều (BiLSTM). Ba lớp BiLSTM là phần chính của mô hình nhận dạng, nằm giữa mạng nơ-ron tích chập một chiều (CNN 1D) và lớp đầu ra của hàm mất mát CTC. Tài liệu dành cho người viết phần thiết kế mô hình và phần cơ sở lý thuyết của báo cáo, và là nền cho `05-ctc.md`.
+Tài liệu này trình bày mạng nơ-ron hồi quy, ô nhớ dài ngắn hạn (LSTM) và LSTM hai chiều (BiLSTM). Hai lớp BiLSTM là phần chính của mô hình nhận dạng, nằm giữa mạng nơ-ron tích chập hai chiều (CNN 2D) và lớp đầu ra của hàm mất mát CTC. Tài liệu dành cho người viết phần thiết kế mô hình và phần cơ sở lý thuyết của báo cáo, và là nền cho `05-ctc.md`.
 
 ## 1. Bài toán
 
@@ -91,29 +91,28 @@ $$
 
 Cổng quên lớn và cổng ghi nhỏ, nên ô nhớ gần như giữ nguyên giá trị cũ. Nếu các cổng giữ nguyên như vậy và giá trị ứng viên bằng 0 trong 10 bước, ô nhớ còn $0{,}8 \times 0{,}9^{10} \approx 0{,}279$. Thông tin vẫn còn sau 10 bước. Với mạng hồi quy đơn giản, không có đường cộng như công thức (4) để giữ thông tin này.
 
-Ví dụ thứ hai áp công thức (7) cho ba lớp BiLSTM của mô hình M1, mỗi chiều có $d = 128$ ô. Lớp thứ nhất nhận đầu ra 128 chiều của CNN 1D. Hai lớp sau nhận véc-tơ ghép $2 \times 128 = 256$ chiều của lớp bên dưới. Bảng 1 ghi kết quả.
+Ví dụ thứ hai áp công thức (7) cho hai lớp BiLSTM của mô hình M1, mỗi chiều có $d = 128$ ô. Lớp thứ nhất nhận đầu ra 128 chiều của lớp kết nối đầy đủ sau CNN 2D. Lớp thứ hai nhận véc-tơ ghép $2 \times 128 = 256$ chiều của lớp bên dưới. Bảng 1 ghi kết quả.
 
-Bảng 1: Số tham số của ba lớp BiLSTM trong mô hình M1
+Bảng 1: Số tham số của hai lớp BiLSTM trong mô hình M1
 
 | Lớp | $d_{\text{vào}}$ | Tham số một chiều | Tham số hai chiều |
 | --- | --- | --- | --- |
 | BiLSTM 1 | 128 | 131.584 | 263.168 |
 | BiLSTM 2 | 256 | 197.120 | 394.240 |
-| BiLSTM 3 | 256 | 197.120 | 394.240 |
-| Tổng | | | 1.051.648 |
+| Tổng | | | 657.408 |
 
-Ba lớp BiLSTM chiếm khoảng 1,05 triệu trong 1,14 triệu tham số của M1 ước tính trong `01-mo-ta-de-tai.md`, mục 7.3. Phần còn lại thuộc CNN 1D và lớp đầu ra.
+Hai lớp BiLSTM chiếm khoảng 0,66 triệu trong 1,00 triệu tham số của M1 ước tính trong `01-mo-ta-de-tai.md`, mục 7.3. Phần còn lại thuộc CNN 2D, lớp kết nối đầy đủ và lớp đầu ra.
 
 ## 4. Áp dụng trong đề tài
 
-- **Vì sao cần hai chiều:** CTC chỉ cho phép đầu ra theo đúng thứ tự thời gian của đầu vào, theo `05-ctc.md`, mục 5. Nét dấu thanh viết trễ xuất hiện sau chữ cái của nó trong chuỗi. Chiều ngược mang thông tin của nét trễ về đúng bước của chữ cái, nên mô hình mới phát ra được ký tự có dấu ở đúng chỗ. Đây là lý do đề tài dùng BiLSTM thay cho LSTM một chiều.
-- **Cấu hình:** mô hình cơ sở M0 có 2 lớp BiLSTM 100 ô, mô hình đề xuất M1 có 3 lớp BiLSTM 128 ô sau CNN 1D, theo `01-mo-ta-de-tai.md`, mục 7.3. Cấu hình huấn luyện khởi đầu dùng dropout 0,5 sau mỗi lớp LSTM [@carbune2019].
+- **Vì sao cần hai chiều:** BiLSTM đọc ảnh theo các cột từ trái sang phải, mỗi bước ứng với một dải cột. Một ký tự trải trên nhiều bước, và các ký tự bên phải giúp phân biệt những nét giống nhau. Chiều ngược mang thông tin bên phải về bước đang xét, nên đề tài dùng BiLSTM thay cho LSTM một chiều. Phép so sánh M0 với M1 đo lợi ích này.
+- **Cấu hình:** mô hình cơ sở M0 không có BiLSTM, mô hình đề xuất M1 có 2 lớp BiLSTM 128 ô sau CNN 2D, theo `01-mo-ta-de-tai.md`, mục 7.3. Cấu hình huấn luyện khởi đầu dùng dropout 0,5 sau mỗi lớp LSTM [@carbune2019].
 - **Chọn LSTM thay cho GRU:** công cụ chuyển đổi LiteRT có hướng dẫn chuyển đổi sẵn cho lớp LSTM của Keras. Chi tiết thuộc `06-trien-khai-android.md` (dự kiến).
 - **Kết quả tạm thời khi đang viết:** chiều ngược cần toàn bộ chuỗi, nên ứng dụng chạy lại cả dòng sau mỗi lần người dùng dừng bút, thay vì cập nhật từng bước.
 
 ## 5. Hạn chế
 
 - **Không xử lý dần theo dòng chảy:** BiLSTM chỉ cho kết quả khi đã có đủ chuỗi. Mỗi lần nhận dạng lại phải chạy từ đầu, nên chi phí tăng theo độ dài dòng.
-- **Tính tuần tự:** bước $t$ phải chờ bước $t - 1$ xong, nên khó tận dụng tính toán song song. Đây là lý do CNN 1D giảm độ dài chuỗi 4 lần trước khi vào BiLSTM.
-- **Quan hệ rất xa vẫn khó:** LSTM giữ thông tin tốt hơn mạng hồi quy đơn giản nhưng không phải vô hạn. Dấu thêm vào một hàng đã viết từ lâu có thể cách chữ cái hàng trăm bước, và cần đo trong kịch bản "Dấu thêm muộn".
+- **Tính tuần tự:** bước $t$ phải chờ bước $t - 1$ xong, nên khó tận dụng tính toán song song. Đây là lý do CNN 2D giảm chiều rộng ảnh 2 lần trước khi vào BiLSTM, còn 256 bước.
+- **Quan hệ rất xa vẫn khó:** LSTM giữ thông tin tốt hơn mạng hồi quy đơn giản nhưng không phải vô hạn. Các bước ở đầu dòng và cuối dòng cách nhau đến 256 bước, nên ngữ cảnh xa chủ yếu do n-gram bổ sung.
 - **Số tham số tăng nhanh theo số ô:** theo công thức (7), số tham số tăng gần theo bình phương của $d$. Tăng số ô để tăng độ chính xác sẽ nhanh chóng chạm giới hạn dung lượng và độ trễ trên điện thoại.
