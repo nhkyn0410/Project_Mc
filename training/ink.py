@@ -18,6 +18,8 @@ UP_RETURN = 1.2  # Tâm nét cao hơn đỉnh thân chữ quá chừng này thì
 MAX_GAP = 2.0  # Khoảng trống ngang rộng hơn chừng này lần chiều cao thân chữ bị thu về GAP_RATIO
 GAP_RATIO = 0.7  # Khoảng cách chèn giữa hai đoạn, tính theo chiều cao thân chữ
 SCALE_LIMITS = (0.7, 1.4)
+STRAY_GAP = 2.0  # Nét cách dải thân chữ theo chiều dọc xa hơn chừng này lần chiều cao thân chữ là nét lạc (docs/07, mục 10.15 đến mục 10.17)
+STRAY_TALL = 5.0  # Nét cao hơn chừng này lần chiều cao thân chữ là nét quẹt nhầm
 
 
 def _body(points):
@@ -116,12 +118,44 @@ def stitch_rows(groups):
     return out
 
 
-def stitch(strokes, top_pad, row_px):
-    """Gán nét vào dòng chữ rồi nối các dòng chữ thành dòng ảo."""
+def _gap(stroke, body):
+    """Khoảng cách theo chiều dọc từ nét tới dải thân chữ, tính theo chiều cao thân chữ, bằng 0 nếu nét chạm dải."""
+    top, base, h = body
+    return max(top - stroke[:, 1].max(), stroke[:, 1].min() - base, 0.0) / h
+
+
+def clean_rows(groups):
+    """Bỏ nét lạc sau khi gán nét vào dòng chữ (docs/07-nhat-ky-thi-nghiem.md, mục 10.17).
+
+    Nét cao hơn STRAY_TALL lần chiều cao thân chữ bị bỏ. Nét cách dải thân chữ của mọi dòng xa hơn STRAY_GAP lần
+    chiều cao thân chữ của dòng đó cũng bị bỏ. Các nét khác giữ ở dòng đã gán, không chuyển dòng.
+    Dải thân chữ tính theo phân vị nên vài nét lạc không kéo lệch được nó. Nếu luật bỏ hết nét thì giữ nguyên.
+    """
+    bodies = [_body(np.concatenate(g)) for g in groups]
+    out = [[] for _ in groups]
+    for u, group in enumerate(groups):
+        for s in group:
+            if np.ptp(s[:, 1]) > STRAY_TALL * bodies[u][2]:
+                continue
+            if min(_gap(s, b) for b in bodies) <= STRAY_GAP:
+                out[u].append(s)
+    out = [g for g in out if g]
+    return out or groups
+
+
+def stitch(strokes, top_pad, row_px, strays=False):
+    """Gán nét vào dòng chữ, bỏ nét lạc nếu strays đúng, rồi nối các dòng chữ thành dòng ảo.
+
+    Bộ lọc nét lạc tắt theo mặc định vì không đạt tiêu chí ghi trước (docs/07-nhat-ky-thi-nghiem.md, mục 10.17).
+    """
     rows = assign_rows(strokes, top_pad, row_px)
     if not len(rows):
         return []
-    return stitch_rows([[s for s, r in zip(strokes, rows) if r == u] for u in range(rows.max() + 1)])
+    groups = [[s for s, r in zip(strokes, rows) if r == u] for u in range(rows.max() + 1)]
+    groups = [g for g in groups if g]
+    if strays:
+        groups = clean_rows(groups)
+    return stitch_rows(groups)
 
 
 def render(strokes, width=512, height=64, stroke_width=STROKE_WIDTH, max_ink=0):

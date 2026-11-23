@@ -7,7 +7,7 @@ Tài liệu này dành cho người trực tiếp đi thu dữ liệu. Bạn kh�
 Đọc kỹ ba điều này trước khi bắt đầu. Sai một trong ba điều thì buổi thu đó bị bỏ.
 
 1. **Không ghi tên người viết vào bất kỳ đâu ngoài phiếu đồng ý.** Không ghi tên vào công cụ, vào tên tệp, vào tin nhắn gửi tệp hay vào sổ theo dõi. Không ghi mã người viết lên phiếu đồng ý.
-2. **Mỗi người chỉ thuộc một nhóm và chỉ viết một buổi.** Người đã viết cho nhóm chỉnh thì không viết cho nhóm kiểm thử, và ngược lại.
+2. **Mỗi người chỉ thuộc một nhóm và chỉ viết một buổi.** Người đã viết cho nhóm chỉnh thì không viết cho nhóm kiểm thử, và ngược lại. Nếu người phụ trách yêu cầu một người viết lại để thay buổi đã bị bỏ, người đó phải dùng lại mã cũ, không nhận mã mới.
 3. **Người viết dùng ngón tay, không dùng bút, và cầm dọc điện thoại.** Không dùng máy tính bảng. Công cụ sẽ từ chối máy tính bảng ở hai nhóm chính thức.
 
 ## 2. Chuẩn bị
@@ -58,10 +58,10 @@ Nếu người tham gia không ký, dừng buổi thu ở đây.
 
 Mở link công cụ thu, bấm Buổi mới nếu đang ở màn Các buổi đã thu, rồi điền từ trên xuống:
 
-1. **Người viết:** công cụ tự hiện một mã dạng NV-K7M2. Không sửa mã này. Chép mã vào sổ theo dõi.
+1. **Người viết:** công cụ tự hiện một mã dạng NV-K7M2. Không sửa mã này. Chép mã vào sổ theo dõi. Nếu người này viết lại theo yêu cầu của người phụ trách, bấm "Người này đã viết một buổi trước" và nhập mã cũ của họ.
 2. **Nhóm đổi chéo:** chọn A hoặc B theo mục 3.3.
 3. **Thiết bị nhập:** để Ngón tay.
-4. **Phiếu đồng ý:** đánh dấu ô "Người viết đã đọc và ký phiếu đồng ý".
+4. **Phiếu đồng ý:** đánh dấu ô "Người viết đã đọc và ký phiếu đồng ý". Với người viết lần đầu, hỏi họ đã từng viết ở đợt thu nào chưa, rồi đánh dấu ô "Người viết chưa từng viết ở đợt thu chính thức nào". Nếu họ đã viết rồi, dừng lại và hỏi người phụ trách.
 5. **Thử thiết bị nhập:** nhờ người viết vẽ một nét bằng ngón tay vào ô thử. Ô báo màu xanh là được.
 6. **Kịch bản:** chọn Nhóm chỉnh hoặc Nhóm kiểm thử. Không chọn Buổi thử. Câu đề và cỡ hàng sẽ bị khóa, không cần và không được sửa.
 7. **Máy thu:** xem ô trạng thái.
@@ -102,7 +102,7 @@ Trong lúc người viết viết, bạn ngồi bên cạnh nhưng không nhắc
 
 Sau dòng cuối, công cụ chuyển sang màn Rà soát buổi thu. Người viết có thể về, bạn làm phần này một mình.
 
-Với mỗi dòng, so nét viết với câu đề rồi chọn một trong hai:
+Với mỗi dòng, đọc từng chữ của nét viết và so với câu đề rồi chọn một trong hai. Dòng liền được cắt thành nhiều đoạn xếp chồng, đọc lần lượt từ trên xuống. Phần lớn lỗi bị sót nằm ở dòng liền, như viết "hiện tại" thay cho "hiện đại" hay thiếu một từ ở cuối câu.
 
 - **Chép đúng:** người viết viết đủ đúng các từ của câu đề. Chữ xấu, nét run, dấu thanh khó đọc vẫn tính là Chép đúng.
 - **Chép khác:** người viết thiếu từ, thừa từ, đổi từ, viết tắt, viết số thay chữ, viết lặp hoặc bỏ dở dòng. Khi chọn Chép khác, ghi ngắn chỗ khác vào ô ghi chú, ví dụ "thiếu chữ của".
@@ -111,7 +111,7 @@ Câu hỏi chỉ là người viết có chép đúng nội dung không, không 
 
 Với dòng ngắt, nếu có thời gian, chạm vào từ mở đầu mỗi hàng mới. Chạm hai lần nếu hàng mới bắt đầu giữa một từ. Phần này không bắt buộc.
 
-Bấm Hoàn tất rà soát. Nếu công cụ báo còn dòng chưa chọn, dòng đó có viền đỏ. Chọn nốt rồi bấm lại.
+Bấm Hoàn tất rà soát. Nếu công cụ báo còn dòng chưa chọn, dòng đó có viền đỏ. Chọn nốt rồi bấm lại. Nếu bạn rà dưới 10 giây một dòng, công cụ nhắc đọc lại. Đọc lại các dòng liền rồi mới bấm lần nữa. Ở đợt thu ngày 16/11/2026, các buổi rà dưới 6 giây một dòng sót tới 4 dòng chép khác.
 
 ### 4.6. Nếu người viết muốn dừng hoặc rút lui
 

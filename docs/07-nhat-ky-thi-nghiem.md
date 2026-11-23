@@ -458,13 +458,163 @@ Theo Bảng 21, đợt thu lệch quy trình ở năm điểm:
 
 Đề tài rà soát lại cả 200 dòng bằng mắt trên ảnh vẽ từ nét gốc. Với nhóm kiểm thử, việc rà soát chỉ dùng ảnh nét, không chạy mô hình và không chạy lớp ghép đoạn. Kết quả là 3 dòng chép khác đề ở nhóm chỉnh và 5 dòng ở nhóm kiểm thử, đều là thiếu từ hoặc đổi một từ. Các dòng này bị loại khỏi phép đo. Dòng mà người rà soát chọn Chép khác vẫn bị loại. Nhóm chỉnh còn 5 dòng liền có nét lạc do chạm nhầm, gồm chấm nhỏ cách xa dòng chữ và một nét thẳng dài. Các dòng có nét lạc được giữ lại, vì người dùng thật cũng có thể chạm nhầm, và quy tắc này áp dụng cho cả nhóm kiểm thử.
 
-Với 6 buổi của nhóm chỉnh, mô hình `m1l_rr_e100` và cấu hình triển khai, còn 57 dòng liền và 59 dòng ngắt. CER (2) của M2 là 14,46% với dòng liền và 16,94% với dòng ngắt sau khi ghép, gộp hai nhóm là 15,72%. Khi nhận dạng từng hàng, CER (2) là 29,78%. Mức này gần mức 15,98% của sáu người viết bằng bút ở mục 10.8 và thấp hơn mức khoảng 21,2% của buổi thử ngón tay ở mục 10.10. CER của dòng ngắt ghép theo người viết trải từ 4,28% đến 23,20%. Với độ dày nét 1,0; 1,2 và 1,5, CER (2) của dòng liền là 15,16%; 14,46% và 14,86%, còn của dòng ngắt ghép là 17,05%; 16,94% và 16,95%, nên độ dày 1,2 vẫn được giữ. Dòng ngắt mô phỏng 2, 4 và 6 chỗ nối có CER (2) 15,64%; 17,12% và 20,21%, tức tăng 1,18; 2,66 và 5,75 điểm phần trăm so với dòng liền.
+Ngày 16/11/2026, buổi NV-XVJ7 được để riêng vì hàng kẻ thật khoảng 9,3 mm không đúng quy trình, nên nhóm chỉnh còn 5 buổi đủ điều kiện, gồm 4 buổi A và 1 buổi B. Với 5 buổi này, mô hình `m1l_rr_e100` và cấu hình triển khai, còn 48 dòng liền và 49 dòng ngắt. CER (2) của M2 là 15,02% với dòng liền và 17,22% với dòng ngắt sau khi ghép, gộp hai nhóm là 16,13%. Khi nhận dạng từng hàng, CER (2) là 29,46%. Mức này gần mức 15,98% của sáu người viết bằng bút ở mục 10.8 và thấp hơn mức khoảng 21,2% của buổi thử ngón tay ở mục 10.10. CER của dòng ngắt ghép theo người viết trải từ 4,28% đến 23,20%. Với độ dày nét 1,0; 1,2 và 1,5, CER (2) của dòng liền là 15,81%; 15,02% và 15,28%, còn của dòng ngắt ghép là 17,60%; 17,22% và 17,28%, nên độ dày 1,2 vẫn được giữ. Dòng ngắt mô phỏng 2, 4 và 6 chỗ nối có CER (2) 16,40%; 17,60% và 20,64%, tức tăng 1,38; 2,58 và 5,62 điểm phần trăm so với dòng liền. Khi tính cả NV-XVJ7, như lần đo ngày 15/11/2026, CER (2) là 14,46% với dòng liền và 16,94% với dòng ngắt ghép.
 
-Hai dòng liền của NV-GPQJ có nét lạc xa dòng chữ có CER 70,7% và 89,4%. Chấm lạc và nét lạc không mở được dòng chữ mới trong lớp ghép đoạn, nên chúng kéo giãn khung của dòng và làm chữ bị thu nhỏ khi vẽ ảnh. Nếu bỏ hai dòng này, CER (2) của dòng liền là 12,07%. Đây là điểm yếu của lớp ghép đoạn cần xử lý ở bước 6, bằng cách bỏ các nét nằm quá xa thân chữ trước khi ghép.
+Hai dòng liền của NV-GPQJ có nét lạc xa dòng chữ có CER 70,7% và 89,4%. Chấm lạc và nét lạc không mở được dòng chữ mới trong lớp ghép đoạn, nên chúng kéo giãn khung của dòng và làm chữ bị thu nhỏ khi vẽ ảnh. Nếu bỏ hai dòng này, CER (2) của dòng liền là 12,20%. Đây là điểm yếu của lớp ghép đoạn cần xử lý ở bước 6, bằng cách bỏ các nét nằm quá xa thân chữ trước khi ghép.
 
-Các số trên mới là số tạm, vì nhóm chỉnh mới có 6 trên 10 người và lệch về nhóm A. Buổi NV-XVJ7 có hàng kẻ thật khoảng 9,3 mm, nên chỉ dùng để tham khảo khi chỉnh tham số phụ thuộc cỡ hàng. Hai buổi trên iPad không tính vào nhóm kiểm thử của điện thoại và được để riêng. Nhóm kiểm thử vì vậy mới có 2 buổi hợp lệ, và mô hình chưa được chạy trên buổi nào của nhóm này.
+Các số trên mới là số tạm, vì nhóm chỉnh mới có 5 trên 10 người đủ điều kiện và lệch về nhóm A. Hai buổi trên iPad không tính vào nhóm kiểm thử của điện thoại và được để riêng. Nhóm kiểm thử vì vậy mới có 2 buổi hợp lệ, và mô hình chưa được chạy trên buổi nào của nhóm này. Bản phân tích của các buổi để riêng nằm ở `~/vnhw/data/nhom-chinh-de-rieng/` và `~/vnhw/data/nhom-kiem-thu-de-rieng/`, mỗi thư mục có tệp ghi lý do.
 
 Cùng ngày, công cụ thu được sửa thành bản 2026-11-15 để các lỗi trên không lặp lại, theo `03-du-lieu.md`, mục 6.
+
+### 10.13. Đợt thu thứ hai của nhóm chỉnh
+
+Ngày 18/11/2026, đề tài nhận một bộ dữ liệu khảo sát mới để thay bộ ở mục 10.12. Bộ mới có 10 buổi, đều thuộc nhóm chỉnh. Năm buổi nhóm A giống từng byte với bản cũ, kể cả buổi NV-XVJ7 đã để riêng. Năm buổi còn lại thuộc nhóm đổi chéo B, thu ngày 16/11/2026 bằng bản công cụ 2026-11-15, mở ngoài khung claude.ai. Bộ mới không còn buổi NV-34C4 của nhóm chỉnh và bốn buổi của nhóm kiểm thử.
+
+Năm buổi mới đều đủ 20 dòng, đúng câu đề đã khóa, viết bằng ngón tay trên điện thoại và có mã ẩn danh. Bảng 22 ghi máy, cỡ hàng và kết quả rà soát lại của năm buổi này. Hàng kẻ thật được tính như Bảng 21, từ thông số màn hình của máy.
+
+Bảng 22: Năm buổi nhóm B của nhóm chỉnh thu ngày 16/11/2026
+
+| Mã | Máy | Nguồn kích thước | Hàng kẻ thật | Thời gian rà soát của người thu | Dòng chép khác đề tìm thấy khi rà soát lại |
+| --- | --- | --- | --- | --- | --- |
+| NV-8GTX | Galaxy A12 | Thẻ, rộng hơn thông số máy 3,3% | Khoảng 11,6 mm | 609 giây | Không |
+| NV-BJVH | Galaxy A33 5G | Thẻ, hẹp hơn thông số máy 2,9% | Khoảng 12,4 mm | 117 giây | 4 dòng, thiếu một từ hoặc đổi từ |
+| NV-DQK4 | Galaxy A13 | Thẻ, hẹp hơn thông số máy 2,3% | Khoảng 12,3 mm | 289 giây | Không |
+| NV-GPBG | iPhone 12 Pro Max, 13 Pro Max hoặc 14 Plus | Bảng máy | 12 mm | 53 giây | 2 dòng, thừa một từ hoặc thiếu một từ |
+| NV-H8XR | iPhone 14 Pro, 15, 15 Pro hoặc 16 | Bảng máy | 12 mm | 83 giây | 3 dòng, thiếu từ hoặc đổi một từ |
+
+Theo Bảng 22, ba máy Galaxy không có trong bảng máy của công cụ nên được đo bằng thẻ. Lần này số đo bằng thẻ chỉ lệch thông số máy từ 2,3% đến 3,3%, so với 22% đến 33% ở mục 10.12. Hàng kẻ thật vì vậy cao từ khoảng 11,6 đến 12,4 mm. Mức lệch này nhỏ hơn nhiều so với mức 22% khiến NV-XVJ7 bị để riêng, nên đề tài nhận cả năm buổi.
+
+Người thu chọn Chép đúng cho cả 100 dòng, có buổi rà soát 20 dòng trong 53 giây. Đề tài rà soát lại cả 100 dòng bằng mắt trên ảnh vẽ từ nét gốc, như mục 10.12. Vì đây là nhóm chỉnh, đề tài chạy thêm mô hình để đối chiếu các dòng có CER cao. Kết quả là 9 dòng chép khác đề, đều ở ba buổi có thời gian rà soát ngắn nhất. Hai người viết cùng viết "hiện tại" thay cho "hiện đại", một người viết "đẹp" thay cho "hẹp", còn các dòng khác thiếu hoặc thừa từ.
+
+Theo yêu cầu thay dữ liệu, thư mục nhóm chỉnh đủ điều kiện và bản phân tích `~/vnhw/data/nhom-chinh/` được thay theo bộ mới. Nhóm chỉnh nay có 9 buổi đủ điều kiện, gồm 4 buổi A cũ và 5 buổi B mới, và tệp `review.json` có thêm 9 dòng chép khác đề. Buổi NV-34C4 vẫn đúng quy trình nhưng không có trong bộ mới, nên được chuyển sang `~/vnhw/data/nhom-chinh-de-rieng/` để chờ người phụ trách xác nhận lý do. Buổi NV-XVJ7 vẫn để riêng như mục 10.12. Năm buổi mới không có nét lạc xa dòng chữ.
+
+Thư mục phiếu đồng ý của bộ mới giống hệt bộ cũ, gồm 10 phiếu ký từ ngày 12/11/2026 đến ngày 15/11/2026. Ngày 23/11/2026, người phụ trách xác nhận năm người viết ngày 16/11/2026 đều là người đã viết ở đợt thu đầu, nên đã có phiếu đồng ý. Người thu đã cấp mã mới cho họ thay vì dùng lại mã cũ, nên tệp không cho biết buổi mới nào thay buổi cũ nào.
+
+Theo `tools/thu-net/quy-trinh-thu.md`, mục 1, mỗi người chỉ thuộc một nhóm và chỉ viết một buổi. Vì vậy cần biết mã cũ của từng người viết lại. Nếu người đó trước đây viết ở nhóm kiểm thử, buổi kiểm thử của họ phải bị loại, vì mô hình đã được chỉnh trên chữ của họ. Nếu người đó trước đây viết ở nhóm chỉnh, nhóm chỉnh chỉ giữ một buổi của họ. So nét chữ trên cùng câu đề không đủ chắc để ghép mã. Trong lúc chờ, nhóm kiểm thử giữ nguyên như mục 10.12 và chưa được dùng.
+
+Bảng 23 ghi kết quả đo lại nhóm chỉnh với `m1l_rr_e100` và cấu hình triển khai, độ dày nét 1,2, sau khi bỏ 12 dòng chép khác đề. Cột 5 buổi là lần đo ngày 16/11/2026 ở mục 10.12, gồm 4 buổi A và buổi NV-34C4. Hai nhóm đổi chéo viết cùng 20 câu đề, chỉ đổi chéo câu nào viết liền và câu nào viết ngắt.
+
+Bảng 23: CER (2) của M2 trên nhóm chỉnh trước và sau khi thay dữ liệu
+
+| Kịch bản | 5 buổi, ngày 16/11/2026 | 9 buổi | 4 buổi A | 5 buổi B mới |
+| --- | --- | --- | --- | --- |
+| Số dòng liền và dòng ngắt | 48 và 49 | 87 và 81 | 38 và 39 | 49 và 42 |
+| Dòng liền | 15,02% | 12,43% | 15,48% | 10,07% |
+| Dòng ngắt sau khi ghép | 17,22% | 14,60% | 15,90% | 13,40% |
+| Gộp dòng liền và dòng ngắt ghép | 16,13% | 13,48% | 15,69% | 11,61% |
+| Dòng ngắt, nhận dạng từng hàng | 29,46% | 26,11% | 26,96% | 25,32% |
+
+Theo Bảng 23, CER (2) gộp giảm từ 16,13% xuống 13,48%, vì mô hình đọc năm người viết mới tốt hơn. Nhóm B mới có CER gộp 11,61%, so với 15,69% của nhóm A. Dòng ngắt sau khi ghép vẫn cao hơn dòng liền 2,17 điểm phần trăm, nhưng thấp hơn cách nhận dạng từng hàng 11,51 điểm phần trăm. CER của dòng ngắt ghép theo người viết trải từ 4,28% đến 23,20%, như lần đo trước. Với độ dày nét 1,0; 1,2 và 1,5, CER (2) của dòng liền là 13,34%; 12,43% và 13,16%, còn của dòng ngắt ghép là 14,84%; 14,60% và 14,68%, nên độ dày 1,2 vẫn được giữ.
+
+Dòng ngắt mô phỏng 2, 4 và 6 chỗ nối có CER (2) 13,60%; 15,49% và 17,53%, tức tăng 1,17; 3,06 và 5,10 điểm phần trăm so với dòng liền. Hai dòng liền có nét lạc của NV-GPQJ vẫn có CER 70,7% và 89,4%, và nếu bỏ hai dòng này thì CER (2) của dòng liền là 10,84%. Các số trên vẫn là số tạm, vì nhóm chỉnh mới có 9 trên 10 người và còn thiếu 1 người nhóm A. Kết quả đo nằm ở `~/vnhw/runs/m1l_rr_e100/nhom-chinh-9/`.
+
+### 10.14. Sửa công cụ thu sau đợt thu thứ hai
+
+Ở màn rà soát, mỗi dòng được thu nhỏ cho vừa bề ngang màn hình. Dòng liền của đợt thu thứ hai rộng từ 1.273 đến 2.314 điểm ảnh CSS, nên trên điện thoại rộng khoảng 390 điểm ảnh, chữ chỉ còn cao khoảng 19 điểm ảnh và gần như không đọc được dấu. Trong 9 dòng chép khác đề bị sót ở mục 10.13, có 8 dòng là dòng liền. Bản công cụ ngày 23/11/2026 có ba thay đổi:
+
+- Dòng liền ở màn rà soát được cắt thành nhiều đoạn xếp chồng, mỗi đoạn có băng viết cao khoảng 56 điểm ảnh, hai đoạn liền nhau chồng lên nhau 30 điểm ảnh.
+- Người thu rà dưới 10 giây một dòng thì công cụ nhắc đọc lại và phải bấm Hoàn tất lần nữa. Tệp ghi thêm thời gian rà soát và việc đã bị nhắc hay chưa.
+- Ở đợt thu chính thức, người thu phải xác nhận người viết chưa từng viết ở đợt thu nào. Người viết lại theo yêu cầu của người phụ trách phải dùng lại mã cũ. Tệp ghi thêm trường `firstSession`.
+
+Bảng máy Android có thêm 25 mã máy Galaxy A đời cũ, gồm A12, A13 và A33 5G của đợt thu thứ hai, để không phải đo bằng thẻ. Quy trình thu `tools/thu-net/quy-trinh-thu.md` được sửa theo. Bản mới chưa được đăng lên đường link của công cụ.
+
+### 10.15. Bộ lọc nét lạc trong lớp ghép đoạn
+
+Ở mục 10.12 và mục 10.13, các dòng có nét lạc có CER từ 70% đến 89%. Nét lạc gồm hai loại. Loại thứ nhất là chấm chạm nhầm nằm cách dòng chữ từ 2,3 đến 15 lần chiều cao thân chữ. Loại thứ hai là một nét quẹt dọc cao 992 điểm ảnh, gấp khoảng 24 lần chiều cao thân chữ. Bước vẽ ảnh co dòng theo khung bao của mọi nét, nên một nét lạc làm chữ thật co lại còn vài điểm ảnh.
+
+Luật sau được ghi trước khi đo. Sau khi gán nét vào dòng chữ, lớp ghép đoạn bỏ một nét khi thỏa một trong hai điều kiện, với $h$ là chiều cao thân chữ của dòng chữ chứa nét đó:
+
+- Khoảng cách theo chiều dọc từ nét tới dải thân chữ, tức khoảng giữa đỉnh thân chữ và đường chân chữ, lớn hơn $2h$.
+- Nét cao hơn $5h$.
+
+Dấu thanh và chân chữ nằm trong khoảng $1h$ quanh dải thân chữ, còn chữ cao nhất như g, h, y cao khoảng $3h$, nên luật không chạm tới nét của chữ. Luật được nhận khi đạt cả ba tiêu chí sau, với độ dày nét 1,2 và cấu hình triển khai:
+
+1. CER (2) gộp dòng liền và dòng ngắt ghép trên 9 buổi nhóm chỉnh thấp hơn 13,48% ở Bảng 23.
+2. CER (2) trên hai buổi thử viết bằng S Pen và buổi thử viết bằng ngón tay của mục 10.6 và mục 10.10 không tăng quá 0,2 điểm phần trăm ở mọi kịch bản.
+3. Mọi nét bị bỏ ở các dòng không ghi là có nét lạc đều được xem bằng mắt, và không nét nào là một phần của chữ hay dấu.
+
+Hai ngưỡng $2h$ và $5h$ không được chỉnh theo kết quả đo. Nếu luật không đạt, ngưỡng mới phải được ghi trước ở một mục mới. Bộ lọc không chạy trên nhóm kiểm thử trước bước 7.
+
+Tiêu chí 3 được xét trước, vì không cần chạy mô hình. Trên nhóm chỉnh và ba buổi thử, luật bỏ 27 nét. Ở dòng liền, 13 nét bị bỏ đều là nét lạc thật, gồm các chấm chạm nhầm và nét quẹt dọc của NV-GPQJ. Ở dòng ngắt, 3 trên 14 nét bị bỏ là chấm lạc thật. 11 nét còn lại là nét nhỏ của hàng dưới mà bước gán nét đã xếp nhầm lên hàng trên, như một dấu phẩy, chấm của chữ i và một mẩu nét của chữ g. Vì vậy luật không đạt tiêu chí 3 và không được đo CER. Luật sửa được ghi ở mục 10.16.
+
+### 10.16. Bộ lọc nét lạc có chuyển hàng
+
+Mục 10.15 cho thấy ở dòng ngắt, nét nằm xa dải thân chữ của hàng chứa nó thường là nét của một hàng khác bị gán nhầm, chứ không phải nét lạc. Luật sau được ghi trước khi đo, sau khi đã xem danh sách nét bị bỏ của mục 10.15 nhưng chưa chạy mô hình lần nào:
+
+- Nét cao hơn $5h$ bị bỏ, với $h$ là chiều cao thân chữ của hàng chứa nét.
+- Nét cách dải thân chữ của hàng chứa nó không quá $2h$ thì giữ ở hàng đó.
+- Nét cách xa hơn $2h$ được chuyển sang hàng có dải thân chữ gần nhất, nếu khoảng cách tới dải đó không quá $2h$ của hàng đó. Nếu không có hàng nào như vậy, nét bị bỏ.
+
+Ở dòng liền chỉ có một hàng, nên luật này cho cùng kết quả với luật ở mục 10.15. Luật được nhận theo ba tiêu chí của mục 10.15, trong đó tiêu chí 3 xét cả nét bị bỏ lẫn nét bị chuyển hàng: không nét nào của chữ hay dấu bị bỏ, và không nét nào bị chuyển sang sai hàng. Hai ngưỡng vẫn là $2h$ và $5h$.
+
+Luật đạt tiêu chí 3. Luật bỏ 16 nét, đều là chấm lạc hoặc nét quẹt thật, và chuyển 11 nét về đúng hàng chứa chúng. Lần đo không bộ lọc cho lại đúng các số của Bảng 23, nên hai lần đo chỉ khác nhau ở bộ lọc. Trên 9 buổi nhóm chỉnh, CER (2) của dòng liền giảm từ 12,43% xuống 10,75%, còn của dòng ngắt ghép tăng từ 14,60% lên 14,93%. CER (2) gộp giảm từ 13,48% xuống 12,77%, nên luật đạt tiêu chí 1. Hai dòng NV-GPQJ có nét lạc giảm từ 70,7% xuống 26,0% và từ 89,4% xuống 3,0%.
+
+Luật không đạt tiêu chí 2. Ở buổi thử viết bằng ngón tay, CER (2) của dòng mô phỏng 4 và 6 chỗ nối tăng 0,53 và 2,21 điểm phần trăm. Phần tăng đến từ vài dòng có nét bị chuyển hàng, trong khi ở hai buổi thử viết bằng S Pen, mọi kịch bản đều giảm hoặc tăng không quá 0,17 điểm phần trăm. Ở dòng ngắt thật, chuyển một nét đúng hàng vẫn làm CER của dòng thay đổi tới 0,12, theo cả hai chiều, nên bước chuyển hàng không có lợi rõ ràng. Theo luật đã ghi trước, luật này không được nhận. Kết quả đo nằm ở `~/vnhw/runs/m1l_rr_e100/loc-net-lac/`.
+
+### 10.17. Bộ lọc chỉ bỏ nét lạc xa mọi hàng
+
+Mục 10.16 cho thấy phần lợi đến từ việc bỏ nét lạc ở dòng liền, còn bước chuyển hàng có hại. Luật sau được ghi trước khi đo:
+
+- Nét cao hơn $5h$ bị bỏ, với $h$ là chiều cao thân chữ của hàng chứa nét.
+- Nét cách dải thân chữ của mọi hàng xa hơn $2h$ của hàng đó thì bị bỏ.
+- Mọi nét khác giữ nguyên ở hàng mà bước gán nét đã chọn, không chuyển hàng.
+
+Ở dòng liền, luật này cho cùng kết quả với luật ở mục 10.15 và mục 10.16. Luật được nhận theo ba tiêu chí của mục 10.15. Hai ngưỡng vẫn là $2h$ và $5h$. Nếu luật này không đạt, đề tài giữ lớp ghép đoạn như cũ và không thử thêm luật nào trên các dữ liệu này.
+
+Luật đạt tiêu chí 3, vì chỉ bỏ 16 nét lạc thật và không chuyển nét nào. Trên 9 buổi nhóm chỉnh, CER (2) của dòng liền giảm từ 12,43% xuống 10,75%, của dòng ngắt ghép tăng từ 14,60% lên 14,87%, và CER (2) gộp giảm từ 13,48% xuống 12,74%, nên luật đạt tiêu chí 1. Phần tăng ở dòng ngắt đến từ hai dòng của NV-5JCD, nơi bỏ 3 chấm lạc thật vẫn làm CER thay đổi theo chiều xấu. Ở hai buổi thử viết bằng S Pen, mọi kịch bản cho đúng số của lần đo không bộ lọc.
+
+Luật không đạt tiêu chí 2. Ở buổi thử viết bằng ngón tay, CER (2) của dòng mô phỏng 4 và 6 chỗ nối vẫn tăng 0,53 và 2,21 điểm phần trăm như ở mục 10.16. Các dòng đổi kết quả đều là dòng mô phỏng của những dòng liền không có nét lạc. Nguyên nhân có thể là một hàng mô phỏng chỉ có vài nét ngắn, nên chiều cao thân chữ của hàng rất nhỏ và nét bình thường bị coi là quá cao. Điều này chưa được kiểm chứng.
+
+Theo điều đã ghi trước khi đo, lớp ghép đoạn giữ như cũ và không thử thêm luật nào trên các dữ liệu này. Hàm `clean_rows` vẫn nằm trong `training/ink.py` nhưng tắt theo mặc định, còn ứng dụng không dùng. Lệnh `eval_selfcollected.py --drop-strays` bật lại bộ lọc để đo. Một luật mới, ví dụ đặt sàn cho chiều cao thân chữ khi xét nét quá cao, chỉ được thử trên dữ liệu nhóm chỉnh thu sau ngày 23/11/2026 và phải ghi trước ở một mục mới.
+
+### 10.18. Đợt thu thứ ba của nhóm chỉnh
+
+Ngày 24/11/2026, đề tài nhận đợt thu thứ ba, gồm 20 buổi thu từ ngày 17/11/2026 đến ngày 19/11/2026 bằng bản công cụ 2026-11-15 mở ngoài khung claude.ai, cùng 20 phiếu đồng ý. Cả 20 buổi thuộc nhóm chỉnh, viết bằng ngón tay trên điện thoại, đủ 20 dòng và đúng câu đề đã khóa, gồm 11 buổi nhóm A và 9 buổi nhóm B. Tệp NV-8ZS8 là tệp gộp theo lược đồ `thu-net-bundle/1`, chứa một buổi. Không buổi nào và không dòng nào trùng nét với 35 buổi của ba đợt thu.
+
+Buổi NV-EM4Y không dùng được. Cả 20 dòng chỉ viết hai chữ "Đó là", mỗi dòng khoảng 3 giây. Tên máy ghi trong tệp là iPhone 14 Pro, trong khi chuỗi nhận dạng trình duyệt là của một máy OPPO, và số đo bằng thẻ 55 mm ứng với màn hình khoảng 5,3 inch. Buổi này được để riêng ở `~/vnhw/data/nhom-chinh-de-rieng/`.
+
+Bảng 24 ghi năm buổi còn lại được đo bằng thẻ, vì máy không có trong bảng máy của bản công cụ 2026-11-15. Bề rộng theo thông số được tính từ đường chéo và độ phân giải của máy. Hàng kẻ thật bằng 12 mm nhân với tỷ số giữa bề rộng theo thông số và số đo bằng thẻ.
+
+Bảng 24: Năm buổi đo bằng thẻ của đợt thu thứ ba
+
+| Mã | Nhóm | Máy | Số đo bằng thẻ | Bề rộng theo thông số máy | Hàng kẻ thật |
+| --- | --- | --- | --- | --- | --- |
+| NV-28E5 | B | Galaxy A12 | 70 mm, dùng lại số đo của NV-8GTX | 67,8 mm | Khoảng 11,6 mm |
+| NV-2SVT | B | Redmi K40 Gaming | 70 mm | 69,5 mm | Khoảng 11,9 mm |
+| NV-6BYK | B | Galaxy A13 | 67 mm, dùng lại số đo của NV-DQK4 | 68,6 mm | Khoảng 12,3 mm |
+| NV-DT73 | B | iQOO Z9 Turbo | 65 mm | 70,7 mm | Khoảng 13,0 mm |
+| NV-EMBS | A | Redmi Note 9S | 65 mm | 69,5 mm | Khoảng 12,8 mm |
+
+Công cụ lưu số đo bằng thẻ trong trình duyệt và dùng lại ở lần mở sau trên cùng máy. Vì vậy NV-28E5 và NV-6BYK được thu trên đúng máy và trình duyệt của NV-8GTX và NV-DQK4 ở mục 10.13. Khung thẻ bắt đầu ở cỡ của màn hình rộng 70 mm, nên số 70 mm của NV-2SVT và NV-8GTX cho thấy người thu đã không chỉnh khung. Hai số này chỉ tình cờ lệch thông số máy 0,7% và 3,3%. Quy tắc nhận được đặt trước khi xem kết quả của mô hình trên đợt này: hàng kẻ thật lệch 12 mm không quá 10%. Theo Bảng 24, cả năm buổi đều đạt, với hàng kẻ thật từ khoảng 11,6 đến 13,0 mm. Mười bốn buổi còn lại lấy bề rộng từ bảng máy.
+
+Hai mươi phiếu đồng ý đều điền đủ họ tên, chữ ký và ngày 18/11/2026 hoặc 19/11/2026, do hai người thu ký. Bảy phiếu là bản chép của phiếu đợt đầu, chỉ đổi ngày, nên bảy người viết của đợt này đã viết ở đợt đầu. Đợt đầu có 6 người nhóm chỉnh và 4 người nhóm kiểm thử, nên ít nhất một người nhóm kiểm thử của đợt đầu đã viết cho nhóm chỉnh. Phiếu không ghi mã, nên không biết buổi nào của đợt này là của bảy người đó.
+
+Thông tin máy trong tệp cho thêm manh mối. Ngoài hai cặp dùng chung số đo bằng thẻ, NV-FUY3, NV-8E9T và NV-QZ3F có cùng đời máy và cùng chuỗi nhận dạng trình duyệt, kể cả phiên bản hệ điều hành, với NV-H8XR, NV-5JCD và NV-GPQJ. Vì người viết dùng máy của mình, 5 trong 9 buổi nhóm chỉnh ở mục 10.13 có lẽ do người của đợt này viết.
+
+Từ các điểm trên, đề tài chốt hai việc:
+
+- **Nhóm chỉnh:** từ ngày 24/11/2026, nhóm chỉnh gồm 19 buổi đủ điều kiện của đợt này, 10 buổi A và 9 buổi B, nằm ở `~/vnhw/data/nhom-chinh-dot3/`. Mỗi buổi có một phiếu riêng và thu trên một máy riêng, nên 19 buổi là của 19 người khác nhau. Chín buổi ở mục 10.13 không còn thuộc nhóm chỉnh, vì người viết của chúng đều là người của đợt đầu, và 5 buổi trong số đó có lẽ là của người đã viết lại ở đợt này. Giữ cả hai sẽ tính một người hai lần. Chín buổi này vẫn nằm ở `~/vnhw/data/nhom-chinh/`, và các kết quả ở mục 10.12 đến mục 10.17 giữ nguyên như đã ghi.
+- **Nhóm kiểm thử:** hai buổi hợp lệ NV-BXDB và NV-542R được để riêng cùng hai buổi trên iPad ở `~/vnhw/data/nhom-kiem-thu-de-rieng/`, vì có thể là của người đã viết cho nhóm chỉnh. Nhóm kiểm thử vì vậy chưa có buổi nào, và cả 20 người của nhóm này phải là người chưa viết ở đợt nào.
+
+Người thu chọn Chép đúng cho cả 380 dòng của 19 buổi. Thời gian rà soát mỗi buổi từ 26 đến 552 giây, trung vị 152 giây. Đề tài rà soát lại cả 380 dòng bằng mắt trên ảnh vẽ từ nét gốc, có đối chiếu kết quả đọc của mô hình như mục 10.13. Kết quả là 42 dòng chép khác đề ở 16 trên 19 buổi, gồm 26 dòng liền và 16 dòng ngắt. Trong đó, 19 dòng nằm ở 6 trong 8 buổi rà soát lâu hơn 10 giây mỗi dòng, nên rà soát lâu hơn chưa đủ để bắt các dòng này. Có 22 dòng thiếu một hoặc hai từ, 7 dòng viết "sinh nhau" thay cho "sinh nhai", trong đó 6 dòng là dòng liền của nhóm A, 6 dòng đổi một từ, như "phù hợp" thay cho "kết hợp" và "tranh cãi" thay cho "tranh luận", và 3 dòng thừa một từ. Bốn dòng còn lại gồm một chữ viết dở, một cặp từ đảo thứ tự, một chữ bị gạch và một chữ thừa. Dòng có chữ bị gạch hoặc chữ thừa cũng bị loại, vì nét mực không còn khớp với nhãn. Dòng chỉ khác dấu câu được giữ như các lần rà soát trước, và năm dòng có nét lạc xa dòng chữ cũng được giữ. Kết quả rà soát nằm ở `~/vnhw/data/nhom-chinh-dot3/review.json`.
+
+Bảng 25 ghi kết quả đo nhóm chỉnh mới với `m1l_rr_e100` và cấu hình triển khai, độ dày nét 1,2, sau khi bỏ 42 dòng chép khác đề. Cột 9 buổi cũ lấy từ Bảng 23 để so.
+
+Bảng 25: CER (2) của M2 trên nhóm chỉnh mới
+
+| Kịch bản | 9 buổi cũ | 19 buổi đợt 3 | 10 buổi A | 9 buổi B |
+| --- | --- | --- | --- | --- |
+| Số dòng liền và dòng ngắt | 87 và 81 | 164 và 174 | 83 và 94 | 81 và 80 |
+| Dòng liền | 12,43% | 10,34% | 8,39% | 12,34% |
+| Dòng ngắt sau khi ghép | 14,60% | 14,69% | 12,39% | 17,39% |
+| Gộp dòng liền và dòng ngắt ghép | 13,48% | 12,58% | 10,52% | 14,85% |
+| Dòng ngắt, nhận dạng từng hàng | 26,11% | 26,83% | 22,76% | 31,61% |
+
+Theo Bảng 25, CER (2) gộp của nhóm chỉnh mới là 12,58%, thấp hơn 0,90 điểm phần trăm so với 9 buổi cũ. Dòng liền thấp hơn 2,09 điểm phần trăm, còn dòng ngắt sau khi ghép gần như không đổi. Vì vậy dòng ngắt ghép nay cao hơn dòng liền 4,35 điểm phần trăm, so với 2,17 điểm phần trăm ở 9 buổi cũ, dù vẫn thấp hơn cách nhận dạng từng hàng 12,14 điểm phần trăm. Dòng ngắt mô phỏng 2, 4 và 6 chỗ nối có CER (2) 11,91%; 12,62% và 14,44%, tức tăng 1,57; 2,28 và 4,10 điểm phần trăm so với dòng liền, nên dòng ngắt thật sau khi ghép còn cao hơn dòng mô phỏng 6 chỗ nối. CER theo người viết trải từ 3,10% đến 27,21% với dòng liền và từ 6,84% đến 34,73% với dòng ngắt ghép, và NV-E4UA cao nhất ở cả hai. Nhóm A thấp hơn nhóm B 4,33 điểm phần trăm ở CER gộp. Nếu không bỏ 42 dòng chép khác đề, CER (2) là 10,54% với dòng liền và 15,04% với dòng ngắt ghép.
+
+Với độ dày nét 1,0; 1,2 và 1,5, CER (2) gộp là 12,71%; 12,58% và 12,51%. Quy tắc chọn được đặt trước khi xem kết quả: chọn độ dày có CER (2) gộp thấp nhất, nhưng giữ 1,2 nếu độ dày đó chỉ thấp hơn 1,2 không quá 0,2 điểm phần trăm, vì đổi độ dày phải sinh lại tệp cho ứng dụng và đo lại. Độ dày 1,5 thấp hơn 1,2 là 0,07 điểm phần trăm, nên độ dày 1,2 được giữ.
+
+Đợt này thu trước ngày 23/11/2026, nên theo mục 10.17 chưa được dùng để thử luật lọc nét lạc mới. Phần còn lại của bước 6 trên nhóm chỉnh mới là kiểm tra lại thứ tự các cấu hình của bước 3 và tìm nguyên nhân dòng ngắt ghép cao hơn dòng liền 4,35 điểm phần trăm. Kết quả đo nằm ở `~/vnhw/runs/m1l_rr_e100/nhom-chinh-dot3/`.
 
 ## 11. Mô hình đưa vào ứng dụng
 
@@ -472,16 +622,16 @@ Mục này ghi các bước sau khi chọn `m1l_rr_e100`, theo bước 5 của `
 
 ### 11.1. Trọng số n-gram
 
-Đề tài chỉnh lại $\alpha$ và $\beta$ theo cách của mục 4, gồm hai bước. Bước đầu dò lưới trên 410 dòng kiểm định với mô hình Keras, gồm 4 giá trị của $\alpha$ từ 0,3 đến 0,8 và 6 giá trị của $\beta$ từ 1 đến 8. Cặp $\alpha = 0{,}45$ và $\beta = 3$ cho CER (2) thấp nhất, 6,13%, còn cặp đang dùng $\alpha = 0{,}45$ và $\beta = 4$ cho 6,17%. Bước sau đo hai cặp này với cấu hình triển khai trên cả 1.229 dòng kiểm định và trên nét viết thật, ghi ở Bảng 22.
+Đề tài chỉnh lại $\alpha$ và $\beta$ theo cách của mục 4, gồm hai bước. Bước đầu dò lưới trên 410 dòng kiểm định với mô hình Keras, gồm 4 giá trị của $\alpha$ từ 0,3 đến 0,8 và 6 giá trị của $\beta$ từ 1 đến 8. Cặp $\alpha = 0{,}45$ và $\beta = 3$ cho CER (2) thấp nhất, 6,13%, còn cặp đang dùng $\alpha = 0{,}45$ và $\beta = 4$ cho 6,17%. Bước sau đo hai cặp này với cấu hình triển khai trên cả 1.229 dòng kiểm định và trên nét viết thật, ghi ở Bảng 26.
 
-Bảng 22: Hai cặp trọng số n-gram của `m1l_rr_e100` với cấu hình triển khai
+Bảng 26: Hai cặp trọng số n-gram của `m1l_rr_e100` với cấu hình triển khai
 
 | Cặp trọng số | Kiểm định, CER (2) | Kiểm định, WER (2) | Kiểm định, CER (1) | Kiểm định, WER (1) | Nét viết thật, ngắt ghép và liền |
 | --- | --- | --- | --- | --- | --- |
 | $\alpha = 0{,}45$, $\beta = 3$ | 6,615% | 17,57% | 5,98% | 16,52% | 16,33% |
 | $\alpha = 0{,}45$, $\beta = 4$ | 6,613% | 17,71% | 5,99% | 16,68% | 15,98% |
 
-Theo Bảng 22, hai cặp gần như bằng nhau trên tập kiểm định. Cặp $\beta = 4$ thấp hơn 0,002 điểm phần trăm ở CER (2), còn cặp $\beta = 3$ thấp hơn từ 0,01 đến 0,17 điểm phần trăm ở ba chỉ số còn lại. Trên nét viết thật, cặp $\beta = 4$ thấp hơn 0,34 điểm phần trăm, khoảng tin cậy theo người viết từ giảm 0,64 đến tăng 0,03. Đề tài giữ $\alpha = 0{,}45$ và $\beta = 4$, vì cặp này có CER (2) thấp nhất trên tập kiểm định và nét viết thật cho cùng chiều. Tệp `params.txt` của ứng dụng vì vậy không đổi.
+Theo Bảng 26, hai cặp gần như bằng nhau trên tập kiểm định. Cặp $\beta = 4$ thấp hơn 0,002 điểm phần trăm ở CER (2), còn cặp $\beta = 3$ thấp hơn từ 0,01 đến 0,17 điểm phần trăm ở ba chỉ số còn lại. Trên nét viết thật, cặp $\beta = 4$ thấp hơn 0,34 điểm phần trăm, khoảng tin cậy theo người viết từ giảm 0,64 đến tăng 0,03. Đề tài giữ $\alpha = 0{,}45$ và $\beta = 4$, vì cặp này có CER (2) thấp nhất trên tập kiểm định và nét viết thật cho cùng chiều. Tệp `params.txt` của ứng dụng vì vậy không đổi.
 
 Với cặp $\beta = 3$ và mô hình Keras, tăng độ rộng beam từ 30 lên 50 chỉ giảm CER (2) thêm 0,07 điểm phần trăm, nên đề tài giữ độ rộng 30.
 
@@ -491,9 +641,9 @@ Với $\alpha = 0{,}45$ và $\beta = 4$, độ dày nét 1,0; 1,2 và 1,5 điể
 
 ### 11.3. Chuyển đổi sang LiteRT
 
-Bảng 23 ghi kết quả chuyển đổi `m1l_rr_e100`, đo như Bảng 4 nhưng trên 200 dòng kiểm định lấy cách đều. Thời gian được đo khi máy đang huấn luyện lần chạy khác, nên chỉ dùng để so giữa các bản.
+Bảng 27 ghi kết quả chuyển đổi `m1l_rr_e100`, đo như Bảng 4 nhưng trên 200 dòng kiểm định lấy cách đều. Thời gian được đo khi máy đang huấn luyện lần chạy khác, nên chỉ dùng để so giữa các bản.
 
-Bảng 23: Kết quả chuyển đổi mô hình `m1l_rr_e100` sang LiteRT
+Bảng 27: Kết quả chuyển đổi mô hình `m1l_rr_e100` sang LiteRT
 
 | Bản | Dung lượng | CER (2) | Số dòng giống bản Keras | Thời gian trung vị một dòng |
 | --- | --- | --- | --- | --- |
@@ -502,13 +652,13 @@ Bảng 23: Kết quả chuyển đổi mô hình `m1l_rr_e100` sang LiteRT
 | LiteRT, lượng tử hóa float16 | 4,47 MB | 8,29% | 185 | 38,0 ms |
 | LiteRT, lượng tử hóa dynamic range | 2,26 MB | 8,86% | 80 | 21,7 ms |
 
-Theo Bảng 23, dynamic range làm CER tăng 0,64 điểm phần trăm so với bản Keras, gần bằng mức 0,61 điểm phần trăm của `m1_v2` ở Bảng 4. Float16 chỉ làm CER tăng 0,07 điểm phần trăm, nên đề tài giữ float16. Bản float16 nặng 4,47 MB, gấp khoảng 2,2 lần bản float16 của `m1_v2`. Khi đo cấu hình triển khai trên máy tính, mô hình chạy chậm hơn `m1_rr_e100` khoảng 2,6 lần, nên độ trễ phải đo lại trên điện thoại thật.
+Theo Bảng 27, dynamic range làm CER tăng 0,64 điểm phần trăm so với bản Keras, gần bằng mức 0,61 điểm phần trăm của `m1_v2` ở Bảng 4. Float16 chỉ làm CER tăng 0,07 điểm phần trăm, nên đề tài giữ float16. Bản float16 nặng 4,47 MB, gấp khoảng 2,2 lần bản float16 của `m1_v2`. Khi đo cấu hình triển khai trên máy tính, mô hình chạy chậm hơn `m1_rr_e100` khoảng 2,6 lần, nên độ trễ phải đo lại trên điện thoại thật.
 
 ### 11.4. Phân tích lỗi
 
-Với cấu hình triển khai, `m1l_rr_e100` đạt CER (2) 6,61% và WER (2) 17,71% trên tập kiểm định, theo Bảng 22. So với `m1_v2` ở Bảng 5, CER (2) giảm 1,61 điểm phần trăm và WER (2) giảm 4,32 điểm phần trăm. Bảng 24 so CER sau khi bỏ dấu của hai mô hình. Cột của `m1_v2` lấy từ Bảng 6, còn cột của `m1l_rr_e100` dùng cấu hình triển khai. CER theo độ dài dòng của `m1l_rr_e100` nằm ở Bảng 7.
+Với cấu hình triển khai, `m1l_rr_e100` đạt CER (2) 6,61% và WER (2) 17,71% trên tập kiểm định, theo Bảng 26. So với `m1_v2` ở Bảng 5, CER (2) giảm 1,61 điểm phần trăm và WER (2) giảm 4,32 điểm phần trăm. Bảng 28 so CER sau khi bỏ dấu của hai mô hình. Cột của `m1_v2` lấy từ Bảng 6, còn cột của `m1l_rr_e100` dùng cấu hình triển khai. CER theo độ dài dòng của `m1l_rr_e100` nằm ở Bảng 7.
 
-Bảng 24: CER của M2 sau khi bỏ dấu trên 1.229 dòng kiểm định, `m1_v2` và `m1l_rr_e100`
+Bảng 28: CER của M2 sau khi bỏ dấu trên 1.229 dòng kiểm định, `m1_v2` và `m1l_rr_e100`
 
 | Cách tính | `m1_v2`, CER (2) | `m1_v2`, CER (1) | `m1l_rr_e100`, CER (2) | `m1l_rr_e100`, CER (1) |
 | --- | --- | --- | --- | --- |
@@ -516,7 +666,7 @@ Bảng 24: CER của M2 sau khi bỏ dấu trên 1.229 dòng kiểm định, `m1
 | Bỏ dấu thanh | 7,51% | 6,62% | 6,12% | 5,54% |
 | Bỏ dấu thanh và dấu phụ | 7,06% | 6,20% | 5,74% | 5,19% |
 
-Theo Bảng 24, dấu thanh gây 0,49 điểm phần trăm CER (2) của `m1l_rr_e100`, còn dấu thanh và dấu phụ gây 0,88 điểm phần trăm. Hai mức này thấp hơn mức 0,69 và 1,14 điểm phần trăm của `m1_v2`. So với `m1_v2`, phần lỗi do dấu chỉ giảm 0,26 điểm phần trăm, còn CER sau khi bỏ mọi dấu giảm 1,32 điểm phần trăm. Phần lớn mức giảm CER vì vậy đến từ việc đọc đúng chữ cái hơn, không phải đọc đúng dấu hơn.
+Theo Bảng 28, dấu thanh gây 0,49 điểm phần trăm CER (2) của `m1l_rr_e100`, còn dấu thanh và dấu phụ gây 0,88 điểm phần trăm. Hai mức này thấp hơn mức 0,69 và 1,14 điểm phần trăm của `m1_v2`. So với `m1_v2`, phần lỗi do dấu chỉ giảm 0,26 điểm phần trăm, còn CER sau khi bỏ mọi dấu giảm 1,32 điểm phần trăm. Phần lớn mức giảm CER vì vậy đến từ việc đọc đúng chữ cái hơn, không phải đọc đúng dấu hơn.
 
 Các cặp hay nhầm nhất vẫn giống `m1_v2`: m và n, n và u, và chữ hoa với chữ thường như C và c, T và t. Lỗi xóa và lỗi chèn hay gặp nhất là dấu cách, với 172 lần xóa và 128 lần chèn, nên một phần lỗi từ đến từ việc tách hoặc nối nhầm âm tiết. Trên 1.229 dòng có 3.511 lỗi thay, 1.009 lỗi xóa và 502 lỗi chèn, so với 4.007, 1.522 và 539 của `m1_v2`.
 

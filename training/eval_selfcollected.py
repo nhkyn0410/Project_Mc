@@ -46,6 +46,7 @@ def main():
     p.add_argument("--dump", default="", help="Ghi nhãn và kết quả nhận dạng ra tệp này, thêm độ dày nét vào tên khi đo nhiều độ dày")
     p.add_argument("--greedy", action="store_true", help="Giải mã đơn giản, không dùng mô hình ngôn ngữ (M1)")
     p.add_argument("--review", default="", help="Tệp rà soát riêng, đánh dấu thêm các dòng chép khác đề theo mã người viết và chỉ số dòng")
+    p.add_argument("--drop-strays", action="store_true", help="Bỏ nét lạc khi ghép bằng ink.clean_rows, bộ lọc chưa được nhận (docs/07-nhat-ky-thi-nghiem.md, mục 10.15 đến mục 10.17)")
     p.add_argument("--by-writer", action="store_true", help="In thêm CER (2) của từng người viết, theo docs/02-yeu-cau-va-danh-gia.md, mục 2.6")
     a = p.parse_args()
 
@@ -71,7 +72,7 @@ def main():
         return decoder.decode(probs, keep=1)[0][1]
 
     def stitched(strokes, top, row, width):
-        return read(ink.stitch(strokes, top, row), width)
+        return read(ink.stitch(strokes, top, row, strays=a.drop_strays), width)
 
     def per_row(strokes, top, row, width):
         rows = ink.assign_rows(strokes, top, row)

@@ -126,6 +126,7 @@ th { color: var(--muted); font-weight: 500; }
         </div>
       </div>
       <label class="check"><input id="f-consent" type="checkbox"><span>Người viết đã đọc và ký phiếu đồng ý.</span></label>
+      <label class="check"><input id="f-first" type="checkbox"><span>Người viết chưa từng viết ở đợt thu chính thức nào, ở nhóm chỉnh hay nhóm kiểm thử. Nếu đã viết rồi, bấm Người này đã viết một buổi trước và nhập mã cũ của họ.</span></label>
     </div>
 
     <div class="panel">
@@ -301,7 +302,7 @@ const OFFICIAL_ROW_MM = 12;
 const TOP_PAD = 14, BAND_MM = 16, TARGET_LINES = 20;
 const INPUT_NAME = { touch: 'Ngón tay', pen: 'S Pen', mouse: 'Chuột' };
 // Bản của công cụ, ghi vào mỗi buổi thu để biết buổi đó được thu bằng bản nào.
-const TOOL_VERSION = '2026-11-15';
+const TOOL_VERSION = '2026-11-23';
 // Trang chạy trong khung của claude.ai hay chạy riêng. Trong khung, trình duyệt chặn việc tải và chia sẻ tệp.
 const IN_FRAME = (() => { try { return window.top !== window.self; } catch (e) { return true; } })();
 // Trình duyệt nằm trong ứng dụng nhắn tin thường không cho lưu tệp và hay phóng to trang.
@@ -398,6 +399,14 @@ const ANDROID = {
   'SM-A366': ['Galaxy A36', 6.7, 1080, 2340], 'SM-A566': ['Galaxy A56', 6.7, 1080, 2340],
   'SM-A155': ['Galaxy A15', 6.5, 1080, 2340], 'SM-A156': ['Galaxy A15 5G', 6.5, 1080, 2340], 'SM-A256': ['Galaxy A25', 6.5, 1080, 2340],
   'SM-A165': ['Galaxy A16', 6.7, 1080, 2340], 'SM-A166': ['Galaxy A16 5G', 6.7, 1080, 2340],
+  // Các đời Galaxy A cũ hơn. Ba máy A12, A13, A33 đã gặp ở đợt thu ngày 16/11/2026 và phải đo bằng thẻ.
+  'SM-A125': ['Galaxy A12', 6.5, 720, 1600], 'SM-A127': ['Galaxy A12', 6.5, 720, 1600], 'SM-A135': ['Galaxy A13', 6.6, 1080, 2408], 'SM-A137': ['Galaxy A13', 6.6, 1080, 2408],
+  'SM-A136': ['Galaxy A13 5G', 6.5, 720, 1600], 'SM-A035': ['Galaxy A03', 6.5, 720, 1600], 'SM-A045': ['Galaxy A04', 6.5, 720, 1600], 'SM-A055': ['Galaxy A05', 6.7, 720, 1600],
+  'SM-A057': ['Galaxy A05s', 6.7, 1080, 2400], 'SM-A145': ['Galaxy A14', 6.6, 1080, 2408], 'SM-A146': ['Galaxy A14 5G', 6.6, 1080, 2408],
+  'SM-A235': ['Galaxy A23', 6.6, 1080, 2408], 'SM-A236': ['Galaxy A23 5G', 6.6, 1080, 2408], 'SM-A245': ['Galaxy A24', 6.5, 1080, 2340],
+  'SM-A325': ['Galaxy A32', 6.4, 1080, 2400], 'SM-A336': ['Galaxy A33 5G', 6.4, 1080, 2400], 'SM-A515': ['Galaxy A51', 6.5, 1080, 2400],
+  'SM-A525': ['Galaxy A52', 6.5, 1080, 2400], 'SM-A526': ['Galaxy A52 5G', 6.5, 1080, 2400], 'SM-A528': ['Galaxy A52s', 6.5, 1080, 2400],
+  'SM-A536': ['Galaxy A53', 6.5, 1080, 2400], 'SM-A715': ['Galaxy A71', 6.7, 1080, 2400], 'SM-A736': ['Galaxy A73', 6.7, 1080, 2400],
   'Pixel 7': ['Pixel 7', 6.3, 1080, 2400], 'Pixel 7 Pro': ['Pixel 7 Pro', 6.7, 1440, 3120],
   'Pixel 8': ['Pixel 8', 6.2, 1080, 2400], 'Pixel 8 Pro': ['Pixel 8 Pro', 6.7, 1344, 2992],
   'Pixel 9': ['Pixel 9', 6.3, 1080, 2424], 'Pixel 9 Pro': ['Pixel 9 Pro', 6.3, 1280, 2856], 'Pixel 9 Pro XL': ['Pixel 9 Pro XL', 6.8, 1344, 2992]
@@ -619,6 +628,9 @@ async function startSession() {
     if ($('#start').dataset.code !== code) { $('#start').dataset.code = code; return startErr(`Máy này chưa có buổi nào của ${code}. Nếu mã này được cấp trên máy khác, bấm bắt đầu lần nữa.`); }
   }
   if (!$('#f-consent').checked) return startErr('Cần xác nhận người viết đã ký phiếu đồng ý.');
+  // Đợt thu chính thức: mỗi người chỉ có một buổi được dùng, theo quy-trinh-thu.md mục 1. Người viết lại phải giữ mã cũ,
+  // để người phân tích thấy hai buổi cùng một người và không xếp họ vào cả nhóm chỉnh lẫn nhóm kiểm thử.
+  if (protocol === 'official' && !codeOld && !$('#f-first').checked) return startErr('Cần xác nhận người viết chưa từng viết ở đợt thu chính thức nào.');
   if (protocol === 'official' && input !== 'touch') return startErr('Đợt thu chính thức chỉ nhận viết bằng ngón tay.');
   if (protocol === 'official' && isTablet()) return startErr('Đợt thu chính thức chỉ thu trên điện thoại, vì khung viết của ứng dụng là khung của điện thoại. Hãy mở link trên một điện thoại.');
   if (!tested[input]) return startErr(`Hãy vẽ thử một nét bằng ${INPUT_NAME[input]} trong ô thử. Nếu ô thử không nhận S Pen, hãy mở trang bằng Chrome.`);
@@ -643,7 +655,7 @@ async function startSession() {
     promptsLocked: protocol === 'official',
     tool: TOOL_VERSION,
     createdAt: now.toISOString(), finishedAt: null, exportedAt: null,
-    coordinateUnit: 'css_px', consent: true,
+    coordinateUnit: 'css_px', consent: true, firstSession: protocol === 'official' ? !codeOld : null,
     device: {
       model, userAgent: navigator.userAgent, screenCssWidth: screen.width, screenCssHeight: screen.height, innerWidth: window.innerWidth,
       devicePixelRatio: devicePixelRatio, screenWidthMm: r2(widthMm()), pxPerMm: r2(pxPerMm()), sizeSource: size.source, tableWidthMm: size.source === 'bang-may' ? r2(size.mm) : null, cardWidthMm: cardMm,
@@ -877,21 +889,43 @@ function renderInk(canvas, line) {
   const pts = line.strokes.flatMap(s => s.points), f = line.frame;
   const maxX = Math.max(...pts.map(p => p[0]), f.canvasW), maxY = Math.max(...pts.map(p => p[1]));
   const w = canvas.parentElement.clientWidth - 24 || 320;
-  const k = Math.min(1, w / maxX), contentH = f.type === 'ruled' ? maxY + 8 : Math.max(maxY, f.topPad + f.bandPx) + 8;
-  canvas.style.height = Math.ceil(contentH * k) + 'px';
-  canvas.width = Math.round(w * devicePixelRatio); canvas.height = Math.round(contentH * k * devicePixelRatio);
+  const fit = Math.min(1, w / maxX);
+  // Dòng liền rộng gấp 4 đến 7 lần màn hình. Thu cho vừa một hàng thì chữ chỉ cao khoảng 19 điểm ảnh, không đọc được dấu,
+  // nên dòng liền được cắt thành nhiều đoạn xếp chồng, mỗi đoạn ở cỡ băng viết cao khoảng 56 điểm ảnh.
+  const strip = f.type !== 'ruled' && f.bandPx && fit < 56 / f.bandPx;
+  const k = strip ? Math.min(1, 56 / f.bandPx) : fit;
+  const y0 = strip ? Math.min(Math.min(...pts.map(p => p[1])), f.topPad) - 6 : 0;
+  const y1 = f.type === 'ruled' ? maxY + 8 : Math.max(maxY, f.topPad + f.bandPx) + 8;
+  const bandH = y1 - y0, overlap = 30, stepX = w / k - overlap;
+  const n = strip ? Math.ceil((maxX - overlap) / stepX) : 1, gap = 8;
+  const cssH = n * bandH * k + (n - 1) * gap;
+  canvas.style.height = Math.ceil(cssH) + 'px';
+  canvas.width = Math.round(w * devicePixelRatio); canvas.height = Math.round(cssH * devicePixelRatio);
   const c = canvas.getContext('2d');
-  c.setTransform(devicePixelRatio * k, 0, 0, devicePixelRatio * k, 0, 0);
-  c.strokeStyle = cssVar('--rule'); c.lineWidth = 1 / k;
-  if (f.type === 'ruled') for (let y = f.topPad; y < contentH; y += f.rowPx) { c.beginPath(); c.moveTo(0, y); c.lineTo(maxX, y); c.stroke(); }
-  c.strokeStyle = cssVar('--stroke'); c.lineWidth = 1.8 / k > 2.2 ? 2.2 : 1.8 / k; c.lineCap = 'round'; c.lineJoin = 'round';
-  line.strokes.forEach(s => { c.beginPath(); c.moveTo(s.points[0][0], s.points[0][1]); s.points.forEach(p => c.lineTo(p[0], p[1])); c.stroke(); });
+  for (let i = 0; i < n; i++) {
+    const top = i * (bandH * k + gap), x0 = i * stepX;
+    c.save();
+    c.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    if (i) { c.fillStyle = cssVar('--rule'); c.fillRect(0, top - gap / 2 - 0.5, w, 1); }
+    c.beginPath(); c.rect(0, top, w, bandH * k); c.clip();
+    c.setTransform(devicePixelRatio * k, 0, 0, devicePixelRatio * k, devicePixelRatio * (-x0 * k), devicePixelRatio * (top - y0 * k));
+    c.strokeStyle = cssVar('--rule'); c.lineWidth = 1 / k;
+    if (f.type === 'ruled') for (let y = f.topPad; y < y1; y += f.rowPx) { c.beginPath(); c.moveTo(0, y); c.lineTo(maxX, y); c.stroke(); }
+    c.strokeStyle = cssVar('--stroke'); c.lineWidth = 1.8 / k > 2.2 ? 2.2 : 1.8 / k; c.lineCap = 'round'; c.lineJoin = 'round';
+    line.strokes.forEach(s => { c.beginPath(); c.moveTo(s.points[0][0], s.points[0][1]); s.points.forEach(p => c.lineTo(p[0], p[1])); c.stroke(); });
+    c.restore();
+  }
 }
 let saveReviewT;
 function saveReviewSoon(s) { clearTimeout(saveReviewT); saveReviewT = setTimeout(() => putSession(s), 300); }
 
+// Dưới 10 giây một dòng, người thu hay bỏ sót dòng chép khác: ba buổi rà trong 53 đến 117 giây
+// cho 20 dòng sót cả 9 dòng ở đợt thu ngày 16/11/2026, hai buổi rà 289 và 609 giây không sót dòng nào.
+const REVIEW_MIN_MS_PER_LINE = 10000;
 function beginReview(s) {
   S.session = s; show('review');
+  if (!s.reviewStartedAt) { s.reviewStartedAt = new Date().toISOString(); putSession(s); }
+  delete $('#r-done').dataset.warned;
   $('#r-code').textContent = `${s.participant}, ${INPUT_NAME[s.input]}`;
   const list = $('#r-list'); list.textContent = '';
   s.lines.forEach(line => {
@@ -944,6 +978,13 @@ $('#r-done').addEventListener('click', async () => {
     toast(`Còn ${left.length} dòng chưa chọn Chép đúng hoặc Chép khác.`);
     return;
   }
+  const s = S.session, ms = Date.now() - Date.parse(s.reviewStartedAt || s.finishedAt), want = REVIEW_MIN_MS_PER_LINE * s.lines.length;
+  if (ms < want && !$('#r-done').dataset.warned) {
+    $('#r-done').dataset.warned = '1';
+    toast(`Mới rà ${fmt(ms / 1000, 0)} giây cho ${s.lines.length} dòng. Hãy đọc lại từng chữ của các dòng liền rồi bấm Hoàn tất lần nữa.`);
+    return;
+  }
+  s.reviewMs = ms; s.reviewWarned = !!$('#r-done').dataset.warned;
   clearTimeout(saveReviewT); S.session.status = 'done'; S.session.reviewedAt = new Date().toISOString(); await putSession(S.session); openList();
 });
 

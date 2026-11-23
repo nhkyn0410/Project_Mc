@@ -120,6 +120,29 @@ def test_single_row_keeps_shape():
     assert np.allclose(np.diff(out[0][:, 0]), np.diff(a[:, 0]))
 
 
+def test_far_dot_and_tall_swipe_are_dropped():
+    line = [word(10 + 70 * i, 50) for i in range(4)]
+    stray = dot(100, 50 + 400)
+    swipe = np.array([[200.0, -400.0], [201.0, 600.0]])
+    out = ink.stitch(line + [stray, swipe], TOP, ROW, strays=True)
+    assert len(out) == 4
+    assert np.ptp(np.concatenate(out)[:, 1]) < 40
+
+
+def test_marks_near_the_line_are_kept():
+    line = [word(10 + 70 * i, 50) for i in range(4)]
+    accent, under = dot(40, 50 - 35), dot(120, 50 + 30)
+    assert len(ink.stitch(line + [accent, under], TOP, ROW, strays=True)) == 6
+
+
+def test_mark_near_another_row_is_kept_in_place():
+    upper = [word(10 + 70 * i, row_center(0)) for i in range(3)]
+    lower = [word(10 + 70 * i, row_center(1)) for i in range(3)]
+    groups = [upper + [dot(30, row_center(1))], lower]
+    out = ink.clean_rows(groups)
+    assert len(out[0]) == 4 and len(out[1]) == 3
+
+
 def test_render_shape_and_margin():
     image = ink.render([word(0, 0, 900, 40)])
     assert image.shape == (64, 512) and image.max() > 100

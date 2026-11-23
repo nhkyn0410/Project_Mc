@@ -52,6 +52,11 @@ def write_parity(run, lm_path, alpha, beta, max_ink=0, stroke_width=ink.STROKE_W
     with open(os.path.join(TEST_RES, "ink_parity.txt"), "w", encoding="utf8") as f:
         for case in range(12):
             strokes = random_strokes(rng, int(rng.integers(1, 4)))
+            if case % 3 == 2:
+                # Nét lạc cho bộ lọc của docs/07-nhat-ky-thi-nghiem.md, mục 10.16: chấm chạm nhầm xa dòng chữ và nét quẹt dọc.
+                low = max(p[1] for s in strokes for p in s)
+                strokes.append(np.array([[60.0, low + 400.0], [61.0, low + 400.0]]))
+                strokes.append(np.array([[200.0, 14.0], [202.0, low + 300.0]]))
             rows = ink.assign_rows(strokes, 14.0, 90.0)
             stitched = ink.stitch(strokes, 14.0, 90.0)
             image = ink.render(stitched, stroke_width=stroke_width, max_ink=max_ink)
