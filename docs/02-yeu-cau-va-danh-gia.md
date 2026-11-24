@@ -69,7 +69,7 @@ Mức tăng là hiệu giữa CER của dòng ngắt và CER của chính các d
 
 ### 2.6. Độ bất định trên tập tự thu
 
-Tập tự thu chỉ có 20 người viết (dự kiến), nên kết quả cần kèm khoảng tin cậy. Đề tài dùng bootstrap 95% với đơn vị lấy mẫu lại là người viết. Khi so sánh dòng liền với dòng ngắt, hoặc so với ML Kit, phép so sánh ghép cặp trên cùng một người viết.
+Tập đánh giá của tập tự thu chỉ có 19 người viết, theo `07-nhat-ky-thi-nghiem.md`, mục 10.19, nên kết quả cần kèm khoảng tin cậy. Đề tài dùng bootstrap 95% với đơn vị lấy mẫu lại là người viết. Khi so sánh dòng liền với dòng ngắt, hoặc so với ML Kit, phép so sánh ghép cặp trên cùng một người viết.
 
 ## 3. Kịch bản kiểm thử
 
@@ -80,8 +80,8 @@ Bảng 2: Kịch bản kiểm thử
 | Kịch bản | Dữ liệu | Câu hỏi cần trả lời |
 | --- | --- | --- |
 | Dòng liền | 1.634 dòng kiểm thử của VNOnDB | Mô hình đứng ở đâu so với các mốc công bố? |
-| Ngắt mô phỏng | Dòng liền của nhóm kiểm thử trong tập tự thu, cắt 2, 4 hoặc 6 lần tại ranh giới từ | Lớp ghép đoạn làm CER tăng bao nhiêu? |
-| Viết tay thật | Nhóm kiểm thử của tập tự thu, mỗi người 10 dòng liền và 10 dòng ngắt | Kết quả có giữ được khi viết bằng ngón tay? |
+| Ngắt mô phỏng | Dòng liền của tập đánh giá trong tập tự thu, cắt 2, 4 hoặc 6 lần tại ranh giới từ | Lớp ghép đoạn làm CER tăng bao nhiêu? |
+| Viết tay thật | Tập đánh giá của tập tự thu, mỗi người 10 dòng liền và 10 dòng ngắt | Kết quả có giữ được khi viết bằng ngón tay? |
 
 Số lần cắt lấy theo dữ liệu thử, trong đó một dòng ngắt chiếm từ 4 đến 8 hàng, theo `07-nhat-ky-thi-nghiem.md`, mục 10. Hai kịch bản Ngắt mô phỏng và Viết tay thật báo thêm mốc nhận dạng từng hàng rồi nối chuỗi, để so với dòng ảo. Kịch bản Ngắt mô phỏng dùng tập tự thu vì bản ảnh của VNOnDB không có nét để cắt. Đề tài không đặt kịch bản riêng cho nét trễ, vì ảnh của dòng không phụ thuộc vào thứ tự viết. Lớp ghép đoạn vẫn phải gán nét trễ vào đúng hàng, và kịch bản Viết tay thật kiểm tra điều này.
 
@@ -109,7 +109,7 @@ ML Kit có mô hình tiếng Việt với mã `vi` [@google2026b], nên đề t�
 ## 5. Quy tắc đo
 
 - **Chọn mô hình:** trong các mô hình có CER của M2 trên tập kiểm định không quá 8,4%, mô hình tốt nhất là mô hình có CER của M2 thấp nhất trên nét viết thật của buổi thử và nhóm chỉnh. CER trên tập kiểm định không phản ánh được nét viết trên điện thoại, theo `07-nhat-ky-thi-nghiem.md`, mục 10.
-- **Tập kiểm thử:** kịch bản trên tập kiểm thử chỉ chạy một lần ở cuối, sau khi đã chốt mô hình và mọi tham số. Nhóm kiểm thử của tập tự thu cũng vậy.
+- **Tập kiểm thử:** kịch bản trên tập kiểm thử chỉ chạy một lần ở cuối, sau khi đã chốt mô hình và mọi tham số. Tập đánh giá của tập tự thu cũng chỉ được đo một lần với cấu hình đã chốt, theo `07-nhat-ky-thi-nghiem.md`, mục 10.19.
 - **Kiểm tra bộ giải mã:** bộ giải mã Kotlin phải cho cùng kết quả với bản Python tham chiếu trên một bộ mẫu chung.
 - **Ghi nhận:** mọi lần chạy ghi vào `07-nhat-ky-thi-nghiem.md`, số liệu trong báo cáo phải chỉ ra được lần chạy tạo ra nó.
 

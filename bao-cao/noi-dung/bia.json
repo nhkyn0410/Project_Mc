@@ -1,0 +1,16 @@
+{
+  "tieuDeTep": "Nhận dạng chữ viết tay tiếng Việt trên thiết bị cảm ứng",
+  "dong": [
+    {"chu": "[TÊN CƠ QUAN CHỦ QUẢN]", "co": 13, "dam": false, "sau": 0},
+    {"chu": "[TÊN TRƯỜNG]", "co": 13, "dam": true, "sau": 0},
+    {"chu": "[TÊN KHOA]", "co": 13, "dam": true, "sau": 0},
+    {"chu": "BÁO CÁO ĐỒ ÁN", "co": 16, "dam": true, "truoc": 150, "sau": 24},
+    {"chu": "NHẬN DẠNG CHỮ VIẾT TAY TIẾNG VIỆT", "co": 20, "dam": true, "sau": 4},
+    {"chu": "TRÊN THIẾT BỊ CẢM ỨNG", "co": 20, "dam": true, "sau": 0},
+    {"chu": "Giảng viên hướng dẫn: [Họ và tên giảng viên]", "co": 14, "truoc": 110, "sau": 6},
+    {"chu": "Sinh viên thực hiện: [Họ và tên sinh viên]", "co": 14, "sau": 6},
+    {"chu": "Mã số sinh viên: [Mã số sinh viên]", "co": 14, "sau": 6},
+    {"chu": "Lớp: [Lớp]", "co": 14, "sau": 0},
+    {"chu": "[Địa danh], tháng 11 năm 2026", "co": 13, "truoc": 150, "sau": 0}
+  ]
+}

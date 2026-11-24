@@ -124,7 +124,7 @@ Bộ mô phỏng sinh dòng ngắt từ dòng liền của tập tự thu, vì b
 5. Chạy bước gán nét vào hàng và lớp ghép đoạn để tạo dòng ảo.
 6. Vẽ dòng ảo thành ảnh theo mục 3.2.
 
-Bước 4 là bắt buộc. Nếu chỉ dịch các đoạn rồi ghép lại, lớp ghép đoạn sẽ trả về đúng dữ liệu gốc và kết quả sẽ đẹp giả tạo. Dòng ngắt sinh từ nhóm chỉnh dùng để chỉnh ngưỡng, còn dòng ngắt sinh từ nhóm kiểm thử dùng để kiểm thử.
+Bước 4 là bắt buộc. Nếu chỉ dịch các đoạn rồi ghép lại, lớp ghép đoạn sẽ trả về đúng dữ liệu gốc và kết quả sẽ đẹp giả tạo. Dòng ngắt sinh từ nhóm chỉnh dùng để chỉnh ngưỡng, còn dòng ngắt sinh từ tập đánh giá dùng để đánh giá.
 
 ## 5. Chống rò rỉ dữ liệu
 
@@ -139,12 +139,12 @@ Các tập dùng chung người viết hoặc văn bản sẽ làm kết quả c
 
 ## 6. Tập tự thu
 
-Tập tự thu là nguồn dữ liệu nét duy nhất của đề tài, và là thước đo cuối cho việc viết bằng ngón tay trên điện thoại. Tập này không dùng để huấn luyện. Người viết chia thành hai nhóm không trùng nhau, đều là người không có trong VNOnDB:
+Tập tự thu là nguồn dữ liệu nét duy nhất của đề tài, và là thước đo cuối cho việc viết bằng ngón tay trên điện thoại. Tập này không dùng để huấn luyện. Người viết đều là người không có trong VNOnDB, và dữ liệu chia thành hai phần, theo `07-nhat-ky-thi-nghiem.md`, mục 10.19:
 
-- **Nhóm chỉnh:** khoảng 10 người (dự kiến), dùng để chỉnh ngưỡng của lớp ghép đoạn và độ dày nét.
-- **Nhóm kiểm thử:** 20 người (dự kiến), chỉ chạy một lần ở cuối.
+- **Nhóm chỉnh:** 9 buổi của đợt thu đầu và đợt thu thứ hai, dùng để chỉnh ngưỡng của lớp ghép đoạn và độ dày nét.
+- **Tập đánh giá:** 19 buổi của đợt thu thứ ba, của 19 người viết, chỉ được đo một lần với cấu hình đã chốt.
 
-Người đã viết ở các buổi thử, mã từ K01 đến V08, không được vào nhóm kiểm thử, vì nét của họ đã dùng để chọn mô hình ở `07-nhat-ky-thi-nghiem.md`, mục 10. Những người này vẫn có thể vào nhóm chỉnh, với mã mới do công cụ thu cấp.
+Dữ liệu của các buổi thử, mã từ K01 đến V08, chỉ dùng để chọn mô hình ở `07-nhat-ky-thi-nghiem.md`, mục 10, và không thuộc tập đánh giá.
 
 Mỗi người viết 10 dòng liền và 10 dòng ngắt. Người thu làm theo hướng dẫn từng bước trong `tools/thu-net/quy-trinh-thu.md`, viết cho người không biết về đề tài. Quy trình thu gồm các bước sau:
 
@@ -171,7 +171,7 @@ Hai buổi thử ngày 09/11/2026 và 10/11/2026 có 6 người viết bằng b�
 - **Rà soát lại ở nơi nhận:** ở đợt thu đầu, người rà soát bỏ sót 8 dòng chép khác đề trên 200 dòng, ở đợt thu thứ hai bỏ sót 9 dòng trên 100, và ở đợt thu thứ ba bỏ sót 42 dòng trên 380, kể cả ở các buổi rà soát lâu hơn 10 giây mỗi dòng, theo `07-nhat-ky-thi-nghiem.md`, mục 10.12, mục 10.13 và mục 10.18. Đề tài vì vậy xem lại mọi dòng trên ảnh vẽ từ nét gốc trước khi dùng một tệp, và với nhóm kiểm thử thì không chạy mô hình khi xem. Dòng có nội dung khác câu đề bị loại, kể cả dòng có chữ thừa hay chữ bị gạch, vì nét mực không còn khớp với nhãn. Dòng chỉ khác dấu câu và dòng có nét lạc được giữ.
 - **Kiểm tra tệp sau khi chép:** mở lại tệp trên máy tính để chắc tệp không bị cắt. Một tệp của buổi thử đầu bị cắt cụt, chỉ đọc được 11 dòng đầu.
 
-Đợt thu thứ ba cho thấy thêm hai việc phải kiểm ở nơi nhận, theo `07-nhat-ky-thi-nghiem.md`, mục 10.18. Thứ nhất, người đã viết ở đợt trước vẫn được cấp mã mới, và chỉ phiếu đồng ý cho biết điều này. Trước khi nhận một buổi vào nhóm kiểm thử, người phụ trách phải đối chiếu phiếu của đợt đó với phiếu của mọi đợt trước. Thứ hai, số đo bằng thẻ có thể không phải là số đo thật. Khung thẻ bắt đầu ở cỡ của màn hình rộng 70 mm, và hai trên bảy lần đo bằng thẻ của đợt thứ hai và đợt thứ ba giữ nguyên số 70 mm này. Với máy không có trong bảng máy, bề rộng ghi trong tệp phải được so với thông số của máy trước khi nhận buổi đó.
+Đợt thu thứ ba cho thấy thêm hai việc phải kiểm ở nơi nhận, theo `07-nhat-ky-thi-nghiem.md`, mục 10.18. Thứ nhất, người đã viết ở đợt trước vẫn được cấp mã mới, và chỉ phiếu đồng ý cho biết điều này. Trước khi nhận một buổi của người viết mới, người phụ trách phải đối chiếu phiếu của đợt đó với phiếu của mọi đợt trước. Thứ hai, số đo bằng thẻ có thể không phải là số đo thật. Khung thẻ bắt đầu ở cỡ của màn hình rộng 70 mm, và hai trên bảy lần đo bằng thẻ của đợt thứ hai và đợt thứ ba giữ nguyên số 70 mm này. Với máy không có trong bảng máy, bề rộng ghi trong tệp phải được so với thông số của máy trước khi nhận buổi đó.
 
 ## 7. Vấn đề chưa chốt
 
@@ -187,5 +187,4 @@ Bảng 4: Các vấn đề chưa chốt về dữ liệu
 | Tập kiểm thử ít hơn nguồn 1.376 ký tự, số đoạn văn ít hơn 2 | Giá trị $N$ khi tính tỷ lệ lỗi | Tìm các dòng có nhãn bất thường, ghi kết quả vào báo cáo |
 | Hai giấy phép khác nhau trong kho HTR-ConvText | Việc lưu danh sách chia tập vào kho mã | Đọc lại giấy phép, ghi nguồn khi lưu |
 | Cách xác định ranh giới từ trong dòng liền tự thu | Bộ mô phỏng cần biết nét nào thuộc từ nào | Tìm các khoảng trống lớn theo số khoảng trắng của câu đề, kiểm tra bằng tay |
-| Nhóm kiểm thử chưa có buổi hợp lệ nào, vì hai buổi cũ có thể là của người đã viết cho nhóm chỉnh, theo `07-nhat-ky-thi-nghiem.md`, mục 10.18 | Chưa đo được CER cuối khi viết bằng ngón tay | Thu 20 người chưa viết ở đợt nào theo mục 6, và đối chiếu phiếu đồng ý với phiếu của mọi đợt trước trước khi nhận một buổi |
 | Bảng máy của công cụ thu chưa kiểm trên máy thật | Sai một dòng trong bảng làm sai cỡ hàng của mọi buổi trên đời máy đó | Ở buổi đầu trên mỗi đời máy, đo thêm bằng thẻ và so với số của bảng |

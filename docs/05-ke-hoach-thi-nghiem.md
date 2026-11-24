@@ -9,7 +9,7 @@ Tài liệu này ghi các thí nghiệm của đề tài, câu hỏi mỗi thí 
 - **Một thay đổi mỗi lần:** mỗi thí nghiệm đổi một yếu tố so với một cấu hình gốc đã có kết quả, để biết thay đổi nào gây ra chênh lệch.
 - **Một lần huấn luyện mỗi lúc:** máy huấn luyện không đủ bộ nhớ cho nhiều lần chạy cùng lúc, theo `07-nhat-ky-thi-nghiem.md`, mục 9. Các lần chạy xếp hàng và chạy lần lượt.
 - **Hạt giống cố định:** mọi lần chạy dùng hạt giống 1, trừ thí nghiệm hạt giống ở Bảng 2. Trên nét viết thật, hai lần chạy cùng cấu hình có thể chênh gần 2 điểm phần trăm, theo `07-nhat-ky-thi-nghiem.md`, mục 10.9. Chênh lệch nhỏ hơn mức này giữa hai lần chạy đơn lẻ vì vậy chưa đủ để kết luận.
-- **Không chạm tập kiểm thử:** tập kiểm thử VNOnDB và nhóm kiểm thử của tập tự thu chỉ chạy một lần ở cuối, theo `02-yeu-cau-va-danh-gia.md`, mục 5.
+- **Không chạm tập kiểm thử:** tập kiểm thử VNOnDB và tập đánh giá của tập tự thu chỉ được đo một lần ở cuối, theo `02-yeu-cau-va-danh-gia.md`, mục 5.
 
 ## 2. Dữ liệu đo
 
@@ -64,11 +64,13 @@ Với ba hạt giống mỗi cấu hình, M1 lớn thấp hơn M1 1,10 điểm p
 4. Chạy M0 với cấu hình dữ liệu đã chọn.
 5. Chỉnh $\alpha$ và $\beta$ trên tập kiểm định, đo lại cấu hình triển khai, sinh tệp cho ứng dụng và chạy phép đối chiếu Kotlin.
 6. Thu nhóm chỉnh, chỉnh lại tham số của lớp ghép đoạn và độ dày nét, rồi lặp lại bước 3 nếu kết quả đổi thứ tự các cấu hình.
-7. Chốt mọi tham số, rồi chạy tập kiểm thử VNOnDB và nhóm kiểm thử, mỗi tập một lần.
+7. Chốt mọi tham số, rồi đo tập kiểm thử VNOnDB và tập đánh giá của tập tự thu, mỗi tập một lần.
 
 Đến ngày 11/11/2026, các bước từ 1 đến 5 đã xong. Bước 6 chờ dữ liệu của nhóm chỉnh, còn bước 7 chạy sau bước 6. Trong lúc chờ, đề tài chạy thử M1 lớn với 150 epoch, theo cách chọn đã chốt trước ở `07-nhat-ky-thi-nghiem.md`, mục 10.11. Lần chạy này xong ngày 13/11/2026 và không đạt hai điều kiện đã chốt, nên ứng dụng giữ `m1l_rr_e100`.
 
-Ngày 15/11/2026, nhóm chỉnh có 5 trên 10 người đủ điều kiện và nhóm kiểm thử có 2 buổi hợp lệ trên 20, theo `07-nhat-ky-thi-nghiem.md`, mục 10.12. Ngày 18/11/2026, bộ dữ liệu mới nâng nhóm chỉnh lên 9 buổi đủ điều kiện, gồm 4 buổi nhóm A và 5 buổi nhóm B, theo mục 10.13 của tài liệu đó. Năm buổi nhóm B do người đã viết ở đợt thu đầu viết lại, nên số người viết khác nhau chưa rõ cho tới khi biết mã cũ của từng người. Ngày 23/11/2026, bước 6 thử bộ lọc nét lạc cho lớp ghép đoạn. Bộ lọc không đạt tiêu chí ghi trước nên lớp ghép đoạn giữ như cũ, theo mục 10.15 đến mục 10.17 của tài liệu đó. Ngày 24/11/2026, đợt thu thứ ba cho 19 buổi đủ điều kiện của 19 người khác nhau, gồm 10 buổi nhóm A và 9 buổi nhóm B. Từ ngày này, nhóm chỉnh chỉ gồm 19 buổi đó, vì 5 trong 9 buổi cũ có lẽ là của người đã viết lại ở đợt thứ ba, theo mục 10.18 của tài liệu đó. Trên nhóm chỉnh mới, CER (2) của M2 là 10,34% với dòng liền và 14,69% với dòng ngắt sau khi ghép, và độ dày nét 1,2 vẫn được giữ. Nhóm kiểm thử chưa có buổi hợp lệ nào, vì hai buổi cũ có thể là của người đã viết cho nhóm chỉnh.
+Ngày 15/11/2026, nhóm chỉnh có 5 trên 10 người đủ điều kiện và nhóm kiểm thử có 2 buổi hợp lệ trên 20, theo `07-nhat-ky-thi-nghiem.md`, mục 10.12. Ngày 18/11/2026, bộ dữ liệu mới nâng nhóm chỉnh lên 9 buổi đủ điều kiện, gồm 4 buổi nhóm A và 5 buổi nhóm B, theo mục 10.13 của tài liệu đó. Năm buổi nhóm B do người đã viết ở đợt thu đầu viết lại, nên số người viết khác nhau chưa rõ cho tới khi biết mã cũ của từng người. Ngày 23/11/2026, bước 6 thử bộ lọc nét lạc cho lớp ghép đoạn. Bộ lọc không đạt tiêu chí ghi trước nên lớp ghép đoạn giữ như cũ, theo mục 10.15 đến mục 10.17 của tài liệu đó. Ngày 24/11/2026, đợt thu thứ ba cho 19 buổi đủ điều kiện của 19 người khác nhau, gồm 10 buổi nhóm A và 9 buổi nhóm B, theo mục 10.18 của tài liệu đó. Cùng ngày, đề tài kết thúc bước 6, chốt cấu hình của ứng dụng và dùng 19 buổi này làm tập đánh giá, theo mục 10.19 của tài liệu đó.
+
+Bước 7 xong ngày 24/11/2026, theo `07-nhat-ky-thi-nghiem.md`, mục 12. Trên tập kiểm thử VNOnDB, CER (2) của M2 là 5,97%, đạt ngưỡng 8,4% ở `02-yeu-cau-va-danh-gia.md`, mục 1. Trên tập đánh giá viết bằng ngón tay, CER (2) của M2 là 10,34% với dòng liền và 14,69% với dòng ngắt sau khi ghép.
 
 ## 5. Mức tăng cường
 
@@ -82,6 +84,5 @@ Bảng 3: Các vấn đề chưa chốt về thí nghiệm
 
 | Vấn đề | Ảnh hưởng | Hướng xử lý |
 | --- | --- | --- |
-| Nét viết thật mới có 6 người, đều viết bằng bút | Cấu hình tốt trên buổi thử có thể không tốt khi viết bằng ngón tay | Đo lại trên nhóm chỉnh trước khi chốt |
 | Độ dao động giữa các hạt giống trên nét viết thật tới gần 2 điểm phần trăm | So sánh hai lần chạy đơn lẻ trên nét viết thật kém tin cậy | Với thí nghiệm mới, chạy ba hạt giống khi hiệu trên nét viết thật dưới 2 điểm phần trăm và tập kiểm định không phân định được |
 | Điều kiện 8,4% trên tập kiểm định có thể loại cấu hình tốt nhất trên nét viết thật | Phải đánh đổi giữa so sánh với công bố và chất lượng trên điện thoại | Ghi cả hai kết quả, quyết định cùng giảng viên hướng dẫn nếu xảy ra |

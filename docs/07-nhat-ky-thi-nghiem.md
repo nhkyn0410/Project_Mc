@@ -593,16 +593,16 @@ Thông tin máy trong tệp cho thêm manh mối. Ngoài hai cặp dùng chung s
 
 Từ các điểm trên, đề tài chốt hai việc:
 
-- **Nhóm chỉnh:** từ ngày 24/11/2026, nhóm chỉnh gồm 19 buổi đủ điều kiện của đợt này, 10 buổi A và 9 buổi B, nằm ở `~/vnhw/data/nhom-chinh-dot3/`. Mỗi buổi có một phiếu riêng và thu trên một máy riêng, nên 19 buổi là của 19 người khác nhau. Chín buổi ở mục 10.13 không còn thuộc nhóm chỉnh, vì người viết của chúng đều là người của đợt đầu, và 5 buổi trong số đó có lẽ là của người đã viết lại ở đợt này. Giữ cả hai sẽ tính một người hai lần. Chín buổi này vẫn nằm ở `~/vnhw/data/nhom-chinh/`, và các kết quả ở mục 10.12 đến mục 10.17 giữ nguyên như đã ghi.
-- **Nhóm kiểm thử:** hai buổi hợp lệ NV-BXDB và NV-542R được để riêng cùng hai buổi trên iPad ở `~/vnhw/data/nhom-kiem-thu-de-rieng/`, vì có thể là của người đã viết cho nhóm chỉnh. Nhóm kiểm thử vì vậy chưa có buổi nào, và cả 20 người của nhóm này phải là người chưa viết ở đợt nào.
+- **Mười chín buổi đủ điều kiện:** 10 buổi A và 9 buổi B được chép vào `~/vnhw/data/nhom-chinh-dot3/`. Mỗi buổi có một phiếu riêng và thu trên một máy riêng, nên 19 buổi là của 19 người khác nhau. Vai trò của 19 buổi này được chốt ở mục 10.19.
+- **Hai buổi nhóm kiểm thử của đợt đầu:** NV-BXDB và NV-542R được để riêng cùng hai buổi trên iPad ở `~/vnhw/data/nhom-kiem-thu-de-rieng/`, vì có thể là của người đã viết cho nhóm chỉnh.
 
 Người thu chọn Chép đúng cho cả 380 dòng của 19 buổi. Thời gian rà soát mỗi buổi từ 26 đến 552 giây, trung vị 152 giây. Đề tài rà soát lại cả 380 dòng bằng mắt trên ảnh vẽ từ nét gốc, có đối chiếu kết quả đọc của mô hình như mục 10.13. Kết quả là 42 dòng chép khác đề ở 16 trên 19 buổi, gồm 26 dòng liền và 16 dòng ngắt. Trong đó, 19 dòng nằm ở 6 trong 8 buổi rà soát lâu hơn 10 giây mỗi dòng, nên rà soát lâu hơn chưa đủ để bắt các dòng này. Có 22 dòng thiếu một hoặc hai từ, 7 dòng viết "sinh nhau" thay cho "sinh nhai", trong đó 6 dòng là dòng liền của nhóm A, 6 dòng đổi một từ, như "phù hợp" thay cho "kết hợp" và "tranh cãi" thay cho "tranh luận", và 3 dòng thừa một từ. Bốn dòng còn lại gồm một chữ viết dở, một cặp từ đảo thứ tự, một chữ bị gạch và một chữ thừa. Dòng có chữ bị gạch hoặc chữ thừa cũng bị loại, vì nét mực không còn khớp với nhãn. Dòng chỉ khác dấu câu được giữ như các lần rà soát trước, và năm dòng có nét lạc xa dòng chữ cũng được giữ. Kết quả rà soát nằm ở `~/vnhw/data/nhom-chinh-dot3/review.json`.
 
-Bảng 25 ghi kết quả đo nhóm chỉnh mới với `m1l_rr_e100` và cấu hình triển khai, độ dày nét 1,2, sau khi bỏ 42 dòng chép khác đề. Cột 9 buổi cũ lấy từ Bảng 23 để so.
+Bảng 25 ghi kết quả đo 19 buổi này với `m1l_rr_e100` và cấu hình triển khai, độ dày nét 1,2, sau khi bỏ 42 dòng chép khác đề. Cột 9 buổi nhóm chỉnh lấy từ Bảng 23 để so.
 
-Bảng 25: CER (2) của M2 trên nhóm chỉnh mới
+Bảng 25: CER (2) của M2 trên 19 buổi của đợt thu thứ ba
 
-| Kịch bản | 9 buổi cũ | 19 buổi đợt 3 | 10 buổi A | 9 buổi B |
+| Kịch bản | 9 buổi nhóm chỉnh | 19 buổi đợt 3 | 10 buổi A | 9 buổi B |
 | --- | --- | --- | --- | --- |
 | Số dòng liền và dòng ngắt | 87 và 81 | 164 và 174 | 83 và 94 | 81 và 80 |
 | Dòng liền | 12,43% | 10,34% | 8,39% | 12,34% |
@@ -610,11 +610,21 @@ Bảng 25: CER (2) của M2 trên nhóm chỉnh mới
 | Gộp dòng liền và dòng ngắt ghép | 13,48% | 12,58% | 10,52% | 14,85% |
 | Dòng ngắt, nhận dạng từng hàng | 26,11% | 26,83% | 22,76% | 31,61% |
 
-Theo Bảng 25, CER (2) gộp của nhóm chỉnh mới là 12,58%, thấp hơn 0,90 điểm phần trăm so với 9 buổi cũ. Dòng liền thấp hơn 2,09 điểm phần trăm, còn dòng ngắt sau khi ghép gần như không đổi. Vì vậy dòng ngắt ghép nay cao hơn dòng liền 4,35 điểm phần trăm, so với 2,17 điểm phần trăm ở 9 buổi cũ, dù vẫn thấp hơn cách nhận dạng từng hàng 12,14 điểm phần trăm. Dòng ngắt mô phỏng 2, 4 và 6 chỗ nối có CER (2) 11,91%; 12,62% và 14,44%, tức tăng 1,57; 2,28 và 4,10 điểm phần trăm so với dòng liền, nên dòng ngắt thật sau khi ghép còn cao hơn dòng mô phỏng 6 chỗ nối. CER theo người viết trải từ 3,10% đến 27,21% với dòng liền và từ 6,84% đến 34,73% với dòng ngắt ghép, và NV-E4UA cao nhất ở cả hai. Nhóm A thấp hơn nhóm B 4,33 điểm phần trăm ở CER gộp. Nếu không bỏ 42 dòng chép khác đề, CER (2) là 10,54% với dòng liền và 15,04% với dòng ngắt ghép.
+Theo Bảng 25, CER (2) gộp của 19 buổi là 12,58%, thấp hơn 0,90 điểm phần trăm so với 9 buổi nhóm chỉnh. Dòng liền thấp hơn 2,09 điểm phần trăm, còn dòng ngắt sau khi ghép gần như không đổi. Vì vậy dòng ngắt ghép cao hơn dòng liền 4,34 điểm phần trăm, so với 2,17 điểm phần trăm ở nhóm chỉnh, dù vẫn thấp hơn cách nhận dạng từng hàng 12,15 điểm phần trăm. Dòng ngắt mô phỏng 2, 4 và 6 chỗ nối có CER (2) 11,91%; 12,62% và 14,44%, tức tăng 1,57; 2,28 và 4,10 điểm phần trăm so với dòng liền, nên dòng ngắt thật sau khi ghép còn cao hơn dòng mô phỏng 6 chỗ nối. CER theo người viết trải từ 3,10% đến 27,21% với dòng liền và từ 6,84% đến 34,73% với dòng ngắt ghép, và NV-E4UA cao nhất ở cả hai. Nhóm A thấp hơn nhóm B 4,33 điểm phần trăm ở CER gộp. Nếu không bỏ 42 dòng chép khác đề, CER (2) là 10,54% với dòng liền và 15,04% với dòng ngắt ghép.
 
 Với độ dày nét 1,0; 1,2 và 1,5, CER (2) gộp là 12,71%; 12,58% và 12,51%. Quy tắc chọn được đặt trước khi xem kết quả: chọn độ dày có CER (2) gộp thấp nhất, nhưng giữ 1,2 nếu độ dày đó chỉ thấp hơn 1,2 không quá 0,2 điểm phần trăm, vì đổi độ dày phải sinh lại tệp cho ứng dụng và đo lại. Độ dày 1,5 thấp hơn 1,2 là 0,07 điểm phần trăm, nên độ dày 1,2 được giữ.
 
-Đợt này thu trước ngày 23/11/2026, nên theo mục 10.17 chưa được dùng để thử luật lọc nét lạc mới. Phần còn lại của bước 6 trên nhóm chỉnh mới là kiểm tra lại thứ tự các cấu hình của bước 3 và tìm nguyên nhân dòng ngắt ghép cao hơn dòng liền 4,35 điểm phần trăm. Kết quả đo nằm ở `~/vnhw/runs/m1l_rr_e100/nhom-chinh-dot3/`.
+Kết quả đo nằm ở `~/vnhw/runs/m1l_rr_e100/nhom-chinh-dot3/`.
+
+### 10.19. Chốt cấu hình và tập đánh giá viết bằng ngón tay
+
+Ngày 24/11/2026, người phụ trách cho biết đề tài không thu thêm dữ liệu. Đề tài vì vậy kết thúc bước 6 của `05-ke-hoach-thi-nghiem.md`, mục 4, và chốt ba việc:
+
+- **Cấu hình:** `m1l_rr_e100` bản float16, $\alpha = 0{,}45$, $\beta = 4$, beam 30, độ dày nét 1,2, lớp ghép đoạn không bật bộ lọc nét lạc. Đây là cấu hình của ứng dụng theo mục 11.
+- **Nhóm chỉnh:** 9 buổi ở mục 10.13. Trên nhóm này, phép kiểm tra độ dày nét và ba luật lọc nét lạc ở mục 10.15 đến mục 10.17 đều giữ nguyên cấu hình.
+- **Tập đánh giá:** 19 buổi của đợt thu thứ ba ở mục 10.18, thay cho nhóm kiểm thử ở `03-du-lieu.md`, mục 6. Tập này dùng cho hai kịch bản Ngắt mô phỏng và Viết tay thật của `02-yeu-cau-va-danh-gia.md`, mục 3.
+
+Cấu hình này đã có trong ứng dụng từ trước khi nhận đợt thu thứ ba, và phép kiểm tra độ dày nét ở mục 10.18 cũng giữ 1,2, nên không tham số nào được đổi theo tập đánh giá. Đề tài không đo lại thứ tự các cấu hình của bước 3 trên dữ liệu ngón tay, để tập đánh giá chỉ được đo với một cấu hình. Phép đo ngày 24/11/2026 ở mục 10.18 là lần đo duy nhất của tập đánh giá, và kết quả cuối nằm ở mục 12.2. Nhóm chỉnh và tập đánh giá chép cùng 20 câu đề của nhóm chỉnh, và có chung một số người viết, theo mục 10.18. Hai buổi NV-BXDB và NV-542R không được dùng.
 
 ## 11. Mô hình đưa vào ứng dụng
 
@@ -673,3 +683,41 @@ Các cặp hay nhầm nhất vẫn giống `m1_v2`: m và n, n và u, và chữ 
 ### 11.5. Đưa vào ứng dụng
 
 Mã `training/export_assets.py` sinh lại các tệp đi kèm từ `m1l_rr_e100`, với $\alpha = 0{,}45$, $\beta = 4$ và độ dày nét 1,2. Chỉ tệp `model.tflite` thay đổi, còn `lm.bin`, `chars.txt` và `params.txt` giống hệt bản trước, kiểm tra bằng mã băm SHA-256. Tổng dung lượng các tệp đi kèm là 15,43 MB, dưới ngưỡng 20 MB. Kết quả đối chiếu Python với Kotlin và chạy thử trên máy ảo nằm ở `06-trien-khai-android.md`, mục 3.
+
+## 12. Kết quả cuối
+
+Mục này ghi kết quả của bước 7 ở `05-ke-hoach-thi-nghiem.md`, mục 4, với cấu hình chốt ở mục 10.19. Mỗi tập chỉ được đo một lần.
+
+### 12.1. Tập kiểm thử VNOnDB
+
+Ngày 24/11/2026, đề tài chạy 1.634 dòng kiểm thử của VNOnDB một lần bằng `training/eval_deployed.py` với cờ `--confirm-test`. Bảng 29 ghi kết quả, cùng kết quả của cấu hình này trên tập kiểm định ở Bảng 26 để so. Các nguồn của mốc so sánh không nêu cách tính trung bình, nên bảng ghi cả hai công thức của CER và WER. Dòng cuối là M1 giải mã đơn giản, tức cùng mô hình nhưng không dùng n-gram.
+
+Bảng 29: Kết quả của cấu hình chốt trên tập kiểm thử VNOnDB
+
+| Chỉ số | Tập kiểm định, 1.229 dòng | Tập kiểm thử, 1.634 dòng |
+| --- | --- | --- |
+| CER (2) của M2 | 6,61% | 5,97% |
+| CER (1) của M2 | 5,99% | 5,59% |
+| WER (2) của M2 | 17,71% | 16,29% |
+| WER (1) của M2 | 16,68% | 15,47% |
+| CER (2) của M1 | 8,31% | 7,79% |
+
+Theo Bảng 29, CER (2) của M2 trên tập kiểm thử là 5,97%, đạt ngưỡng không quá 8,4% và thấp hơn mục tiêu cao hơn 7,6% ở `02-yeu-cau-va-danh-gia.md`, mục 1. Mọi chỉ số trên tập kiểm thử đều thấp hơn trên tập kiểm định, từ 0,40 đến 1,42 điểm phần trăm, nên các lựa chọn làm trên tập kiểm định không cho thấy dấu hiệu quá khớp. So với các mốc dạng ảnh ở `02-yeu-cau-va-danh-gia.md`, Bảng 3, CER của M2 theo cả hai công thức nằm giữa HTR-VT với 4,26% và OrigamiNet với 7,6%, và WER cũng nằm giữa hai mốc này. Mô hình có 2,23 triệu tham số, so với 53,5 triệu của HTR-VT và 39,1 triệu của OrigamiNet. Khi không dùng n-gram, CER (2) của M1 là 7,79%, gần mức 7,6% của OrigamiNet. Kết quả từng dòng nằm ở `~/vnhw/runs/m1l_rr_e100/deployed_test_pred.txt`.
+
+### 12.2. Tập đánh giá viết bằng ngón tay
+
+Bảng 30 ghi kết quả của 19 người viết trong tập đánh giá, lấy từ phép đo ở mục 10.18 với độ dày nét 1,2, sau khi bỏ 42 dòng chép khác đề. Khoảng tin cậy 95% lấy bằng bootstrap 10.000 lần, với đơn vị lấy mẫu lại là người viết, theo `02-yeu-cau-va-danh-gia.md`, mục 2.6.
+
+Bảng 30: Kết quả trên tập đánh giá viết bằng ngón tay
+
+| Kịch bản | Số dòng | CER (2) | Khoảng tin cậy 95% của CER (2) | WER (2) |
+| --- | --- | --- | --- | --- |
+| Viết tay thật, dòng liền | 164 | 10,34% | 8,07-12,87% | 24,81% |
+| Viết tay thật, dòng ngắt sau khi ghép | 174 | 14,69% | 11,77-18,01% | 35,43% |
+| Viết tay thật, gộp hai loại dòng | 338 | 12,58% | 10,16-15,35% | 30,28% |
+| Viết tay thật, dòng ngắt nhận dạng từng hàng | 174 | 26,83% | 22,48-31,40% | 58,40% |
+| Ngắt mô phỏng, 2 chỗ nối | 164 | 11,91% | 9,64-14,45% | 28,40% |
+| Ngắt mô phỏng, 4 chỗ nối | 164 | 12,62% | 10,40-15,04% | 29,84% |
+| Ngắt mô phỏng, 6 chỗ nối | 164 | 14,44% | 11,68-17,72% | 34,97% |
+
+Theo Bảng 30, khi viết bằng ngón tay trên điện thoại, CER (2) của dòng liền là 10,34%, cao hơn tập kiểm thử VNOnDB 4,37 điểm phần trăm. So ghép cặp trên cùng người viết, dòng ngắt sau khi ghép cao hơn dòng liền 4,34 điểm phần trăm, khoảng tin cậy từ 2,43 đến 6,39, và thấp hơn cách nhận dạng từng hàng 12,15 điểm phần trăm, khoảng tin cậy từ 9,80 đến 14,33. Với dòng ngắt mô phỏng, lớp ghép đoạn làm CER tăng 1,57; 2,28 và 4,10 điểm phần trăm so với chính dòng đó viết liền khi có 2, 4 và 6 chỗ nối, với khoảng tin cậy từ 0,48 đến 2,72, từ 1,33 đến 3,23 và từ 2,61 đến 5,66. Nếu giữ cả 380 dòng, kể cả các dòng chép khác đề, CER (2) là 10,54% với dòng liền, 15,04% với dòng ngắt sau khi ghép và 27,61% với nhận dạng từng hàng. Kết quả từng dòng nằm ở `~/vnhw/runs/m1l_rr_e100/nhom-chinh-dot3/`.

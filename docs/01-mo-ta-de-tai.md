@@ -59,7 +59,7 @@ Bảng 1: Phát biểu bài toán
 
 Nguồn chính là VNOnDB, gồm 7.296 dòng từ 200 người viết [@nguyen2018; @le2018]. Các tệp nét gốc không tải được, nên đề tài dùng bản đã vẽ thành ảnh. Cách chia gồm 4.433 dòng huấn luyện, 1.229 dòng kiểm định và 1.634 dòng kiểm thử [@le2019]. Nhờ vậy, kết quả so sánh được với các công bố dạng ảnh.
 
-Tập tự thu là nguồn dữ liệu nét duy nhất, với người viết không có trong VNOnDB. Tập này không dùng để huấn luyện, mà chia thành nhóm chỉnh ngưỡng và nhóm kiểm thử. Chi tiết về nguồn, tiền xử lý, chống rò rỉ và quy trình thu nằm trong `03-du-lieu.md`.
+Tập tự thu là nguồn dữ liệu nét duy nhất, với người viết không có trong VNOnDB. Tập này không dùng để huấn luyện, mà chia thành nhóm chỉnh ngưỡng và tập đánh giá. Chi tiết về nguồn, tiền xử lý, chống rò rỉ và quy trình thu nằm trong `03-du-lieu.md`.
 
 ## 7. Phương pháp
 
