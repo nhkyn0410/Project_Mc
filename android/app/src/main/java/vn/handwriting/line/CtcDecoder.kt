@@ -4,7 +4,11 @@ import kotlin.math.exp
 import kotlin.math.ln
 import kotlin.math.ln1p
 
-/** Bản Kotlin của training/decoder.py. */
+/**
+ * Bản Kotlin của training/decoder.py. Khi có n-gram ký tự, bộ giải mã theo cách kết hợp của
+ * training/decoder_char.py: mỗi ký tự thêm vào tiền tố được cộng alphaC nhân log xác suất theo
+ * n-gram ký tự và gammaC, cuối dòng cộng alphaC nhân log xác suất của ký hiệu cuối câu.
+ */
 class CtcDecoder(
     chars: String,
     private val lm: NGramModel?,
@@ -13,6 +17,9 @@ class CtcDecoder(
     private val beam: Int = 30,
     private val topChars: Int = 8,
     private val minProb: Float = 0.002f,
+    private val clm: CharNGramModel? = null,
+    private val alphaC: Double = 0.0,
+    private val gammaC: Double = 0.0,
 ) {
     private val chars = chars.toCharArray()
     private val index = HashMap<Char, Int>().also { m -> this.chars.forEachIndexed { i, c -> m[c] = i } }
@@ -20,6 +27,21 @@ class CtcDecoder(
     private val space = index.getValue(' ')
 
     private class LmState(val score: Double, val a: Int, val b: Int, val current: String)
+
+    // Log xác suất theo n-gram ký tự, nhớ theo ngữ cảnh và nhãn để không tra lại.
+    private val charCache = HashMap<String, Double>()
+    private val labelSymbols = clm?.let { m -> IntArray(this.chars.size) { m.symbol(this.chars[it]) } }
+
+    private fun charLogP(prefix: String, k: Int): Double {
+        val model = clm!!
+        val n1 = model.order - 1
+        val tail = if (prefix.length >= n1) prefix.substring(prefix.length - n1) else "\u0000" + prefix
+        val key = tail + "\u0001" + k
+        return charCache.getOrPut(key) {
+            if (charCache.size > 200_000) charCache.clear()
+            model.logP(model.contextOf(prefix), if (k == EOS) model.eos else labelSymbols!![k])
+        }
+    }
     private class Entry(var lb: Double, var lnb: Double, val state: LmState)
 
     private fun add(x: Double, y: Double): Double {
@@ -60,8 +82,9 @@ class CtcDecoder(
                 for (k in labels) {
                     val base = if (k == last) e.lb else total
                     if (base <= NEG / 2) continue
-                    val state = if (k == space) wordScore(e.state)
-                    else LmState(e.state.score, e.state.a, e.state.b, e.state.current + chars[k])
+                    val c = if (clm != null) alphaC * charLogP(prefix, k) + gammaC else 0.0
+                    val state = if (k == space) wordScore(e.state).let { LmState(it.score + c, it.a, it.b, "") }
+                    else LmState(e.state.score + c, e.state.a, e.state.b, e.state.current + chars[k])
                     update(prefix + chars[k], NEG, base + ln(row[k].coerceAtLeast(1e-12f).toDouble()), state)
                 }
             }
@@ -70,7 +93,10 @@ class CtcDecoder(
             for (entry in ranked.take(beam)) current[entry.key] = entry.value
         }
         return current.entries
-            .map { (prefix, e) -> Pair(add(e.lb, e.lnb) + wordScore(e.state).score, prefix.trim()) }
+            .map { (prefix, e) ->
+                val end = if (clm != null) alphaC * charLogP(prefix, EOS) else 0.0
+                Pair(add(e.lb, e.lnb) + (wordScore(e.state).score + end), prefix.trim())
+            }
             .sortedByDescending { it.first }
             .take(keep)
             .map { it.second }
@@ -78,6 +104,7 @@ class CtcDecoder(
 
     companion object {
         private const val NEG = -1e9
+        private const val EOS = -1
         private val NOT_WORD = Regex("[^\\p{L}\\p{Nd}\\p{Nl}\\p{No}_]")
         private val DIGIT = Regex("\\p{Nd}")
 

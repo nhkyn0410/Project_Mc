@@ -7,8 +7,12 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.channels.FileChannel
 
-/** Chạy mô hình và bộ giải mã. Chỉ gọi từ một luồng nền. */
-class Recognizer(context: Context) {
+/**
+ * Chạy mô hình và bộ giải mã. Chỉ gọi từ một luồng nền.
+ * Nếu có clm.bin và params.txt có đủ trọng số, bộ giải mã dùng thêm n-gram ký tự,
+ * trừ khi useCharLm là false (dùng để đo so sánh với cấu hình cũ).
+ */
+class Recognizer(context: Context, useCharLm: Boolean = true) {
     private val interpreter: Interpreter
     private val decoder: CtcDecoder
     private val input = ByteBuffer.allocateDirect(Ink.HEIGHT * Ink.WIDTH * 4).order(ByteOrder.nativeOrder())
@@ -17,6 +21,7 @@ class Recognizer(context: Context) {
     private val labels: Int
     private val maxInk: Int
     private val strokeWidth: Double
+    val usesCharLm: Boolean
 
     class Result(val candidates: List<String>, val modelMs: Long, val decodeMs: Long, val renderMs: Long)
 
@@ -33,7 +38,15 @@ class Recognizer(context: Context) {
         val chars = assets.open("chars.txt").use { String(it.readBytes(), Charsets.UTF_8) }
         val lm = NGramModel(assets.open("lm.bin").use { it.readBytes() })
         val params = assets.open("params.txt").use { String(it.readBytes()).trim().split(" ") }
-        decoder = CtcDecoder(chars, lm, params[0].toDouble(), params[1].toDouble())
+        val clm = if (useCharLm && params.size >= 6 && "clm.bin" in (assets.list("") ?: emptyArray())) {
+            CharNGramModel(assets.open("clm.bin").use { it.readBytes() })
+        } else null
+        usesCharLm = clm != null
+        decoder = CtcDecoder(
+            chars, lm, params[0].toDouble(), params[1].toDouble(), clm = clm,
+            alphaC = if (clm != null) params[4].toDouble() else 0.0,
+            gammaC = if (clm != null) params[5].toDouble() else 0.0,
+        )
         maxInk = params[2].toInt()
         strokeWidth = params[3].toDouble()
     }

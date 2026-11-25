@@ -704,6 +704,12 @@ Bảng 29: Kết quả của cấu hình chốt trên tập kiểm thử VNOnDB
 
 Theo Bảng 29, CER (2) của M2 trên tập kiểm thử là 5,97%, đạt ngưỡng không quá 8,4% và thấp hơn mục tiêu cao hơn 7,6% ở `02-yeu-cau-va-danh-gia.md`, mục 1. Mọi chỉ số trên tập kiểm thử đều thấp hơn trên tập kiểm định, từ 0,40 đến 1,42 điểm phần trăm, nên các lựa chọn làm trên tập kiểm định không cho thấy dấu hiệu quá khớp. So với các mốc dạng ảnh ở `02-yeu-cau-va-danh-gia.md`, Bảng 3, CER của M2 theo cả hai công thức nằm giữa HTR-VT với 4,26% và OrigamiNet với 7,6%, và WER cũng nằm giữa hai mốc này. Mô hình có 2,23 triệu tham số, so với 53,5 triệu của HTR-VT và 39,1 triệu của OrigamiNet. Khi không dùng n-gram, CER (2) của M1 là 7,79%, gần mức 7,6% của OrigamiNet. Kết quả từng dòng nằm ở `~/vnhw/runs/m1l_rr_e100/deployed_test_pred.txt`.
 
+Đề tài phân tích thêm kết quả từng dòng của lần chạy này, không chạy lại mô hình, bằng `strip_tones` và `strip_all` trong `training/analyze_errors.py`:
+
+- **Dòng trùng văn bản với tập huấn luyện:** 146 trong 1.634 dòng có văn bản giống hệt một dòng huấn luyện, theo `03-du-lieu.md`, mục 5. Trên 1.488 dòng còn lại, CER (2) của M2 là 6,05%, CER (1) là 5,69% và WER (2) là 16,48%, chỉ cao hơn toàn tập 0,08 điểm phần trăm ở CER (2). Trên 146 dòng trùng, CER (2) là 5,09%.
+- **Lỗi do dấu:** sau khi bỏ dấu thanh, CER (2) và CER (1) là 5,48% và 5,12%. Sau khi bỏ cả dấu thanh và dấu phụ, hai số này là 5,11% và 4,78%. Như trên tập kiểm định ở Bảng 28, dấu thanh gây khoảng 0,5 điểm phần trăm CER (2), còn dấu thanh và dấu phụ gây khoảng 0,9 điểm phần trăm.
+- **Độ dài dòng:** CER (2) là 16,36% với 59 dòng từ 1 đến 20 ký tự, 10,95% với 73 dòng từ 21 đến 40 ký tự, 4,50% với 190 dòng từ 41 đến 60 ký tự, 5,10% với 1.003 dòng từ 61 đến 80 ký tự và 6,50% với 309 dòng từ 81 ký tự trở lên. Như trên tập kiểm định ở Bảng 7, dòng ngắn có CER cao hơn hẳn.
+
 ### 12.2. Tập đánh giá viết bằng ngón tay
 
 Bảng 30 ghi kết quả của 19 người viết trong tập đánh giá, lấy từ phép đo ở mục 10.18 với độ dày nét 1,2, sau khi bỏ 42 dòng chép khác đề. Khoảng tin cậy 95% lấy bằng bootstrap 10.000 lần, với đơn vị lấy mẫu lại là người viết, theo `02-yeu-cau-va-danh-gia.md`, mục 2.6.
@@ -721,3 +727,235 @@ Bảng 30: Kết quả trên tập đánh giá viết bằng ngón tay
 | Ngắt mô phỏng, 6 chỗ nối | 164 | 14,44% | 11,68-17,72% | 34,97% |
 
 Theo Bảng 30, khi viết bằng ngón tay trên điện thoại, CER (2) của dòng liền là 10,34%, cao hơn tập kiểm thử VNOnDB 4,37 điểm phần trăm. So ghép cặp trên cùng người viết, dòng ngắt sau khi ghép cao hơn dòng liền 4,34 điểm phần trăm, khoảng tin cậy từ 2,43 đến 6,39, và thấp hơn cách nhận dạng từng hàng 12,15 điểm phần trăm, khoảng tin cậy từ 9,80 đến 14,33. Với dòng ngắt mô phỏng, lớp ghép đoạn làm CER tăng 1,57; 2,28 và 4,10 điểm phần trăm so với chính dòng đó viết liền khi có 2, 4 và 6 chỗ nối, với khoảng tin cậy từ 0,48 đến 2,72, từ 1,33 đến 3,23 và từ 2,61 đến 5,66. Nếu giữ cả 380 dòng, kể cả các dòng chép khác đề, CER (2) là 10,54% với dòng liền, 15,04% với dòng ngắt sau khi ghép và 27,61% với nhận dạng từng hàng. Kết quả từng dòng nằm ở `~/vnhw/runs/m1l_rr_e100/nhom-chinh-dot3/`.
+
+## 13. Phân tích sau khi chốt cấu hình
+
+Các phép đo trong mục này làm ngày 25/11/2026, sau khi đã chốt cấu hình và chạy các tập cuối ở mục 12. Chúng chỉ dùng tập kiểm định và 9 buổi của nhóm chỉnh, không chạy lại tập kiểm thử VNOnDB và tập đánh giá, và không đổi cấu hình của ứng dụng. Mã đo và kết quả từng dòng nằm ở `~/vnhw/runs/m1l_rr_e100/khoang-lm/`.
+
+### 13.1. Phần lỗi mô hình ngữ cảnh có thể sửa
+
+Phép đo này xét xem một mô hình đoán ký tự từ các ký tự xung quanh có thể giảm lỗi đến đâu, với mô hình `m1l_rr_e100` và tệp `lm.bin` của ứng dụng. Bảng 31 ghi CER (2) của các cách lấy kết quả sau:
+
+- **Ứng viên đầu:** M2 như trong ứng dụng, beam 30, xét tối đa 8 ký tự có xác suất từ 0,002 trở lên mỗi bước.
+- **Tốt nhất trong 3 hoặc 30 ứng viên:** ứng viên gần nhãn nhất trong 3 ứng viên ứng dụng hiện ra, hoặc trong 30 tiền tố còn lại ở bước cuối của beam.
+- **N-gram biết trước câu:** n-gram cho log xác suất 0 với mọi cụm ba của câu đúng, các cụm khác giữ nguyên, cùng $\alpha = 0{,}45$ và $\beta = 4$ như ứng dụng.
+- **Tìm rộng:** beam 300, xét tối đa 20 ký tự có xác suất từ 0,0001 trở lên mỗi bước. Khi tìm rộng, ứng viên đúng ít bị loại giữa chừng, nên bản tìm rộng biết trước câu gần với một mô hình ngữ cảnh chấm điểm cả bên trong âm tiết.
+
+Bảng 31: CER (2) của M2 theo cách lấy kết quả, trên tập kiểm định và nhóm chỉnh
+
+| Cách lấy kết quả | Kiểm định, 1.229 dòng | Nhóm chỉnh, dòng liền, 87 dòng | Nhóm chỉnh, dòng ngắt ghép, 81 dòng | Nhóm chỉnh, gộp, 168 dòng |
+| --- | --- | --- | --- | --- |
+| Giải mã đơn giản, không n-gram | 8,31% | 17,16% | 18,72% | 17,91% |
+| Ứng viên đầu | 6,61% | 12,43% | 14,60% | 13,48% |
+| Tốt nhất trong 3 ứng viên | 5,74% | 11,47% | 13,72% | 12,55% |
+| Tốt nhất trong 30 ứng viên | 4,87% | 10,54% | 12,49% | 11,48% |
+| N-gram biết trước câu | 4,82% | 11,18% | 13,44% | 12,27% |
+| Tìm rộng, n-gram thường | 6,41% | 11,44% | 13,51% | 12,44% |
+| Tìm rộng, n-gram biết trước câu | 3,88% | 8,50% | 10,64% | 9,53% |
+
+Theo Bảng 31, n-gram hiện có đã giảm CER (2) từ 8,31% xuống 6,61% trên tập kiểm định và từ 17,91% xuống 13,48% trên nhóm chỉnh. Khi n-gram biết trước câu và bộ giải mã tìm rộng, CER (2) còn 3,88% trên tập kiểm định và 9,53% trên nhóm chỉnh. Mức này chỉ tính phần nội dung âm tiết, vì n-gram âm tiết bỏ dấu câu và đưa mọi âm tiết về chữ thường, nên không sửa được lỗi chữ hoa và dấu câu.
+
+Mục 14.4 chấm lại mức này sau khi bỏ dấu câu ở cuối và đưa về chữ thường. Theo cách chấm đó, ngữ cảnh âm tiết sửa được khoảng 36% số lỗi của nhóm chỉnh. Khoảng 64% còn lại đến từ mô hình nhận dạng: ký tự đúng có xác suất quá thấp so với ký tự sai, nên ngữ cảnh không kéo lại được.
+
+Với beam 30 như ứng dụng, n-gram biết trước câu chỉ giảm CER (2) của nhóm chỉnh từ 13,48% xuống 12,27%, so với 9,53% khi tìm rộng. Trên chữ viết bằng ngón tay, ứng viên đúng hay bị loại khỏi beam trước khi âm tiết kết thúc, đúng chỗ n-gram âm tiết chưa chấm điểm, theo `ly-thuyet/06-beam-search-va-n-gram.md`, mục 5. Một mô hình ngôn ngữ mức ký tự chấm điểm từng ký tự, nên có thể giữ các ứng viên này ngay trong beam hẹp. Với n-gram thường, tìm rộng giảm CER (2) 1,04 điểm phần trăm trên nhóm chỉnh nhưng chỉ 0,20 điểm phần trăm trên tập kiểm định. Mục 14 thử cách dùng mô hình mức ký tự.
+
+Tốt nhất trong 30 ứng viên có CER (2) 11,48% trên nhóm chỉnh. Đây là mức thấp nhất mà cách chấm lại các ứng viên cuối có thể đạt, ví dụ chấm lại bằng một mô hình ngôn ngữ chiều ngược. Với n-gram, xác suất của cả câu tính theo chiều xuôi hay chiều ngược gần bằng nhau, nên n-gram chiều ngược không thêm nhiều thông tin. Ngữ cảnh phía sau đã tác động trong beam search, vì âm tiết sau được chấm theo các âm tiết trước nó.
+
+Đề tài cũng thử n-gram biết trước câu với $\alpha = 3$. Bộ giải mã khi đó gộp hoặc bỏ bớt âm tiết để tránh điểm phạt của n-gram, nên CER (2) tăng lên 9,77% trên tập kiểm định và 23,28% trên nhóm chỉnh, và trọng số này không dùng làm mức so sánh.
+
+### 13.2. Tham số tìm kiếm trên nhóm chỉnh
+
+Bảng 32 tách phần giảm CER khi tìm rộng trên nhóm chỉnh theo từng tham số, với n-gram thường, $\alpha = 0{,}45$ và $\beta = 4$. Thời gian giải mã là thời gian CPU của bản Python, ghi theo bội số so với cấu hình của ứng dụng.
+
+Bảng 32: CER (2) của M2 trên nhóm chỉnh theo tham số tìm kiếm
+
+| Độ rộng beam | Số ký tự xét mỗi bước | Ngưỡng xác suất | Dòng liền | Dòng ngắt ghép | Gộp | Thời gian giải mã |
+| --- | --- | --- | --- | --- | --- | --- |
+| 30 | 8 | 0,002 | 12,43% | 14,60% | 13,48% | 1 lần |
+| 30 | 20 | 0,0001 | 12,41% | 14,64% | 13,49% | 1,8 lần |
+| 100 | 8 | 0,002 | 11,88% | 13,87% | 12,84% | 3,0 lần |
+| 100 | 12 | 0,0005 | 11,83% | 13,81% | 12,78% | 3,9 lần |
+| 300 | 8 | 0,002 | 11,49% | 13,61% | 12,51% | 9,3 lần |
+| 300 | 20 | 0,0001 | 11,44% | 13,51% | 12,44% | 21,7 lần |
+
+Theo Bảng 32, phần giảm đến từ độ rộng beam. Xét thêm ký tự mỗi bước gần như không đổi CER, còn beam 100 giảm CER (2) gộp 0,64 điểm phần trăm với thời gian giải mã gấp khoảng 3 lần. Đổi độ rộng beam là đổi cấu hình đã chốt, nên cần đo lại độ trễ trên điện thoại, và kết quả ở mục 12 vẫn là kết quả của cấu hình beam 30.
+
+### 13.3. Dấu chấm cuối câu
+
+Trên nhóm chỉnh, nhãn của cả 168 dòng đều kết thúc bằng dấu chấm, nhưng ứng viên đầu mất dấu chấm này ở 129 dòng. Nếu bỏ dấu câu ở cuối cả nhãn và kết quả, CER (2) giảm từ 12,43% xuống 11,25% với dòng liền, từ 14,60% xuống 13,48% với dòng ngắt ghép, và từ 13,48% xuống 12,32% khi gộp. Theo nét gốc, chỉ 56 dòng có một nét nhỏ dưới 2 mm mỗi chiều nằm bên phải mọi nét khác của hàng cuối, giống dấu chấm, gồm 42 dòng liền và 14 dòng ngắt. Phép đếm này dựa trên hình dạng nét nên chỉ là ước lượng, nhưng cho thấy nhiều người viết không viết dấu chấm cuối câu. Một phần của khoảng 1,2 điểm phần trăm CER (2) do dấu chấm vì vậy đến từ cách chấm nhãn, không phải từ lỗi nhận dạng.
+
+## 14. Thử n-gram ký tự sau khi chốt cấu hình
+
+Mục 13.1 cho thấy trên chữ viết bằng ngón tay, ứng viên đúng hay bị loại khỏi beam trước khi n-gram âm tiết kịp chấm điểm. Mục này thử thêm một n-gram ký tự, chấm điểm từng ký tự ngay khi beam search thêm ký tự đó vào tiền tố. Các phép đo làm ngày 25/11/2026 với bản float16 của `m1l_rr_e100`, chỉ dùng tập kiểm định và 9 buổi của nhóm chỉnh như mục 13, và không đổi cấu hình của ứng dụng. Mã nằm ở `training/build_char_ngram.py`, `training/char_ngram.py`, `training/decoder_char.py` và `training/eval_char_lm.py`. Mô hình nằm ở `~/vnhw/data/char-ngram/`, kết quả từng dòng và mã phân tích phụ nằm ở `~/vnhw/runs/m1l_rr_e100/char-lm/`.
+
+### 14.1. N-gram ký tự
+
+N-gram ký tự được dựng như sau:
+
+- **Kho văn bản:** như kho của n-gram âm tiết ở mục 4, loại thêm các câu có cụm 8 âm tiết trùng với 40 câu đề của nhóm chỉnh và nhóm kiểm thử. Kho còn 1.503.952 câu và 187.577.230 ký tự, ít hơn kho của n-gram âm tiết 2 câu.
+- **Ký hiệu:** mỗi ký tự trong bảng 160 ký tự của mô hình nhận dạng là một ký hiệu, thêm ba ký hiệu cho ký tự ngoài bảng, đầu câu và cuối câu. Ký tự ngoài bảng chiếm 0,23% số ký tự của kho. Khác n-gram âm tiết, n-gram ký tự giữ chữ hoa và dấu câu.
+- **Làm trơn:** Kneser-Ney sửa đổi dạng nội suy [@kneser1995; @chen1999], lưu ở dạng lùi. Mỗi n-gram lưu log xác suất, mỗi ngữ cảnh lưu trọng số lùi.
+- **Tỉa:** bỏ các n-gram có số đếm dưới ngưỡng của bậc đó, rồi tính lại trọng số lùi để tổng xác suất theo mỗi ngữ cảnh vẫn bằng 1. Trên một kho nhỏ tự sinh, tổng này lệch khỏi 1 dưới $10^{-7}$, cả khi có và không tỉa.
+- **Tệp cho điện thoại:** mỗi n-gram có khóa băm 32 bit và log xác suất lượng tử 8 bit, thêm 1 byte trọng số lùi nếu chưa ở bậc cao nhất.
+
+Bảng 33 ghi các n-gram ký tự đã dựng. Số bit mỗi ký tự đo trên nhãn của tập kiểm định và trên 20 câu đề của nhóm chỉnh, số càng thấp thì mô hình đoán ký tự tiếp theo càng đúng. Dung lượng tính theo định dạng tệp cho điện thoại. Hai tệp `s6.bin` và `l7.bin` đã ghi ra nặng 4.101.993 và 14.004.271 byte, và lượng tử 8 bit làm số bit mỗi ký tự của hai bản này thay đổi không quá 0,003.
+
+Bảng 33: Các n-gram ký tự theo bậc và ngưỡng tỉa
+
+| Tên | Bậc | Ngưỡng số đếm, từ bậc 1 | Số n-gram | Dung lượng | Bit mỗi ký tự, kiểm định | Bit mỗi ký tự, câu đề |
+| --- | --- | --- | --- | --- | --- | --- |
+| `c5` | 5 | Không tỉa | 4.421.607 | 23,18 MB | 2,70 | 1,98 |
+| `c6` | 6 | Không tỉa | 12.456.923 | 66,71 MB | 2,56 | 1,80 |
+| `c7` | 7 | Không tỉa | 27.320.603 | 149,06 MB | 2,48 | 1,69 |
+| `c8` | 8 | Không tỉa | 51.271.706 | 283,68 MB | 2,43 | 1,63 |
+| `s5` | 5 | 1, 1, 3, 10, 30 | 707.674 | 3,92 MB | 2,75 | 1,99 |
+| `s6` | 6 | 1, 1, 3, 20, 50, 100 | 713.764 | 4,10 MB | 2,70 | 1,91 |
+| `s7` | 7 | 1, 1, 3, 20, 100, 200, 200 | 654.304 | 3,82 MB | 2,75 | 1,95 |
+| `s8` | 8 | 1, 1, 5, 50, 100, 200, 300, 300 | 595.667 | 3,51 MB | 2,80 | 2,03 |
+| `l6` | 6 | 1, 1, 1, 3, 10, 10 | 2.391.428 | 13,27 MB | 2,60 | 1,81 |
+| `l7` | 7 | 1, 1, 1, 5, 10, 20, 30 | 2.431.639 | 14,00 MB | 2,56 | 1,75 |
+| `l8` | 8 | 1, 1, 2, 5, 20, 20, 50, 50 | 2.355.730 | 13,73 MB | 2,57 | 1,77 |
+
+Theo Bảng 33, bậc càng cao thì số bit mỗi ký tự càng thấp, nhưng các bản chưa tỉa nặng từ 23,18 MB trở lên. Ứng dụng còn trống 4,57 MB dưới ngưỡng 20 MB, theo mục 11.5. Ở mức khoảng 4 MB, bản bậc 6 `s6` có số bit mỗi ký tự thấp nhất. Nếu bỏ `lm.bin` thì còn khoảng 15,5 MB, và ở mức khoảng 14 MB, bản bậc 7 `l7` thấp nhất.
+
+Câu đề lấy từ các bài Wikipedia đã giữ riêng, cùng nguồn với kho văn bản, nên đề tài kiểm tra xem kho có chứa câu đề không. Với 19 trong 20 câu đề của nhóm chỉnh, đoạn liền dài nhất có mặt nguyên văn trong kho Wikipedia dài từ 4 đến 7 âm tiết. Câu đề 17 chung đoạn 12 âm tiết "còn là những tác phẩm văn chương cổ điển của Trung Quốc." với một câu ở bài khác. Câu đó là một trong 2 câu bị loại thêm khỏi kho của n-gram ký tự, nhưng có trong kho của `lm.bin`. Trong kho đó, mỗi cụm ba của đoạn này có số đếm từ 11 trở lên, nên câu này góp nhiều nhất 1 lần đếm vào mỗi cụm.
+
+Với `c8`, câu đề cần 1,63 bit mỗi ký tự, còn 2.000 câu khác cùng độ dài lấy từ các bài đã giữ riêng cần 1,77 bit. Câu đề dễ đoán hơn một chút, có lẽ vì `training/select_prompts.py` chỉ chọn câu có mọi âm tiết gặp ít nhất 200 lần, không có chữ số và ít tên riêng. Nhãn của tập kiểm định cần nhiều bit hơn hẳn, vì VNOnDB khác văn phong Wikipedia và chỉ 35 trong 1.229 nhãn là câu trọn vẹn, bắt đầu bằng chữ hoa và kết thúc bằng dấu chấm.
+
+### 14.2. Cách nối vào bộ giải mã
+
+Bộ giải mã `CharDecoder` giữ nguyên beam search của mục 4, kể cả độ rộng 30, và thử ba cách dùng n-gram ký tự:
+
+- **Kết hợp:** mỗi ký tự thêm vào tiền tố, kể cả khoảng trắng, được cộng một trọng số nhân log xác suất theo n-gram ký tự, cộng một điểm thưởng. Khi kết thúc, chuỗi được cộng thêm log xác suất của ký hiệu cuối câu. N-gram âm tiết vẫn chấm mỗi âm tiết khi âm tiết kết thúc, như ứng dụng.
+- **Chỉ ký tự:** như cách kết hợp nhưng bỏ n-gram âm tiết, tức $\alpha = 0$ và $\beta = 0$.
+- **Chấm trước:** n-gram ký tự chỉ chấm các ký tự của âm tiết đang viết dở. Khi âm tiết kết thúc, phần điểm này được thay bằng điểm của n-gram âm tiết.
+
+Trọng số được chọn trên 410 dòng kiểm định, lấy 1 trên mỗi 3 dòng, như cách chọn $\alpha$ và $\beta$ ở mục 4. Trên 410 dòng này, cấu hình của ứng dụng có CER (2) 6,15% và WER (2) 17,29%. Lưới đầu dùng `c8` với cả ba cách nối, trọng số n-gram ký tự 0,1; 0,2; 0,3 và 0,45, riêng cách chỉ ký tự dùng 0,3; 0,45; 0,6 và 0,8. Điểm thưởng mỗi ký tự gồm 0; 0,5; 1 và 2, riêng cách chấm trước bỏ mức 2.
+
+Lưới thứ hai chỉnh lại $\alpha$ trong 0,3; 0,45 và 0,6, $\beta$ trong 3, 4 và 5 cho cách kết hợp, với trọng số n-gram ký tự 0,3 hoặc 0,4 và điểm thưởng 0,75; 1 hoặc 1,5. Hai bản tỉa dùng lưới nhỏ quanh bộ trọng số tốt nhất của `c8`: trọng số 0,2; 0,3 và 0,4 với `s6`, 0,3; 0,45 và 0,6 với `l7`, cùng điểm thưởng 0,5; 1 và 1,5. Bảng 34 ghi bộ trọng số tốt nhất của mỗi lưới.
+
+Bảng 34: Bộ trọng số tốt nhất của mỗi lưới, trên 410 dòng kiểm định
+
+| Cách nối | N-gram ký tự | $\alpha$ | $\beta$ | Trọng số n-gram ký tự | Điểm thưởng mỗi ký tự | CER (2) | WER (2) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Như ứng dụng | Không dùng | 0,45 | 4 | 0 | 0 | 6,15% | 17,29% |
+| Chấm trước | `c8` | 0,45 | 4 | 0,3 | 0,5 | 5,89% | 16,42% |
+| Chỉ ký tự | `c8` | 0 | 0 | 0,45 | 1 | 5,66% | 15,12% |
+| Kết hợp | `c8` | 0,45 | 4 | 0,3 | 1 | 5,40% | 14,35% |
+| Kết hợp, lưới thứ hai | `c8` | 0,3 | 3 | 0,4 | 1 | 5,37% | 14,08% |
+| Kết hợp | `s6` | 0,45 | 4 | 0,3 | 1 | 5,81% | 15,80% |
+| Chỉ ký tự | `l7` | 0 | 0 | 0,45 | 1,5 | 6,17% | 16,88% |
+
+Theo Bảng 34, cách kết hợp cho CER (2) thấp nhất, sau đó là cách chỉ ký tự rồi cách chấm trước. Cách chấm trước giữ được ứng viên đúng trong beam, nhưng bỏ điểm của n-gram ký tự khi âm tiết kết thúc, nên mất phần sửa chữ hoa và dấu câu ở mục 14.4. Lưới thứ hai chỉ giảm thêm 0,03 điểm phần trăm CER (2), nên các phép đo sau dùng bộ trọng số của lưới thứ hai cho `c8` và bộ trọng số tốt nhất của lưới riêng cho `s6` và `l7`.
+
+### 14.3. Kết quả trên tập kiểm định và nhóm chỉnh
+
+Bảng 35 ghi kết quả trên cả 1.229 dòng kiểm định và 168 dòng nhóm chỉnh, với bộ trọng số của Bảng 34 và beam 30. Thời gian giải mã là thời gian CPU của bản Python, ghi theo bội số so với cấu hình của ứng dụng, mức 0,06 giây mỗi dòng. Hai bản `s6` và `l7` vừa ngưỡng 20 MB. Với `s6` dùng cùng `lm.bin`, tổng các tệp đi kèm khoảng 19,53 MB, còn với `l7` thay cho `lm.bin`, tổng khoảng 18,48 MB. Bản `c8` chỉ cho biết mức lợi khi không giới hạn dung lượng.
+
+Bảng 35: CER (2) và WER (2) của M2 khi thêm n-gram ký tự
+
+| Cấu hình | N-gram ký tự | Kiểm định, CER (2) | Kiểm định, WER (2) | Nhóm chỉnh, dòng liền | Nhóm chỉnh, dòng ngắt ghép | Nhóm chỉnh, gộp | Nhóm chỉnh, gộp, WER (2) | Thời gian giải mã |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Như ứng dụng | Không dùng | 6,61% | 17,71% | 12,43% | 14,60% | 13,48% | 31,24% | 1 lần |
+| Kết hợp, `s6` | 4,10 MB, cùng `lm.bin` | 6,25% | 16,47% | 10,03% | 11,63% | 10,80% | 23,79% | 2,2 lần |
+| Chỉ ký tự, `l7` | 14,00 MB, thay `lm.bin` | 6,62% | 17,69% | 10,08% | 11,68% | 10,85% | 24,63% | 2,7 lần |
+| Chỉ ký tự, `c8` | 283,68 MB, thay `lm.bin` | 6,17% | 15,96% | 9,43% | 11,02% | 10,20% | 22,74% | 2,5 lần |
+| Kết hợp, `c8` | 283,68 MB, cùng `lm.bin` | 5,90% | 15,11% | 9,07% | 9,96% | 9,50% | 20,68% | 3,0 lần |
+
+Theo Bảng 35, `s6` dùng kết hợp giảm CER (2) 0,36 điểm phần trăm trên tập kiểm định và 2,68 điểm phần trăm trên nhóm chỉnh, gồm 2,40 điểm với dòng liền và 2,97 điểm với dòng ngắt ghép. WER (2) gộp của nhóm chỉnh giảm từ 31,24% xuống 23,79%. So từng dòng của nhóm chỉnh, `s6` làm 110 dòng tốt lên, 21 dòng kém đi và 37 dòng giữ nguyên. Bản `s6.bin` lượng tử 8 bit cho CER (2) lệch bản số thực không quá 0,02 điểm phần trăm ở mọi cột.
+
+Bản `l7` thay cho `lm.bin` giữ CER (2) của tập kiểm định gần như cũ, 6,62% so với 6,61%, và giảm 2,63 điểm phần trăm trên nhóm chỉnh. Bản `c8` dùng kết hợp cho thấy mức lợi khi không giới hạn dung lượng: 0,71 điểm phần trăm trên tập kiểm định và 3,98 điểm phần trăm trên nhóm chỉnh. Mức giảm trên nhóm chỉnh lớn hơn nhiều so với tập kiểm định, vì câu đề là văn Wikipedia như kho văn bản, còn nhãn VNOnDB khác văn phong, theo mục 14.1. Với văn bản người dùng tự viết, mức lợi vì vậy có thể thấp hơn mức đo trên nhóm chỉnh.
+
+### 14.4. Phần giảm theo loại lỗi
+
+Bảng 36 tách phần giảm trên nhóm chỉnh theo cách chấm của mục 13.3: bỏ dấu câu ở cuối cả nhãn và kết quả, rồi đưa cả hai về chữ thường. Cột cuối đếm số dòng có kết quả kết thúc bằng dấu chấm, trong khi cả 168 nhãn đều kết thúc bằng dấu chấm. Hai dòng tìm rộng lấy từ các phép đo của Bảng 31.
+
+Bảng 36: CER (2) gộp của nhóm chỉnh theo cách chấm
+
+| Cách lấy kết quả | Như chấm | Bỏ dấu câu cuối | Bỏ dấu câu cuối, chữ thường | Dòng kết thúc bằng dấu chấm |
+| --- | --- | --- | --- | --- |
+| Như ứng dụng | 13,48% | 12,32% | 11,32% | 39 |
+| Tìm rộng, n-gram thường | 12,44% | 11,26% | 10,24% | 39 |
+| Tìm rộng, n-gram biết trước câu | 9,53% | 8,28% | 7,19% | 39 |
+| Kết hợp, `s6` | 10,80% | 9,96% | 9,51% | 68 |
+| Chỉ ký tự, `l7` | 10,85% | 10,32% | 9,91% | 97 |
+| Chỉ ký tự, `c8` | 10,20% | 9,60% | 9,21% | 89 |
+| Kết hợp, `c8` | 9,50% | 8,85% | 8,47% | 87 |
+
+Theo Bảng 36, phần giảm CER (2) của n-gram ký tự gồm ba phần:
+
+- **Chữ cái đọc đúng hơn:** khi bỏ dấu câu cuối và đưa về chữ thường, CER (2) giảm từ 11,32% xuống 9,51% với `s6` và 8,47% với `c8` dùng kết hợp. Mức của n-gram biết trước câu khi tìm rộng là 7,19%, nên chỉ với beam 30, `s6` lấy được khoảng 44% và `c8` khoảng 69% phần lỗi mà ngữ cảnh âm tiết có thể sửa.
+- **Chữ hoa:** n-gram âm tiết đưa mọi âm tiết về chữ thường nên không phân biệt "Ven" với "ven", còn n-gram ký tự phân biệt được. Phần này giảm CER (2) 0,55 điểm phần trăm với `s6` và 0,62 điểm phần trăm với `c8`.
+- **Dấu chấm cuối câu:** câu trong kho văn bản kết thúc bằng dấu chấm, nên kết quả có dấu chấm ở 68 dòng với `s6` và 87 dòng với `c8`, so với 39 dòng của cấu hình gốc. Phần này giảm CER (2) 0,32 điểm phần trăm với `s6` và 0,51 điểm phần trăm với `c8`. Theo mục 13.3, nhiều người viết không viết dấu chấm này, nên phần này phản ánh cách chấm nhãn nhiều hơn nét viết.
+
+Như vậy, trong 2,68 điểm phần trăm mà `s6` giảm được trên nhóm chỉnh, 1,81 điểm là chữ cái đọc đúng hơn. Với `l7`, kết quả có dấu chấm ở 97 dòng, và phần dấu chấm chiếm 0,63 trong 2,63 điểm phần trăm. Ví dụ, ở một dòng liền của nhóm chỉnh, cấu hình gốc đọc "Thúc đông đồng bằng Ven biển là vN0 6ao nuyêi trrunD tâm", còn `s6` đọc "Phía đông đồng bằng ven biển là vùng Cao nguyên trung tâm.". Các mức của Bảng 31 vì vậy là giới hạn của phần nội dung âm tiết, không phải của mọi lỗi, theo mục 13.1.
+
+### 14.5. Đưa vào ứng dụng
+
+Bản `s6` thêm 4,10 MB, nên tổng các tệp đi kèm là 19,53 MB, sát ngưỡng 20 MB. Thời gian giải mã của bản Python tăng khoảng 2,2 lần. Ngày 25/11/2026, đề tài đưa `s6` vào ứng dụng theo các bước sau:
+
+1. Viết `CharNGramModel.kt` để đọc tệp `clm.bin`, cùng định dạng với `s6.bin`, và thêm phần chấm từng ký tự theo cách kết hợp vào `CtcDecoder.kt`.
+2. Mở rộng `training/export_assets.py` để ghi `clm.bin` và hai trọng số mới, rồi đối chiếu bản Kotlin với bản Python trên 8 dòng kiểm định, theo `06-trien-khai-android.md`, mục 3.1.
+3. Chạy cả luồng của ứng dụng trên 168 dòng của nhóm chỉnh bằng bài đo ở mục 15. Ứng dụng cho cùng kết quả với bản Python ở cả 168 dòng, với cả bộ giải mã có và không có n-gram ký tự.
+
+Tập kiểm thử VNOnDB và tập đánh giá đã đo một lần với cấu hình đã chốt, nên kết quả ở mục 12 vẫn là kết quả của cấu hình đó. Cấu hình mới của ứng dụng chỉ có số đo trên tập kiểm định và nhóm chỉnh của mục này.
+
+## 15. So sánh với ML Kit
+
+ML Kit có mô hình nhận dạng chữ viết tay tiếng Việt chạy trên điện thoại [@google2026b], nên đề tài so với ML Kit trên cùng nét viết của tập tự thu, theo `02-yeu-cau-va-danh-gia.md`, mục 4. Phép đo làm ngày 25/11/2026, sau khi đưa n-gram ký tự vào ứng dụng ở mục 14.5. Mô hình của đề tài không chạy lại trên tập đánh giá: trên tập này, ML Kit được so với kết quả từng dòng của cấu hình đã chốt ở mục 12.2. Mã gồm `training/export_bench.py`, `BenchTest.kt` trong `android/app/src/androidTest/` và `training/eval_mlkit.py`. Kết quả từng dòng nằm ở `~/vnhw/runs/m1l_rr_e100/mlkit/may-ao/`.
+
+### 15.1. Cách chạy
+
+- **Bài đo:** `BenchTest.kt` chạy trong bản debug của ứng dụng, bản duy nhất có ML Kit và quyền mạng. Bài đo chạy trên máy ảo Pixel 6, vì điện thoại thật không kết nối lúc đo, nên thời gian chạy trong mục này không dùng làm độ trễ.
+- **ML Kit:** bản 19.0.0 của thư viện nhận dạng chữ viết tay, mô hình `vi`. Lần chạy đầu tải hai tệp: mô hình LSTM 2,34 MB và mô hình ngôn ngữ 20,80 MB. Thư viện còn thêm 6,89 MB mã gốc cho `arm64-v8a`.
+- **Đầu vào của ML Kit:** nét gốc kèm thời điểm của từng điểm, không có ngữ cảnh đứng trước. Vùng viết là cả khung viết với dòng ngắt và một hàng với dòng liền.
+- **Hai cách đưa nét:** nét gốc như người viết, và dòng ảo của lớp ghép đoạn. Lớp ghép đoạn chỉ dời và co giãn từng nét, nên dòng ảo giữ được thứ tự nét và thời điểm của từng điểm.
+- **Chấm điểm:** lấy ứng viên đầu của ML Kit, qua cùng bước chuẩn hóa nhãn của `03-du-lieu.md`, mục 3.1. Bước này làm CER (2) gộp của ML Kit thay đổi không quá 0,06 điểm phần trăm.
+- **So ghép cặp:** hiệu CER (2) trên cùng các dòng, khoảng tin cậy 95% lấy bằng bootstrap 10.000 lần với đơn vị lấy mẫu lại là người viết, theo `02-yeu-cau-va-danh-gia.md`, mục 2.6.
+
+### 15.2. Kết quả trên tập đánh giá
+
+Bảng 37 ghi CER (2) của ML Kit và của cấu hình đã chốt trên 338 dòng của tập đánh giá. Bảng 38 ghi hiệu CER (2) của ML Kit trừ cấu hình đã chốt, so ghép cặp trên cùng người viết, nên hiệu âm nghĩa là ML Kit có ít lỗi hơn.
+
+Bảng 37: CER (2) và WER (2) trên tập đánh giá viết bằng ngón tay
+
+| Hệ thống | Dòng liền, 164 dòng | Dòng ngắt, 174 dòng | Gộp, 338 dòng | WER (2) gộp |
+| --- | --- | --- | --- | --- |
+| Cấu hình đã chốt, Bảng 30 | 10,34% | 14,69% | 12,58% | 30,28% |
+| ML Kit, nét gốc | 5,24% | 36,61% | 21,39% | 37,83% |
+| ML Kit, dòng ảo của lớp ghép đoạn | 5,69% | 6,92% | 6,33% | 20,98% |
+
+Bảng 38: Hiệu CER (2) của ML Kit trừ cấu hình đã chốt trên tập đánh giá, tính bằng điểm phần trăm, kèm khoảng tin cậy 95%
+
+| Cách đưa nét vào ML Kit | Dòng liền | Dòng ngắt | Gộp |
+| --- | --- | --- | --- |
+| Nét gốc | -5,10, từ -7,00 đến -3,37 | 21,92, từ 11,41 đến 32,75 | 8,81, từ 2,91 đến 14,89 |
+| Dòng ảo của lớp ghép đoạn | -4,65, từ -6,52 đến -2,85 | -7,77, từ -10,42 đến -5,31 | -6,25, từ -8,34 đến -4,29 |
+
+Theo Bảng 37 và Bảng 38, ML Kit đọc chữ viết bằng ngón tay tốt hơn mô hình của đề tài. Với dòng liền, CER (2) của ML Kit thấp hơn 5,10 điểm phần trăm, và khoảng tin cậy không chứa 0. ML Kit đọc trực tiếp nét kèm thứ tự và thời điểm, còn mô hình của đề tài chỉ đọc ảnh vẽ lại từ nét và chỉ học từ VNOnDB.
+
+Với dòng ngắt, ML Kit đọc nét gốc rất kém, CER (2) là 36,61%, vì nét của nhiều hàng không được nối thành một dòng. Khi nhận dòng ảo của lớp ghép đoạn, CER (2) của ML Kit với dòng ngắt giảm xuống 6,92%, thấp hơn hệ thống của đề tài 7,77 điểm phần trăm. Như vậy lớp ghép đoạn dùng được với một bộ nhận dạng khác, và là phần mà ML Kit không có. Với dòng liền, dòng ảo làm CER (2) của ML Kit tăng từ 5,24% lên 5,69%, có lẽ vì lớp ghép đoạn rút các khoảng trống lớn và co giãn nét theo hàng.
+
+### 15.3. Kết quả trên nhóm chỉnh
+
+Trên nhóm chỉnh, đề tài so được cả cấu hình mới có n-gram ký tự. Bảng 39 ghi CER (2) của bốn cách trên 168 dòng. Hai dòng của ứng dụng lấy từ bài đo trên máy ảo, với tệp `clm.bin` đã lượng tử hóa, và trùng kết quả của bản Python ở cả 168 dòng.
+
+Bảng 39: CER (2) và WER (2) trên nhóm chỉnh
+
+| Hệ thống | Dòng liền, 87 dòng | Dòng ngắt, 81 dòng | Gộp, 168 dòng | WER (2) gộp |
+| --- | --- | --- | --- | --- |
+| Ứng dụng, cấu hình đã chốt | 12,43% | 14,60% | 13,48% | 31,24% |
+| Ứng dụng, có n-gram ký tự | 10,05% | 11,61% | 10,80% | 23,81% |
+| ML Kit, nét gốc | 6,70% | 24,83% | 15,44% | 32,77% |
+| ML Kit, dòng ảo của lớp ghép đoạn | 8,43% | 6,23% | 7,37% | 22,85% |
+
+Theo Bảng 39, n-gram ký tự thu hẹp khoảng cách giữa ứng dụng và ML Kit dùng dòng ảo. So ghép cặp trên 9 người viết, ML Kit dùng dòng ảo thấp hơn cấu hình đã chốt 6,11 điểm phần trăm, khoảng tin cậy từ 3,80 đến 8,20. ML Kit dùng dòng ảo cũng thấp hơn cấu hình có n-gram ký tự 3,43 điểm phần trăm, khoảng tin cậy từ 1,58 đến 5,14. Với riêng dòng liền, hiệu này còn 1,63 điểm phần trăm, khoảng tin cậy từ 0,31 đến 2,87. Nhóm chỉnh chỉ có 9 người viết và dùng cùng 20 câu đề với tập đánh giá, nên các hiệu này chỉ để tham khảo.
+
+### 15.4. Nhận xét
+
+Từ mục 15.2 và mục 15.3, đề tài rút ra các nhận xét sau:
+
+- **Mô hình nhận dạng:** mô hình LSTM của ML Kit chỉ nặng 2,34 MB nhưng đọc nét trực tiếp và đi kèm mô hình ngôn ngữ 20,80 MB, nên đọc chữ viết bằng ngón tay tốt hơn mô hình của đề tài.
+- **Lớp ghép đoạn:** đây là phần đóng góp rõ nhất của đề tài. Không có lớp này, ML Kit không đọc được dòng ngắt. Có lớp này, CER (2) của ML Kit với dòng ngắt dưới 7% trên cả hai nhóm.
+- **Chạy không cần mạng:** cả hai đều nhận dạng ngay trên điện thoại. ML Kit cần mạng để tải mô hình ở lần đầu, còn ứng dụng của đề tài chứa sẵn mọi tệp.
+- **Hướng dùng:** nếu được dùng thư viện ngoài, ghép lớp ghép đoạn với ML Kit cho CER thấp nhất trong các cách đã đo. Nếu không, mô hình của đề tài cần học thêm từ nét viết bằng ngón tay, hoặc đọc thêm thứ tự và thời điểm của nét.

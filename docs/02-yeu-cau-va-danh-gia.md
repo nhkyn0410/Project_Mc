@@ -104,7 +104,7 @@ Bảng 3: Mốc so sánh trên tập kiểm thử VNOnDB
 
 Trong Bảng 3, mốc CNN + BiLSTM là mô hình gồm mạng nơ-ron tích chập (CNN) và LSTM hai chiều (BiLSTM). MyScript và IVTOV khó làm mục tiêu vì cả hai đều dùng VieTreeBank, cùng nguồn với văn bản kiểm thử [@le2019]. Cuộc thi còn có một tập kiểm thử riêng gồm 15 người viết mới [@vohtr2018b]. Trên tập này, CER của IVTOV tăng từ 3,2% lên 5,6%, và CER của Google tăng từ 6,9% lên 10,3% [@carbune2019]. Vì vậy, tập tự thu phải dùng người viết mới.
 
-ML Kit có mô hình tiếng Việt với mã `vi` [@google2026b], nên đề tài chạy cùng tập tự thu trên ML Kit để có mốc thực tế nhất.
+ML Kit có mô hình tiếng Việt với mã `vi` [@google2026b], nên đề tài chạy cùng tập tự thu trên ML Kit để có mốc thực tế nhất. Kết quả so sánh nằm ở `07-nhat-ky-thi-nghiem.md`, mục 15.
 
 ## 5. Quy tắc đo
 

@@ -313,7 +313,7 @@ Hai lớp BiLSTM chiếm khoảng 0,66 triệu trong 1,00 triệu tham số củ
 
 - **Vì sao cần hai chiều:** BiLSTM đọc ảnh theo các cột từ trái sang phải, mỗi bước ứng với một dải cột. Một ký tự trải trên nhiều bước, và các ký tự bên phải giúp phân biệt những nét giống nhau. Chiều ngược mang thông tin bên phải về bước đang xét, nên đề tài dùng BiLSTM thay cho LSTM một chiều. Phép so sánh M0 với M1 đo lợi ích này.
 - **Cấu hình:** mô hình cơ sở M0 không có BiLSTM, mô hình đề xuất M1 có 2 lớp BiLSTM 128 ô sau CNN 2D, theo mục 3.2.4. Cấu hình huấn luyện khởi đầu dùng dropout 0,5 sau mỗi lớp LSTM [@carbune2019].
-- **Chọn LSTM thay cho GRU:** công cụ chuyển đổi LiteRT có hướng dẫn chuyển đổi sẵn cho lớp LSTM của Keras. Chi tiết thuộc Chương 5 (dự kiến).
+- **Chọn LSTM thay cho GRU:** công cụ chuyển đổi LiteRT có hướng dẫn chuyển đổi sẵn cho lớp LSTM của Keras. Cách chuyển đổi nằm ở mục 5.1.
 - **Kết quả tạm thời khi đang viết:** chiều ngược cần toàn bộ chuỗi, nên ứng dụng chạy lại cả dòng sau mỗi lần người dùng dừng bút, thay vì cập nhật từng bước.
 
 ### 2.4.8. Hạn chế
@@ -522,16 +522,16 @@ $$\begin{aligned} \text{"ăn côm"}: &\quad -1{,}0 + 0{,}5 \times (-9{,}210) = -
 ### 2.6.7. Áp dụng trong đề tài
 
 - **Vị trí trong hệ thống:** beam search và n-gram âm tiết tạo thành mô hình M2 trong mục 3.2.4, là bản đưa lên điện thoại. Giải mã đơn giản ở mục 2.5 chỉ dùng để theo dõi tỷ lệ lỗi ký tự (CER) trong lúc huấn luyện.
-- **Kho văn bản cho n-gram:** gồm văn bản của tập huấn luyện VNOnDB và một kho văn bản khác không lấy từ VieTreeBank, vì văn bản kiểm thử của VNOnDB lấy từ VieTreeBank. Các câu trùng với tập kiểm thử và với câu đề của tập tự thu phải được loại trước khi đếm. Chi tiết thuộc mục 3.1 (dự kiến).
+- **Kho văn bản cho n-gram:** gồm văn bản của tập huấn luyện VNOnDB và một kho văn bản khác không lấy từ VieTreeBank, vì văn bản kiểm thử của VNOnDB lấy từ VieTreeBank. Các câu trùng với tập kiểm thử và với câu đề của tập tự thu phải được loại trước khi đếm. Kho văn bản của đề tài gồm tập huấn luyện VNOnDB và Wikipedia tiếng Việt, theo mục 3.2.5.
 - **Chuẩn hóa văn bản:** kho văn bản và nhãn phải cùng chuẩn Unicode NFC và cùng kiểu đặt dấu thanh. Nếu không, một âm tiết bị đếm thành hai, và xác suất của cả hai đều thấp hơn thực tế.
 - **Chỉnh trọng số:** $\alpha$, $\beta$ chỉnh trên tập kiểm định, tập kiểm thử chỉ chạy một lần ở cuối.
 - **Ba ứng viên cho người dùng:** sau bước cuối, các tiền tố còn lại trong beam đã được xếp theo điểm, nên có sẵn danh sách ứng viên mà không phải tính thêm.
-- **Ràng buộc trên điện thoại:** $W$ lớn thì chính xác hơn nhưng chậm hơn, và n-gram bậc cao thì chính xác hơn nhưng tốn bộ nhớ hơn. Giá trị của $W$ và $n$ sẽ chọn bằng thí nghiệm trong Chương 4, sao cho mô hình và n-gram không quá 20 MB và mỗi dòng nhận dạng không quá 1 giây (dự kiến). Bộ giải mã viết bằng Kotlin, và nên có bản tham chiếu bằng Python để so kết quả.
+- **Ràng buộc trên điện thoại:** $W$ lớn thì chính xác hơn nhưng chậm hơn, và n-gram bậc cao thì chính xác hơn nhưng tốn bộ nhớ hơn. Đề tài dùng n-gram bậc 3, theo mục 3.2.5, và $W = 30$, chọn bằng thí nghiệm ở mục 4.3.2, vì tăng $W$ lên 50 chỉ giảm CER thêm 0,10 điểm phần trăm. Mô hình và n-gram nặng tổng cộng 15,43 MB, dưới giới hạn 20 MB. Bộ giải mã viết bằng Kotlin, và bản tham chiếu bằng Python cho cùng ba ứng viên, theo mục 5.3.
 
 ### 2.6.8. Hạn chế
 
 - **Beam có thể bỏ sót đáp án:** chuỗi đúng bị loại ở một bước giữa chừng thì không quay lại được, dù điểm cuối của nó cao nhất. $W$ càng nhỏ thì rủi ro càng lớn.
-- **Mô hình ngôn ngữ chỉ tác động ở ranh giới âm tiết:** trong lúc một âm tiết chưa xong, beam chỉ dựa vào xác suất của nét viết, nên âm tiết đúng có thể bị loại trước khi mô hình ngôn ngữ kịp giúp.
+- **Mô hình ngôn ngữ chỉ tác động ở ranh giới âm tiết:** trong lúc một âm tiết chưa xong, beam chỉ dựa vào xác suất của nét viết, nên âm tiết đúng có thể bị loại trước khi mô hình ngôn ngữ kịp giúp. Đề tài thử thêm n-gram ký tự để chấm cả bên trong âm tiết, theo mục 4.8.
 - **Ngữ cảnh ngắn:** n-gram chỉ nhìn $n - 1$ âm tiết trước. Nó không dùng được ngữ cảnh xa hơn hay ngữ cảnh phía sau âm tiết đang xét.
 - **Lệch miền văn bản:** n-gram học từ một kho văn bản sẽ ưu tiên cách viết của kho đó. Người dùng viết nội dung khác, như tên riêng hay từ chuyên ngành, có thể bị sửa sai.
 - **Chi phí:** mỗi bước phải xét $W$ tiền tố nhân với số nhãn, cộng thêm tra cứu n-gram, nên beam search chậm hơn nhiều so với giải mã đơn giản. Độ trễ này cộng vào thời gian chạy mô hình trên điện thoại.
@@ -580,9 +580,9 @@ Bảng: Dung lượng của mô hình M1 theo cách lưu trọng số {#bang:d7-
 
 ### 2.7.6. Áp dụng trong đề tài
 
-- **So sánh:** đề tài đo cả hai cách trên toàn bộ tập kiểm định, theo mục 4.3.
+- **So sánh:** đề tài đo cả hai cách trên toàn bộ tập kiểm định, theo mục 4.3.3.
 - **Lựa chọn:** đề tài dùng float16. Dynamic range làm tỷ lệ lỗi ký tự (CER) vượt ngưỡng, còn float16 cho kết quả gần như bản gốc.
-- **Dung lượng:** với M1, float16 làm mô hình tăng thêm khoảng 1 MB so với dynamic range. Với M1 lớn, mô hình đang dùng trong ứng dụng, mức tăng là khoảng 2,2 MB, theo mục 4.3. Tổng dung lượng vẫn thấp hơn ngưỡng 20 MB trong mục 1.2.
+- **Dung lượng:** với M1, float16 làm mô hình tăng thêm khoảng 1 MB so với dynamic range. Với M1 lớn, mô hình đang dùng trong ứng dụng, mức tăng là khoảng 2,2 MB, theo mục 4.3.3. Tổng dung lượng vẫn thấp hơn ngưỡng 20 MB trong mục 1.2.
 - **Cách chuyển đổi:** các bước cụ thể nằm trong mục 5.1.
 
 ### 2.7.7. Hạn chế

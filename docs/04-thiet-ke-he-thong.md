@@ -13,8 +13,8 @@ Bảng 1: Vị trí mã của từng thành phần
 | Thành phần | Bản Python | Bản Kotlin |
 | --- | --- | --- |
 | Gán nét vào hàng, ghép đoạn, vẽ ảnh | `training/ink.py` | `Ink.kt` |
-| Mô hình ngôn ngữ | `training/lm_binary.py` | `NGramModel.kt` |
-| Bộ giải mã | `training/decoder.py` | `CtcDecoder.kt` |
+| Mô hình ngôn ngữ | `training/lm_binary.py`, `training/char_ngram.py` | `NGramModel.kt`, `CharNGramModel.kt` |
+| Bộ giải mã | `training/decoder.py`, `training/decoder_char.py` | `CtcDecoder.kt` |
 | Mô hình | `training/model.py` | `Recognizer.kt`, chạy tệp `.tflite` |
 
 ## 2. Lớp ghép đoạn
@@ -84,9 +84,13 @@ Bảng 3: Quy mô của tệp `lm.bin`, đã đo
 | Cụm ba | 1.273.828 |
 | Dung lượng | 10,95 MB |
 
+### 4.4. N-gram ký tự
+
+Sau khi chốt cấu hình, ứng dụng dùng thêm tệp `clm.bin`, là n-gram ký tự bậc 6 nặng 4,10 MB, theo `07-nhat-ky-thi-nghiem.md`, mục 14. Mô hình học từ cùng kho văn bản với `lm.bin`, giữ chữ hoa và dấu câu, và chấm điểm từng ký tự thay vì từng âm tiết. Tổng dung lượng các tệp đi kèm là 19,53 MB, dưới ngưỡng 20 MB.
+
 ## 5. Bộ giải mã
 
-Bộ giải mã là beam search trên tiền tố, theo `ly-thuyet/06-beam-search-va-n-gram.md`, mục 2.3. Mỗi bước chỉ xét tối đa 8 ký tự có xác suất từ 0,002 trở lên. Điểm n-gram được cộng khi một âm tiết kết thúc. Bảng 4 ghi các tham số đang dùng.
+Bộ giải mã là beam search trên tiền tố, theo `ly-thuyet/06-beam-search-va-n-gram.md`, mục 2.3. Mỗi bước chỉ xét tối đa 8 ký tự có xác suất từ 0,002 trở lên. Điểm n-gram âm tiết được cộng khi một âm tiết kết thúc. Trong ứng dụng, mỗi ký tự thêm vào tiền tố còn được cộng điểm của n-gram ký tự, theo cách kết hợp ở `07-nhat-ky-thi-nghiem.md`, mục 14.2. Bảng 4 ghi các tham số đang dùng.
 
 Bảng 4: Tham số của bộ giải mã
 
@@ -95,6 +99,8 @@ Bảng 4: Tham số của bộ giải mã
 | Độ rộng beam $W$ | 30 | Theo `07-nhat-ky-thi-nghiem.md`, mục 4 và mục 11.1 |
 | $\alpha$ | 0,45 | Chỉnh trên tập kiểm định, chỉnh lại cho `m1l_rr_e100` theo `07-nhat-ky-thi-nghiem.md`, mục 11.1 |
 | $\beta$ | 4 | Chỉnh trên tập kiểm định, chỉnh lại cho `m1l_rr_e100` theo `07-nhat-ky-thi-nghiem.md`, mục 11.1 |
+| Trọng số n-gram ký tự | 0,3 | Chỉnh trên 410 dòng kiểm định, theo `07-nhat-ky-thi-nghiem.md`, mục 14.2 |
+| Điểm thưởng mỗi ký tự | 1 | Chỉnh trên 410 dòng kiểm định, theo `07-nhat-ky-thi-nghiem.md`, mục 14.2 |
 | Số ứng viên trả về | 3 | Theo `01-mo-ta-de-tai.md`, mục 5 |
 
 ## 6. Vấn đề chưa chốt

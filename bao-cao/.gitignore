@@ -1,0 +1,6 @@
+# Tệp trung gian của bộ dựng báo cáo, sinh lại bằng cong-cu/dung-bao-cao.ps1
+tam/
+cong-cu/__pycache__/
+cong-cu/node_modules/
+*.tmp
+~$*.docx

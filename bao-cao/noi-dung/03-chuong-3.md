@@ -114,8 +114,8 @@ Hệ thống có một luồng xử lý chung cho Python và Kotlin, theo Hình 
 | Thành phần | Bản Python | Bản Kotlin |
 | --- | --- | --- |
 | Gán nét vào hàng, ghép đoạn, vẽ ảnh | `training/ink.py` | `Ink.kt` |
-| Mô hình ngôn ngữ | `training/lm_binary.py` | `NGramModel.kt` |
-| Bộ giải mã | `training/decoder.py` | `CtcDecoder.kt` |
+| Mô hình ngôn ngữ | `training/lm_binary.py`, `training/char_ngram.py` | `NGramModel.kt`, `CharNGramModel.kt` |
+| Bộ giải mã | `training/decoder.py`, `training/decoder_char.py` | `CtcDecoder.kt` |
 | Mô hình nhận dạng | `training/model.py` | `Recognizer.kt`, chạy tệp `.tflite` |
 
 Bảng: Vị trí mã của từng thành phần {#bang:vi-tri-ma w=40,30,30}
@@ -177,7 +177,7 @@ Bảng: Các mô hình của đề tài {#bang:mo-hinh w=12,48,18,22}
 
 Hình {{hinh:kien-truc}} cho thấy kiến trúc của M1 lớn, mô hình đưa vào ứng dụng, cùng kích thước đầu ra của từng lớp.
 
-![Kiến trúc mô hình M1 lớn và kích thước đầu ra của từng lớp](../hinh/kien-truc-m1l.png){#hinh:kien-truc rong=13}
+![Kiến trúc mô hình M1 lớn và kích thước đầu ra của từng lớp](../hinh/kien-truc-m1l.png){#hinh:kien-truc rong=11.5}
 
 Mô hình được huấn luyện trực tiếp trên dữ liệu cấp dòng bằng hàm mất mát CTC. Mọi lần chạy dùng Adam với tốc độ học giảm theo hàm cosin từ 0,001 xuống 0,00001, lô 32 dòng, dropout 0,5 sau mỗi lớp BiLSTM, cắt chuẩn gradient ở 5 và hạt giống 1, trừ thí nghiệm hạt giống. Mô hình tốt nhất của mỗi lần chạy được chọn theo CER trên tập kiểm định, tính bằng giải mã đơn giản ở mục 2.5.6.
 
@@ -210,3 +210,5 @@ Bộ giải mã là beam search trên tiền tố, theo mục 2.6.4. Mỗi bư�
 | Số ứng viên trả về | 3 | Theo yêu cầu của ứng dụng ở Bảng {{bang:bai-toan}} |
 
 Bảng: Tham số của bộ giải mã {#bang:giai-ma w=28,14,58 can=t,g,t}
+
+Các tham số trên là của cấu hình đã chốt. Sau khi chạy các tập cuối, bộ giải mã trong ứng dụng dùng thêm một n-gram ký tự, chấm điểm từng ký tự với trọng số 0,3 và điểm thưởng 1 mỗi ký tự, theo mục 4.8.

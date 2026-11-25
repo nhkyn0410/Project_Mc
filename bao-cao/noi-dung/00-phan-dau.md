@@ -68,6 +68,8 @@ Ký hiệu toán dùng trong báo cáo được liệt kê theo thứ tự xuấ
 | $\nu$ | Số nguyên lưu trọng số sau lượng tử hóa |
 | $\gamma$, $\zeta$ | Bước lượng tử và điểm không của phép lượng tử hóa |
 
+{bang co=12 w=28,72}
+
 Chữ viết tắt được liệt kê theo thứ tự chữ cái.
 
 | Viết tắt | Viết đầy đủ | Nghĩa |
@@ -84,10 +86,13 @@ Chữ viết tắt được liệt kê theo thứ tự chữ cái.
 | LSTM | Long Short-Term Memory | Mạng hồi quy có bộ nhớ dài ngắn hạn |
 | M0, M1, M2 | | Ba mô hình của đề tài, xem mục 3.2.4 |
 | NFC | Normalization Form C | Dạng chuẩn Unicode dùng ký tự dựng sẵn |
+| SDK | Software Development Kit | Bộ công cụ phát triển phần mềm |
 | VNOnDB | HANDS-VNOnDB | Bộ dữ liệu chữ viết tay tiếng Việt dạng nét |
 | VOHTR | Vietnamese Online Handwritten Text Recognition | Cuộc thi nhận dạng chữ viết tay tiếng Việt dạng nét tại ICFHR 2018 |
 | WER | Word Error Rate | Tỷ lệ lỗi từ, trong đề tài tính theo âm tiết |
 | WER (1), WER (2) | | Tỷ lệ lỗi từ tính theo công thức tổng và công thức trung bình theo dòng, xem mục 1.5.1 |
+
+{bang co=12 w=20,38,42}
 
 # DANH MỤC BẢNG
 @@danh-muc-bang

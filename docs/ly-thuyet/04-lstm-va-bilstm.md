@@ -107,7 +107,7 @@ Hai lớp BiLSTM chiếm khoảng 0,66 triệu trong 1,00 triệu tham số củ
 
 - **Vì sao cần hai chiều:** BiLSTM đọc ảnh theo các cột từ trái sang phải, mỗi bước ứng với một dải cột. Một ký tự trải trên nhiều bước, và các ký tự bên phải giúp phân biệt những nét giống nhau. Chiều ngược mang thông tin bên phải về bước đang xét, nên đề tài dùng BiLSTM thay cho LSTM một chiều. Phép so sánh M0 với M1 đo lợi ích này.
 - **Cấu hình:** mô hình cơ sở M0 không có BiLSTM, mô hình đề xuất M1 có 2 lớp BiLSTM 128 ô sau CNN 2D, theo `01-mo-ta-de-tai.md`, mục 7.3. Cấu hình huấn luyện khởi đầu dùng dropout 0,5 sau mỗi lớp LSTM [@carbune2019].
-- **Chọn LSTM thay cho GRU:** công cụ chuyển đổi LiteRT có hướng dẫn chuyển đổi sẵn cho lớp LSTM của Keras. Chi tiết thuộc `06-trien-khai-android.md` (dự kiến).
+- **Chọn LSTM thay cho GRU:** công cụ chuyển đổi LiteRT có hướng dẫn chuyển đổi sẵn cho lớp LSTM của Keras. Cách chuyển đổi nằm ở `06-trien-khai-android.md`, mục 1.
 - **Kết quả tạm thời khi đang viết:** chiều ngược cần toàn bộ chuỗi, nên ứng dụng chạy lại cả dòng sau mỗi lần người dùng dừng bút, thay vì cập nhật từng bước.
 
 ## 5. Hạn chế

@@ -13,6 +13,8 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "0.1"
+        // Bài đo trên điện thoại (src/androidTest): độ trễ của ứng dụng và so sánh với ML Kit.
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -40,4 +42,8 @@ android {
 dependencies {
     implementation("com.google.ai.edge.litert:litert:1.4.0")
     testImplementation("junit:junit:4.13.2")
+    // ML Kit chỉ có trong bản debug, để bài đo so sánh trên điện thoại. Bản phát hành không chứa ML Kit.
+    debugImplementation("com.google.mlkit:digital-ink-recognition:19.0.0")
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
 }

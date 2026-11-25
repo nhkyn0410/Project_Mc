@@ -18,10 +18,12 @@ EXT = {
     ("04-thiet-ke-he-thong.md", ""): "mục 3.2", ("04-thiet-ke-he-thong.md", "3"): "mục 3.2.3",
     ("04-thiet-ke-he-thong.md", "4"): "mục 3.2.5", ("04-thiet-ke-he-thong.md", "5"): "mục 3.2.6",
     ("05-ke-hoach-thi-nghiem.md", ""): "Chương 4",
-    ("06-trien-khai-android.md", ""): "Chương 5", ("06-trien-khai-android.md", "1"): "mục 5.1",
-    ("07-nhat-ky-thi-nghiem.md", ""): "Chương 4", ("07-nhat-ky-thi-nghiem.md", "5"): "mục 4.3",
+    ("06-trien-khai-android.md", ""): "Chương 5", ("06-trien-khai-android.md", "1"): "mục 5.1", ("06-trien-khai-android.md", "3"): "mục 5.3",
+    ("07-nhat-ky-thi-nghiem.md", "4"): "mục 4.3.2",
+    ("07-nhat-ky-thi-nghiem.md", ""): "Chương 4", ("07-nhat-ky-thi-nghiem.md", "5"): "mục 4.3.3",
     ("07-nhat-ky-thi-nghiem.md", "6"): "mục 4.7", ("07-nhat-ky-thi-nghiem.md", "10.5"): "mục 4.4",
-    ("07-nhat-ky-thi-nghiem.md", "11.3"): "mục 4.3", ("07-nhat-ky-thi-nghiem.md", "11.2"): "mục 4.5",
+    ("07-nhat-ky-thi-nghiem.md", "11.3"): "mục 4.3.3", ("07-nhat-ky-thi-nghiem.md", "11.2"): "mục 4.5.2",
+    ("07-nhat-ky-thi-nghiem.md", "14"): "mục 4.8",
 }
 
 def sections_of(text):

@@ -70,6 +70,7 @@ function parse(text, dir) {
       i++; continue;
     }
     if ((m = s.match(/^\$\$(.*)\$\$\s*(\{#ct:[^}]*\})?$/))) { flush(); blocks.push({ t: "eq", tex: m[1].trim(), opts: parseOpts(m[2]) }); i++; continue; }
+    if ((m = s.match(/^&& \[(\d+)\] (.*)$/))) { flush(); blocks.push({ t: "ref", n: m[1], text: m[2] }); i++; continue; }
     if ((m = s.match(/^- (.*)$/))) { flush(); blocks.push({ t: "li", kind: "bullet", text: m[1] }); i++; continue; }
     if ((m = s.match(/^(\d+)\. (.*)$/)) && !/^\d+\.\d/.test(s)) { flush(); blocks.push({ t: "li", kind: "num", text: m[2] }); i++; continue; }
     para.push(s); i++;
@@ -164,9 +165,16 @@ function makeTable(b) {
   }
   widths[widths.length - 1] += TEXT_W - widths.reduce((a, c) => a + c, 0);
   const align = (opts.can || "").split(",");
+  // Bảng thấp hơn khoảng 30% trang thì giữ trọn trên một trang. Bảng cao hơn được tách sang trang sau,
+  // nhưng mỗi phần có ít nhất hai hàng: hàng tiêu đề đi cùng hai hàng đầu, hai hàng cuối đi cùng chú thích.
+  const charW = (size / 2) * 20 * 0.48; // bề rộng trung bình một ký tự, tính bằng twip
+  const lineH = (size / 2) * 20 * 1.3 * 1.15;
+  const height = b.rows.reduce((sum, r) => sum + 80 + lineH * Math.max(...widths.map((wc, c) => Math.max(1, Math.ceil((strip(r[c] || "").length * charW) / (wc - 180))))), 0);
+  const keepAll = height <= 0.3 * (16838 - 2 * 1417);
+  const n = b.rows.length;
   const rows = b.rows.map((r, ri) => {
     const header = ri === 0;
-    const lastRow = ri === b.rows.length - 1;
+    const keep = keepAll || ri <= 1 || ri >= n - 2;
     return new TableRow({
       tableHeader: header,
       cantSplit: true,
@@ -177,7 +185,7 @@ function makeTable(b) {
         children: [new Paragraph({
           alignment: header ? AlignmentType.CENTER : (align[c] === "g" ? AlignmentType.CENTER : align[c] === "p" ? AlignmentType.RIGHT : AlignmentType.LEFT),
           spacing: { before: 0, after: 0, line: LINE, lineRule: LineRuleType.AUTO },
-          keepNext: lastRow,
+          keepNext: keep,
           children: runs(r[c] || "", { size, bold: header || undefined }),
         })],
       })),
@@ -211,15 +219,16 @@ function makeImage(b) {
   ];
 }
 function pngSize(buf) { return { w: buf.readUInt32BE(16), h: buf.readUInt32BE(20) }; }
-function makeEq(b) {
+function makeEq(b, keep) {
   // Công thức riêng dòng: bảng 3 cột không viền, công thức ở giữa, số (chương.thứ tự) sát lề phải.
+  // keep: công thức đi cùng trang với đoạn "trong đó" giải thích nó.
   const none = { style: BorderStyle.NONE, size: 0, color: "FFFFFF" };
   const nb = { top: none, bottom: none, left: none, right: none, insideHorizontal: none, insideVertical: none };
   const w = [1134, TEXT_W - 2268, 1134];
   const cell = (i, children, align) => new TableCell({
     width: { size: w[i], type: WidthType.DXA }, borders: { top: none, bottom: none, left: none, right: none },
     verticalAlign: VerticalAlign.CENTER, margins: { top: 0, bottom: 0, left: 0, right: 0 },
-    children: [new Paragraph({ alignment: align, keepLines: true, spacing: { before: 40, after: 40, line: LINE, lineRule: LineRuleType.AUTO }, children })],
+    children: [new Paragraph({ alignment: align, keepLines: true, keepNext: keep || undefined, spacing: { before: 40, after: 40, line: LINE, lineRule: LineRuleType.AUTO }, children })],
   });
   return new Table({
     width: { size: TEXT_W, type: WidthType.DXA }, columnWidths: w, borders: nb,
@@ -244,8 +253,12 @@ let listId = 0;
 function newSection(kind) { cur = { kind, children: [] }; sections.push(cur); }
 newSection("front");
 let prevLi = null;
-let pendingNoNum = false;
-for (const b of blocks) {
+for (let bi = 0; bi < blocks.length; bi++) {
+  const b = blocks[bi];
+  // đoạn dẫn ngay trước một bảng hoặc công thức, và đoạn kết thúc bằng dấu hai chấm trước một danh sách,
+  // đi cùng trang với phần nó dẫn
+  const next = bi + 1 < blocks.length ? blocks[bi + 1] : null;
+  const beforeTable = !!next && (next.t === "table" || next.t === "eq" || (next.t === "li" && b.t === "p" && /:$/.test(b.text)));
   if (b.t !== "li") prevLi = null;
   if (b.t === "cmd") {
     if (b.name === "phan-chinh") { newSection("main"); continue; }
@@ -265,12 +278,17 @@ for (const b of blocks) {
     const lv = [HeadingLevel.HEADING_1, HeadingLevel.HEADING_2, HeadingLevel.HEADING_3][b.level - 1];
     cur.children.push(new Paragraph({ heading: lv, pageBreakBefore: b.level === 1 && cur.children.length > 0, children: runs(b.text) }));
   } else if (b.t === "p") {
-    cur.children.push(new Paragraph({ children: runs(b.text) }));
+    // đoạn ngay sau một bảng không chú thích thì cách bảng 6 pt, để chữ không dính vào viền bảng
+    const afterBareTable = bi > 0 && blocks[bi - 1].t === "table" && !blocks[bi - 1].cap;
+    cur.children.push(new Paragraph({ keepNext: beforeTable || undefined, spacing: afterBareTable ? { before: 120 } : undefined, children: runs(b.text) }));
+  } else if (b.t === "ref") {
+    cur.children.push(new Paragraph({ style: "TaiLieu", children: [new TextRun({ children: [`[${b.n}]`, new D.Tab()] }), ...runs(b.text)] }));
   } else if (b.t === "li") {
     if (!prevLi || prevLi.kind !== b.kind) listId++;
     prevLi = b;
     cur.children.push(new Paragraph({
       numbering: { reference: b.kind === "bullet" ? "cham" : "so", level: 0, instance: listId },
+      keepNext: beforeTable || undefined,
       children: runs(b.text),
     }));
   } else if (b.t === "table") {
@@ -278,7 +296,7 @@ for (const b of blocks) {
   } else if (b.t === "img") {
     cur.children.push(...makeImage(b));
   } else if (b.t === "eq") {
-    cur.children.push(makeEq(b));
+    cur.children.push(makeEq(b, !!next && next.t === "p" && /^trong đó/i.test(next.text)));
   }
 }
 fs.writeFileSync(path.join(path.dirname(out), "cong-thuc.json"), JSON.stringify(eqs));
@@ -310,6 +328,7 @@ const doc = new Document({
     paragraphStyles: [
       { id: "Caption", name: "caption", basedOn: "Normal", next: "Normal", quickFormat: true, run: { font: FONT, size: PT(12), italics: true, bold: false, color: "000000" }, paragraph: { alignment: AlignmentType.CENTER, spacing: { before: 60, after: AFTER, line: LINE, lineRule: LineRuleType.AUTO } } },
       { id: "TieuDeRieng", name: "Tieu de rieng", basedOn: "Normal", next: "Normal", run: { font: FONT, size: PT(13), bold: true, allCaps: true }, paragraph: { alignment: AlignmentType.CENTER, spacing: { before: 0, after: 240, line: LINE, lineRule: LineRuleType.AUTO }, keepNext: true } },
+      { id: "TaiLieu", name: "Tai lieu tham khao", basedOn: "Normal", next: "TaiLieu", run: { font: FONT, size: PT(13) }, paragraph: { alignment: AlignmentType.LEFT, indent: { left: 680, hanging: 680 }, spacing: { before: 0, after: AFTER, line: LINE, lineRule: LineRuleType.AUTO }, keepLines: true, tabStops: [{ type: TabStopType.LEFT, position: 680 }] } },
       { id: "TOC1", name: "toc 1", basedOn: "Normal", next: "Normal", run: { font: FONT, size: PT(13), bold: true }, paragraph: { alignment: AlignmentType.LEFT, spacing: { before: 60, after: 60, line: LINE, lineRule: LineRuleType.AUTO }, tabStops: [{ type: TabStopType.RIGHT, position: TEXT_W, leader: "dot" }] } },
       { id: "TOC2", name: "toc 2", basedOn: "Normal", next: "Normal", run: { font: FONT, size: PT(13) }, paragraph: { alignment: AlignmentType.LEFT, indent: { left: 280 }, spacing: { before: 0, after: 40, line: LINE, lineRule: LineRuleType.AUTO }, tabStops: [{ type: TabStopType.RIGHT, position: TEXT_W, leader: "dot" }] } },
       { id: "TOC3", name: "toc 3", basedOn: "Normal", next: "Normal", run: { font: FONT, size: PT(13), italics: true }, paragraph: { alignment: AlignmentType.LEFT, indent: { left: 560 }, spacing: { before: 0, after: 40, line: LINE, lineRule: LineRuleType.AUTO }, tabStops: [{ type: TabStopType.RIGHT, position: TEXT_W, leader: "dot" }] } },

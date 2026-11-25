@@ -21,6 +21,12 @@ def main(docx):
                 if k:
                     i = text.find(c)
                     report.append(f"{part}: {k} lần '{c}', ví dụ: ...{text[max(0, i - 40):i + 40]}...")
+            # trong công thức chỉ cấm gạch và mũi tên; dấu ba chấm của dãy số như z1, ..., zT là ký hiệu toán
+            math = "".join(re.findall(r"<m:t(?: [^>]*)?>([^<]*)</m:t>", xml))
+            for c in [x for x in CAM if x != "…"]:
+                k = math.count(c)
+                if k:
+                    report.append(f"{part}: {k} lần '{c}' trong công thức")
             if "⟦CT" in xml:
                 report.append(f"{part}: còn chỗ giữ công thức")
         with zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as zout:

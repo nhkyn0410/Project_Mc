@@ -61,4 +61,27 @@ class ParityTest {
             assertEquals(expected[c].split("\t"), decoder.decode(probs))
         }
     }
+
+    @Test
+    fun charDecoderMatchesPython() {
+        val p = text("params.txt").trim().split(" ")
+        val steps = p[2].toInt()
+        val labels = p[3].toInt()
+        val count = p[4].toInt()
+        val floats = ByteBuffer.wrap(bytes("decoder_probs.bin")).order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer()
+        val decoder = CtcDecoder(
+            text("chars.txt"), NGramModel(bytes("lm.bin")), p[0].toDouble(), p[1].toDouble(),
+            clm = CharNGramModel(bytes("clm.bin")), alphaC = p[7].toDouble(), gammaC = p[8].toDouble(),
+        )
+        val expected = text("decoder_char_expected.txt").trim('\n').split("\n")
+        assertEquals(count, expected.size)
+        var differs = 0
+        for (c in 0 until count) {
+            val probs = Array(steps) { FloatArray(labels) { floats.get() } }
+            val got = decoder.decode(probs)
+            if (got != expected[c].split("\t")) differs++
+            assertEquals(expected[c].split("\t"), got)
+        }
+        assertEquals(0, differs)
+    }
 }

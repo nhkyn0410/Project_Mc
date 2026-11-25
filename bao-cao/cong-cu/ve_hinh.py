@@ -56,8 +56,8 @@ def luong_xu_ly():
     W, H = 1000 * S, 380 * S
     im = Image.new("RGB", (W, H), "white")
     d = ImageDraw.Draw(im)
-    f = font(FB, 11)
-    fl = font(FI, 11)
+    f = font(FB, 14)
+    fl = font(FI, 13)
     bw, bh = 225 * S // 2 * 2 // 2, 74 * S
     gap = 48 * S
     # hàng trên: xử lý dòng ngắt; hàng dưới: nhận dạng dòng ảo
@@ -101,8 +101,8 @@ def luong_xu_ly():
     bb = d.textbbox((0, 0), t, font=fl)
     d.text(((lx + cx) / 2 - (bb[2] - bb[0]) / 2, fy + 6 * S), t, fill=(60, 60, 60), font=fl)
     # nhãn hai phần
-    fl2 = font(FI, 10.5)
-    for txt, y in (("Xử lý dòng ngắt", top_y - 30 * S), ("Nhận dạng dòng ảo", bot_y - 30 * S)):
+    fl2 = font(FI, 13)
+    for txt, y in (("Xử lý dòng ngắt", top_y - 36 * S), ("Nhận dạng dòng ảo", bot_y - 36 * S)):
         d.text((xs[1] + bw / 2 - d.textbbox((0, 0), txt, font=fl2)[2] / 2, y), txt, fill=(60, 60, 60), font=fl2)
     im = trim(im)
     im.save(os.path.join(OUT, "luong-xu-ly.png"), dpi=(300, 300))
@@ -148,10 +148,10 @@ def vi_du_dong_ngat(code, idx):
     db = ImageDraw.Draw(b)
     db.rectangle([0, 0, b.width - 1, b.height - 1], outline=(120, 120, 120), width=S)
     # ghép: (a) bên trái, (b) bên phải phía dưới, có nhãn
-    fl = font(F, 12)
+    fl = font(F, 20)
     pad = 30 * S
     Wt = a.width + pad + b.width
-    Ht = max(a.height, b.height) + 40 * S
+    Ht = max(a.height, b.height) + 50 * S
     out = Image.new("RGB", (Wt, Ht), "white")
     out.paste(a, (0, 0))
     by = (a.height - b.height) // 2
@@ -159,7 +159,7 @@ def vi_du_dong_ngat(code, idx):
     do = ImageDraw.Draw(out)
     for txt, cx in (("(a)", a.width / 2), ("(b)", a.width + pad + b.width / 2)):
         bb = do.textbbox((0, 0), txt, font=fl)
-        do.text((cx - (bb[2] - bb[0]) / 2, Ht - 34 * S), txt, fill="black", font=fl)
+        do.text((cx - (bb[2] - bb[0]) / 2, Ht - 44 * S), txt, fill="black", font=fl)
     arrow(do, (a.width + 4 * S, by + b.height / 2), (a.width + pad - 4 * S, by + b.height / 2), w=2, head=8)
     out.save(os.path.join(OUT, "vi-du-dong-ngat.png"), dpi=(300, 300))
     print("dòng:", line["text"], "| số dòng chữ khi gán:", int(rows.max()) + 1, "| ảnh mô hình:", img.shape)
@@ -167,45 +167,41 @@ def vi_du_dong_ngat(code, idx):
 
 def kien_truc():
     """Kiến trúc M1 lớn, mô hình đưa vào ứng dụng, xếp từ trên xuống."""
+    # Chữ trong hình in ra khoảng 10 pt khi hình rộng 12 cm, nên dòng dài được chia làm hai
     rows = [
         ("Ảnh xám của dòng liền hoặc dòng ảo", "64 × 512 × 1", False),
-        ("Khối 1: tích chập 3 × 3, 48 bộ lọc, chuẩn hóa theo lô, ReLU, max pooling 2 × 2", "32 × 256 × 48", True),
-        ("Khối 2: tích chập 3 × 3, 96 bộ lọc, chuẩn hóa theo lô, ReLU, max pooling 2 × 1", "16 × 256 × 96", True),
-        ("Khối 3: tích chập 3 × 3, 192 bộ lọc, chuẩn hóa theo lô, ReLU, max pooling 2 × 1", "8 × 256 × 192", True),
-        ("Khối 4: tích chập 3 × 3, 192 bộ lọc, chuẩn hóa theo lô, ReLU, max pooling 2 × 1", "4 × 256 × 192", True),
-        ("Đổi thành chuỗi 256 bước, lớp kết nối đầy đủ 192 ô, ReLU", "256 × 192", False),
+        ("Khối 1: tích chập 3 × 3, 48 bộ lọc,\nchuẩn hóa theo lô, ReLU, max pooling 2 × 2", "32 × 256 × 48", True),
+        ("Khối 2: tích chập 3 × 3, 96 bộ lọc,\nchuẩn hóa theo lô, ReLU, max pooling 2 × 1", "16 × 256 × 96", True),
+        ("Khối 3: tích chập 3 × 3, 192 bộ lọc,\nchuẩn hóa theo lô, ReLU, max pooling 2 × 1", "8 × 256 × 192", True),
+        ("Khối 4: tích chập 3 × 3, 192 bộ lọc,\nchuẩn hóa theo lô, ReLU, max pooling 2 × 1", "4 × 256 × 192", True),
+        ("Đổi thành chuỗi 256 bước,\nlớp kết nối đầy đủ 192 ô, ReLU", "256 × 192", False),
         ("BiLSTM thứ nhất: 192 ô mỗi chiều, dropout 0,5", "256 × 384", False),
         ("BiLSTM thứ hai: 192 ô mỗi chiều, dropout 0,5", "256 × 384", False),
         ("Lớp kết nối đầy đủ, softmax trên 161 nhãn", "256 × 161", False),
-        ("Huấn luyện: hàm mất mát CTC. Nhận dạng: beam search và n-gram âm tiết", "", None),
+        ("Huấn luyện: hàm mất mát CTC\nNhận dạng: beam search và n-gram âm tiết", "", None),
     ]
-    W, bw, bh, gap = 1500 * S // 2 * 2 // 2, 1000 * S // 2, 46 * S, 26 * S
-    W = 1250 * S // 2 * 2
-    x0 = 40 * S
-    xshape = x0 + bw + 40 * S
-    H = len(rows) * (bh + gap) + 90 * S
+    bw, gap = 340 * S, 16 * S
+    x0 = 20 * S
+    xshape = x0 + bw + 22 * S
+    hs = [(40 if "\n" in r[0] else 24) * S for r in rows]
+    W = xshape + 140 * S
+    H = sum(hs) + gap * (len(rows) - 1) + 80 * S
     im = Image.new("RGB", (W, H), "white")
     d = ImageDraw.Draw(im)
     f = font(F, 10.5)
     fb = font(FB, 10.5)
     fs = font(FI, 10.5)
     y = 50 * S
-    d.text((xshape, y - 38 * S), "Kích thước đầu ra (cao × rộng × kênh)", fill=(60, 60, 60), font=fs)
-    for i, (txt, shape, cnn) in enumerate(rows):
+    d.text((xshape, y - 44 * S), "Kích thước đầu ra\n(cao × rộng × kênh)", fill=(60, 60, 60), font=fs, spacing=4 * S)
+    for i, ((txt, shape, cnn), bh) in enumerate(zip(rows, hs)):
         fill = (235, 235, 235) if cnn else (255, 255, 255)
-        if cnn is None:
-            d.rounded_rectangle((x0, y, x0 + bw, y + bh), radius=8 * S, outline=(0, 0, 0), width=2 * S, fill=(255, 255, 255))
-        else:
-            d.rectangle((x0, y, x0 + bw, y + bh), outline=(0, 0, 0), width=2 * S, fill=fill)
-        bb = d.textbbox((0, 0), txt, font=f)
-        d.text((x0 + bw / 2 - (bb[2] - bb[0]) / 2, y + bh / 2 - (bb[3] - bb[1]) / 2 - bb[1]), txt, fill="black", font=f)
+        box(d, (x0, y, x0 + bw, y + bh), txt, f, fill=fill, radius=8 if cnn is None else 0)
         if shape:
             bb = d.textbbox((0, 0), shape, font=fb)
             d.text((xshape, y + bh / 2 - (bb[3] - bb[1]) / 2 - bb[1]), shape, fill="black", font=fb)
         if i < len(rows) - 1:
-            arrow(d, (x0 + bw / 2, y + bh + 2 * S), (x0 + bw / 2, y + bh + gap - 2 * S), w=2, head=7)
+            arrow(d, (x0 + bw / 2, y + bh + 2 * S), (x0 + bw / 2, y + bh + gap - 2 * S), w=2, head=6)
         y += bh + gap
-    # ngoặc nhóm CNN 2D và BiLSTM ở bên trái
     im = trim(im)
     im.save(os.path.join(OUT, "kien-truc-m1l.png"), dpi=(300, 300))
 

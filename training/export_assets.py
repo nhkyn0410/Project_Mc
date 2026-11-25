@@ -2,6 +2,8 @@
 
 Chạy trong Ubuntu sau export_tflite.py:
     python export_assets.py --run ~/vnhw/runs/m1_v2 --lm ~/vnhw/data/ngram_clean.npz --alpha 0.6 --beta 4
+
+Thêm --clm, --alpha-c và --gamma-c để đưa n-gram ký tự vào ứng dụng (docs/07-nhat-ky-thi-nghiem.md, mục 14).
 """
 import argparse
 import json
@@ -10,9 +12,11 @@ import shutil
 
 import numpy as np
 
+import char_ngram
 import ink
 import lm_binary
 from decoder import Decoder
+from decoder_char import CharDecoder
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ASSETS = os.path.join(HERE, "..", "android", "app", "src", "main", "assets")
@@ -46,7 +50,7 @@ def random_strokes(rng, n_rows):
     return strokes
 
 
-def write_parity(run, lm_path, alpha, beta, max_ink=0, stroke_width=ink.STROKE_WIDTH):
+def write_parity(run, lm_path, alpha, beta, max_ink=0, stroke_width=ink.STROKE_WIDTH, clm_path="", alpha_c=0.0, gamma_c=0.0):
     os.makedirs(TEST_RES, exist_ok=True)
     rng = np.random.default_rng(7)
     with open(os.path.join(TEST_RES, "ink_parity.txt"), "w", encoding="utf8") as f:
@@ -70,14 +74,19 @@ def write_parity(run, lm_path, alpha, beta, max_ink=0, stroke_width=ink.STROKE_W
     probs = np.load(os.path.join(run, "val_probs.npy"))
     lm = lm_binary.NGramBin(lm_path)
     d = Decoder(chars, lm, alpha, beta)
-    idx = [0, 200, 700]
+    idx = [0, 200, 700, 50, 400, 900, 1000, 1150]
     probs[idx].astype("<f4").tofile(os.path.join(TEST_RES, "decoder_probs.bin"))
     with open(os.path.join(TEST_RES, "decoder_expected.txt"), "w", encoding="utf8") as f:
         for i in idx:
             result = d.decode(probs[i], keep=3)
             f.write("\t".join(t for _, t in result) + "\n")
+    if clm_path:
+        dc = CharDecoder(chars, lm, alpha, beta, clm=char_ngram.CharNGramBin(clm_path), alpha_c=alpha_c, gamma_c=gamma_c)
+        with open(os.path.join(TEST_RES, "decoder_char_expected.txt"), "w", encoding="utf8") as f:
+            for i in idx:
+                f.write("\t".join(t for _, t in dc.decode(probs[i], keep=3)) + "\n")
     with open(os.path.join(TEST_RES, "params.txt"), "w", encoding="utf8") as f:
-        f.write(f"{alpha} {beta} {probs.shape[1]} {probs.shape[2]} {len(idx)} {max_ink} {stroke_width}\n")
+        f.write(f"{alpha} {beta} {probs.shape[1]} {probs.shape[2]} {len(idx)} {max_ink} {stroke_width} {alpha_c} {gamma_c}\n")
 
 
 def main():
@@ -88,6 +97,9 @@ def main():
     p.add_argument("--beta", type=float, required=True)
     p.add_argument("--model", default="m_float16.tflite")
     p.add_argument("--stroke-width", type=float, default=ink.STROKE_WIDTH)
+    p.add_argument("--clm", default="", help="Tệp .npz của n-gram ký tự, ghi thành clm.bin")
+    p.add_argument("--alpha-c", type=float, default=0.0)
+    p.add_argument("--gamma-c", type=float, default=0.0)
     a = p.parse_args()
     os.makedirs(ASSETS, exist_ok=True)
     os.makedirs(TEST_RES, exist_ok=True)
@@ -101,9 +113,16 @@ def main():
             f.write("".join(chars))
     config = json.load(open(os.path.join(a.run, "config.json"), encoding="utf8"))
     max_ink = config.get("max_ink", 0) or 0
+    clm_path = os.path.join(ASSETS, "clm.bin")
+    if a.clm:
+        char_ngram.write(a.clm, clm_path)
+        shutil.copy(clm_path, os.path.join(TEST_RES, "clm.bin"))
+    elif os.path.exists(clm_path):
+        os.remove(clm_path)
     with open(os.path.join(ASSETS, "params.txt"), "w", encoding="utf8") as f:
-        f.write(f"{a.alpha} {a.beta} {max_ink} {a.stroke_width}\n")
-    write_parity(a.run, lm_path, a.alpha, a.beta, max_ink, a.stroke_width)
+        extra = f" {a.alpha_c} {a.gamma_c}" if a.clm else ""
+        f.write(f"{a.alpha} {a.beta} {max_ink} {a.stroke_width}{extra}\n")
+    write_parity(a.run, lm_path, a.alpha, a.beta, max_ink, a.stroke_width, clm_path if a.clm else "", a.alpha_c, a.gamma_c)
     sizes = {n: round(os.path.getsize(os.path.join(ASSETS, n)) / 1e6, 2) for n in os.listdir(ASSETS)}
     print(json.dumps(sizes), "total MB", round(sum(sizes.values()), 2))
 

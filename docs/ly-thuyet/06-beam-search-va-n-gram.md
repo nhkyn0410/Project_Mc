@@ -100,16 +100,16 @@ $$
 ## 4. Áp dụng trong đề tài
 
 - **Vị trí trong hệ thống:** beam search và n-gram âm tiết tạo thành mô hình M2 trong `01-mo-ta-de-tai.md`, mục 7.3, là bản đưa lên điện thoại. Giải mã đơn giản ở `05-ctc.md` chỉ dùng để theo dõi tỷ lệ lỗi ký tự (CER) trong lúc huấn luyện.
-- **Kho văn bản cho n-gram:** gồm văn bản của tập huấn luyện VNOnDB và một kho văn bản khác không lấy từ VieTreeBank, vì văn bản kiểm thử của VNOnDB lấy từ VieTreeBank. Các câu trùng với tập kiểm thử và với câu đề của tập tự thu phải được loại trước khi đếm. Chi tiết thuộc `03-du-lieu.md` (dự kiến).
+- **Kho văn bản cho n-gram:** gồm văn bản của tập huấn luyện VNOnDB và một kho văn bản khác không lấy từ VieTreeBank, vì văn bản kiểm thử của VNOnDB lấy từ VieTreeBank. Các câu trùng với tập kiểm thử và với câu đề của tập tự thu phải được loại trước khi đếm. Kho văn bản của đề tài gồm tập huấn luyện VNOnDB và Wikipedia tiếng Việt, theo `04-thiet-ke-he-thong.md`, mục 4.
 - **Chuẩn hóa văn bản:** kho văn bản và nhãn phải cùng chuẩn Unicode NFC và cùng kiểu đặt dấu thanh. Nếu không, một âm tiết bị đếm thành hai, và xác suất của cả hai đều thấp hơn thực tế.
 - **Chỉnh trọng số:** $\alpha$, $\beta$ chỉnh trên tập kiểm định, tập kiểm thử chỉ chạy một lần ở cuối.
 - **Ba ứng viên cho người dùng:** sau bước cuối, các tiền tố còn lại trong beam đã được xếp theo điểm, nên có sẵn danh sách ứng viên mà không phải tính thêm.
-- **Ràng buộc trên điện thoại:** $W$ lớn thì chính xác hơn nhưng chậm hơn, và n-gram bậc cao thì chính xác hơn nhưng tốn bộ nhớ hơn. Giá trị của $W$ và $n$ sẽ chọn bằng thí nghiệm trong `05-ke-hoach-thi-nghiem.md`, sao cho mô hình và n-gram không quá 20 MB và mỗi dòng nhận dạng không quá 1 giây (dự kiến). Bộ giải mã viết bằng Kotlin, và nên có bản tham chiếu bằng Python để so kết quả.
+- **Ràng buộc trên điện thoại:** $W$ lớn thì chính xác hơn nhưng chậm hơn, và n-gram bậc cao thì chính xác hơn nhưng tốn bộ nhớ hơn. Đề tài dùng n-gram bậc 3, theo `04-thiet-ke-he-thong.md`, mục 4, và $W = 30$, chọn bằng thí nghiệm ở `07-nhat-ky-thi-nghiem.md`, mục 4, vì tăng $W$ lên 50 chỉ giảm CER thêm 0,10 điểm phần trăm. Mô hình và n-gram nặng tổng cộng 15,43 MB, dưới giới hạn 20 MB. Bộ giải mã viết bằng Kotlin, và bản tham chiếu bằng Python cho cùng ba ứng viên, theo `06-trien-khai-android.md`, mục 3.
 
 ## 5. Hạn chế
 
 - **Beam có thể bỏ sót đáp án:** chuỗi đúng bị loại ở một bước giữa chừng thì không quay lại được, dù điểm cuối của nó cao nhất. $W$ càng nhỏ thì rủi ro càng lớn.
-- **Mô hình ngôn ngữ chỉ tác động ở ranh giới âm tiết:** trong lúc một âm tiết chưa xong, beam chỉ dựa vào xác suất của nét viết, nên âm tiết đúng có thể bị loại trước khi mô hình ngôn ngữ kịp giúp.
+- **Mô hình ngôn ngữ chỉ tác động ở ranh giới âm tiết:** trong lúc một âm tiết chưa xong, beam chỉ dựa vào xác suất của nét viết, nên âm tiết đúng có thể bị loại trước khi mô hình ngôn ngữ kịp giúp. Đề tài thử thêm n-gram ký tự để chấm cả bên trong âm tiết, theo `07-nhat-ky-thi-nghiem.md`, mục 14.
 - **Ngữ cảnh ngắn:** n-gram chỉ nhìn $n - 1$ âm tiết trước. Nó không dùng được ngữ cảnh xa hơn hay ngữ cảnh phía sau âm tiết đang xét.
 - **Lệch miền văn bản:** n-gram học từ một kho văn bản sẽ ưu tiên cách viết của kho đó. Người dùng viết nội dung khác, như tên riêng hay từ chuyên ngành, có thể bị sửa sai.
 - **Chi phí:** mỗi bước phải xét $W$ tiền tố nhân với số nhãn, cộng thêm tra cứu n-gram, nên beam search chậm hơn nhiều so với giải mã đơn giản. Độ trễ này cộng vào thời gian chạy mô hình trên điện thoại.

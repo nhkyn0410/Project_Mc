@@ -5,3 +5,4 @@ local.properties
 .idea/
 app/src/main/assets/
 app/src/test/resources/
+app/src/androidTest/assets/
